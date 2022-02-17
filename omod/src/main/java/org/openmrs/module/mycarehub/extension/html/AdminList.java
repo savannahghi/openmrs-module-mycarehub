@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.basicmodule.extension.html;
+package org.openmrs.module.mycarehub.extension.html;
 
 import java.util.HashMap;
 import java.util.Map;

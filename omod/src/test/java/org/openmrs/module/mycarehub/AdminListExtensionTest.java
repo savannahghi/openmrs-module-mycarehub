@@ -11,14 +11,14 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.basicmodule;
+package org.openmrs.module.mycarehub;
 
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.module.Extension.MEDIA_TYPE;
-import org.openmrs.module.basicmodule.extension.html.AdminList;
+import org.openmrs.module.mycarehub.extension.html.AdminList;
 
 /**
  * This test validates the AdminList extension class
