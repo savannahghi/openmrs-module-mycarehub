@@ -1,11 +1,11 @@
-openmrs-module-basicmodule
+openmrs-module-mycarehub
 ==========================
 
-A demonstration module for new OpenMRS module developers
+OpenMRS module to link myCareHub to KenyaEMR
 
 Description
 -----------
-This is a very basic module which can be used as a starting point in creating a new module.
+OpenMRS module to sync data to and from my care hub backend
 
 Building from Source
 --------------------

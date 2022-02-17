@@ -30,17 +30,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * This class configured as controller using annotation and mapped with the URL of
- * 'module/basicmodule/basicmoduleLink.form'.
+ * 'module/mycarehub/mycarehubLink.form'.
  */
 @Controller
-@RequestMapping(value = "module/basicmodule/basicmoduleLink.form")
+@RequestMapping(value = "module/mycarehub/mycarehubLink.form")
 public class BasicModuleFormController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/** Success form view name */
-	private final String SUCCESS_FORM_VIEW = "/module/basicmodule/basicmoduleForm";
+	private final String SUCCESS_FORM_VIEW = "/module/mycarehub/mycarehubForm";
 	
 	/**
 	 * Initially called after the formBackingObject method to get the landing form name
