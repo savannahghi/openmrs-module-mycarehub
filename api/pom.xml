@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>mycarehub</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mycarehub-api</artifactId>
 	<packaging>jar</packaging>
-	<name>My Care Hub API</name>
-	<description>API project for My Care Hub</description>
+	<name>MyCareHub API</name>
+	<description>API project for MyCareHub</description>
 </project>
