@@ -28,14 +28,14 @@ public class MyCareHubModuleActivator extends BaseModuleActivator {
 	 * @see org.openmrs.module.Activator#startup()
 	 */
 	public void startup() {
-		log.info("Starting Basic Module");
+		log.info("Starting My Care Hub");
 	}
 	
 	/**
 	 * @see org.openmrs.module.Activator#shutdown()
 	 */
 	public void shutdown() {
-		log.info("Shutting down Basic Module");
+		log.info("Shutting down My Care Hub");
 	}
 	
 }

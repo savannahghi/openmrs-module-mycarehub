@@ -21,7 +21,11 @@
 		<dependency>
 			<groupId>org.openmrs.web</groupId>
 			<artifactId>openmrs-web</artifactId>
-            <scope>provided</scope>
+            <scope>jar</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>webservices.rest-omod</artifactId>
 		</dependency>
 	</dependencies>
 

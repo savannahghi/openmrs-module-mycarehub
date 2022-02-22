@@ -30,5 +30,18 @@
 
     <properties>
         <openmrs.platform.version>1.11.2</openmrs.platform.version>
+		<webservicesRestVersion>2.1</webservicesRestVersion>
     </properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>webservices.rest-omod</artifactId>
+				<version>${webservicesRestVersion}</version>
+				<type>jar</type>
+				<scope>provided</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

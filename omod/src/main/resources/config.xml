@@ -18,6 +18,10 @@
 	<!-- /Base Module Properties -->
 	
 	<require_version>${openmrs.platform.version}</require_version>
+
+	<require_modules>
+		<require_module version="2.1">org.openmrs.module.webservices.rest</require_module>
+	</require_modules>
 	
 	<!-- Extensions -->
 	<extension>
