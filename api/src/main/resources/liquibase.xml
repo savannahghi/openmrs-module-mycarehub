@@ -1,40 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
+
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
- 
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
     <!--
-    	See http://wiki.openmrs.org/display/docs/Module+liquibase+File for 
-    	documentation on this file.
-    
-        See http://www.liquibase.org/manual/home#available_database_refactorings
-        for a list of supported elements and attributes
+    	See http://wiki.openmrs.org/display/docs/Module+liquibase+File for documentation on this file.
+        See http://www.liquibase.org/manual/home#available_database_refactorings for a list of supported elements and attributes
     -->
- 
- 	<!-- Uncomment this and edit the values below to use this file
- 	
-	<changeSet id="mymoduleid-2010-05-25-15:50" author="bwolfe">
+
+	<changeSet id="mycarehub-20220222162400" author="sthaiya">
 		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="mymoduleid_myobject"/></not>
+			<not><tableExists tableName="mycarehub_setting"/></not>
 		</preConditions>
 		<comment>
-			Creating the mymoduleid_myobject table
+			Creating the MyCareHub Settings table
 		</comment>
-		<createTable tableName="mymoduleid_myobject">
-			<column name="mymoduleid_myobject_id" type="int">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-			<column name="firstname" type="varchar(255)"/>
-			<column name="lastname" type="varchar(255)"/>
-			<column name="username" type="varchar(255)">
-				<constraints unique="true" nullable="false"/>
-			</column>
-			<column name="testid" type="int" />
+		<createTable tableName="mycarehub_setting">
+            <column name="id" type="int"  autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="setting_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_sync_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="voided" type="tinyint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="int"/>
+            <column name="date_voided" type="datetime"/>
+            <column name="void_reason" type="varchar(255)" defaultValue="null"/>
 		</createTable>
     </changeSet>
-    
-    -->
- 
+
+    <changeSet id="mycarehub-20220222171800" author="sthaiya">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM scheduler_task_config where schedulable_class =
+                'org.openmrs.module.mycarehub.task.MyCareHubSyncTask'
+            </sqlCheck>
+        </preConditions>
+        <comment>Add GeneratePatientReportsTask to scheduler</comment>
+        <sql>
+            INSERT INTO  scheduler_task_config  (name, description, schedulable_class, start_time, start_time_pattern,
+            repeat_interval, start_on_startup, started, created_by, date_created, changed_by, date_changed, last_execution_time, uuid )
+            VALUES ('Sync myCareHub Data', 'Periodically send KenyaEMR Data to myCareHub backend server', 'org.openmrs.module.mycarehub.task.MyCareHubSyncTask',
+            '2022-02-22 17:18:00','MM/dd/yyyy HH:mm:ss',86400, 1, 1,
+            1, now(), NULL, NULL, NULL, uuid());
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
