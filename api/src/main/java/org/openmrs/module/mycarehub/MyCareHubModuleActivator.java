@@ -22,20 +22,33 @@ import org.openmrs.module.BaseModuleActivator;
  */
 public class MyCareHubModuleActivator extends BaseModuleActivator {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private final Log log = LogFactory.getLog(this.getClass());
 	
 	/**
-	 * @see org.openmrs.module.Activator#startup()
+	 * @see BaseModuleActivator#willStart()
 	 */
-	public void startup() {
-		log.info("Starting My Care Hub");
+	public void willStart() {
+		log.info("Starting MyCareHub Module");
 	}
 	
 	/**
-	 * @see org.openmrs.module.Activator#shutdown()
+	 * @see BaseModuleActivator#started()
 	 */
-	public void shutdown() {
-		log.info("Shutting down My Care Hub");
+	public void started() {
+		log.info("MyCareHub Module started");
 	}
 	
+	/**
+	 * @see BaseModuleActivator#willStop()
+	 */
+	public void willStop() {
+		log.info("Stopping MyCareHub Module");
+	}
+	
+	/**
+	 * @see BaseModuleActivator#stopped()
+	 */
+	public void stopped() {
+		log.info("MyCareHub Module stopped");
+	}
 }

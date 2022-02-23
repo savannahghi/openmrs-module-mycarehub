@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>mycarehub</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mycarehub-omod</artifactId>
 	<packaging>jar</packaging>
-	<name>My Care Hub OMOD</name>
-	<description>OpenMRS module to sync data to and from my care hub backend</description>
+	<name>MyCareHub OMOD</name>
+	<description>OpenMRS module to sync data to and from MyCareHub backend</description>
 
 	<dependencies>
         <dependency>
