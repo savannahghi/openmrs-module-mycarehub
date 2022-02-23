@@ -3,13 +3,65 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
-    <!--
-    	See http://wiki.openmrs.org/display/docs/Module+liquibase+File for documentation on this file.
-        See http://www.liquibase.org/manual/home#available_database_refactorings for a list of supported elements and attributes
-    -->
+    <changeSet id="mycarehub-202202221530" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="mycarehub_appointment_requests"/></not>
+        </preConditions>
+        <comment>
+            Creating appointment requests table
+        </comment>
+        <createTable tableName="mycarehub_appointment_requests">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="appointment_uuid" type="varchar(255)"/>
+            <column name="patient_id" type="int"/>
+            <column name="requested_date" type="date"/>
+            <column name="requested_time_slot" type="varchar(32)"/>
+            <column name="creator" valueNumeric="1" type="int"/>
+            <column name="date_created" type="datetime"/>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="voided" valueBoolean="false" type="boolean"/>
+            <column name="voided_by" type="int"/>
+            <column name="date_voided" type="datetime"/>
+            <column name="void_reason" type="text"/>
+            <column name="uuid" type="char(38)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
+	<changeSet id="mycarehub-202202221545" author="bmokaya">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="mycarehub_healthdiary"/></not>
+		</preConditions>
+		<comment>
+			Creating health diary table
+		</comment>
+		<createTable tableName="mycarehub_healthdiary">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="patient_id" type="int"/>
+			<column name="mood" type="varchar(255)"/>
+			<column name="elaboration" type="text"/>
+			<column name="date_recorded" type="datetime"/>
+            <column name="creator" valueNumeric="1" type="int"/>
+            <column name="date_created" type="datetime"/>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="voided" valueBoolean="false" type="boolean"/>
+            <column name="voided_by" type="int"/>
+            <column name="date_voided" type="datetime"/>
+            <column name="void_reason" type="text"/>
+            <column name="uuid" type="char(38)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+		</createTable>
+   </changeSet>
 	<changeSet id="mycarehub-20220222162400" author="sthaiya">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="mycarehub_setting"/></not>
