@@ -81,11 +81,12 @@ public class BasicModuleFormController {
 		// get all patients that have an identifier "101" (from the demo sample data)
 		// see http://resources.openmrs.org/doc/index.html?org/openmrs/api/PatientService.html for
 		// a list of all PatientService methods
-		Collection<Patient> patients = Context.getPatientService().findPatients("101", false);
+		//		Collection<Patient> patients = Context.getPatientService().findPatients("101", false);
 		
 		// this object will be made available to the jsp page under the variable name
 		// that is defined in the @ModuleAttribute tag
-		return patients;
+		//		return patients;
+		return null;
 	}
 	
 }
