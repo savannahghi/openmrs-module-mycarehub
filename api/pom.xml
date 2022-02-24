@@ -11,4 +11,45 @@
 	<packaging>jar</packaging>
 	<name>MyCareHub API</name>
 	<description>API project for MyCareHub</description>
+
+	<dependencies>
+		<!-- Begin OpenMRS core -->
+		<dependency>
+			<groupId>org.openmrs.api</groupId>
+			<artifactId>openmrs-api</artifactId>
+			<type>jar</type>
+			<exclusions>
+				<exclusion>
+					<artifactId>javassist</artifactId>
+					<groupId>javassist</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.api</groupId>
+			<artifactId>openmrs-api</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>javassist</artifactId>
+					<groupId>javassist</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openmrs.web</groupId>
+			<artifactId>openmrs-web</artifactId>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.web</groupId>
+			<artifactId>openmrs-web</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<!-- End OpenMRS core -->
+
+	</dependencies>
 </project>
