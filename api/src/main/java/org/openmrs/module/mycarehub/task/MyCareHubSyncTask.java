@@ -17,7 +17,7 @@ public class MyCareHubSyncTask extends AbstractTask {
 	@Override
 	public void execute() {
 		Context.openSession();
-		processor.processQueueData();
+		processor.synchronizeData();
 		Context.closeSession();
 	}
 }

@@ -29,6 +29,8 @@
     <properties>
 		<openMRSVersion>2.3.3</openMRSVersion>
 		<webservicesRestVersion>2.1</webservicesRestVersion>
+		<retrofitVersion>2.9.0</retrofitVersion>
+		<gsonVersion>2.9.0</gsonVersion>
     </properties>
 
 	<distributionManagement>
@@ -47,7 +49,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<!-- Begin OpenMRS core -->
-
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -153,6 +154,36 @@
 				<version>${webservicesRestVersion}</version>
 				<type>jar</type>
 				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.squareup.retrofit2</groupId>
+				<artifactId>retrofit</artifactId>
+				<version>${retrofitVersion}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.squareup.retrofit2</groupId>
+				<artifactId>converter-gson</artifactId>
+				<version>${retrofitVersion}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gsonVersion}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-validator</groupId>
+				<artifactId>commons-validator</artifactId>
+				<version>1.7</version>
 			</dependency>
 
 		</dependencies>

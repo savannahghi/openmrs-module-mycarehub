@@ -2,38 +2,29 @@ package org.openmrs.module.mycarehub.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Location;
-import org.openmrs.Provider;
-import org.openmrs.api.context.Context;
-import org.openmrs.util.HandlerUtil;
 
-import java.util.Iterator;
-import java.util.List;
-
-/**
- */
 public class DataSynchronizer {
-	
+
 	private final Log log = LogFactory.getLog(DataSynchronizer.class);
-	
+
 	private static Boolean isRunning = false;
-	
-	public void processQueueData() {
+
+	public void synchronizeData() {
 		if (!isRunning) {
 			synchronizeAllData();
 		} else {
-			log.info("Data synchronizer aborting (another synchronizer already running)!");
+			log.error("Data synchronizer aborting (another synchronizer already running)!");
 		}
 	}
-	
+
 	private void synchronizeAllData() {
 		try {
 			isRunning = true;
-			log.info("Firing up the Synchronizer processor ...");
+			log.info("Firing up the REST Synchronizer ...");
 		}
 		finally {
 			isRunning = false;
-			log.info("Stopping up queue data processor ...");
+			log.info("Shutting down the REST Synchronizer...");
 		}
 	}
 }
