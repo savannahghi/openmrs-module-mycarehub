@@ -17,5 +17,5 @@ public interface RestApiService {
 	@POST("login")
 	Call<LoginResponse> login(@Body LoginRequest request);
 	
-	Call<PatientRegistrationResponse> uploadPatientRegistration(@Body PatientRegistrationRequest request);
+	Call<NewClientsIdentifiersResponse> getNewClientsIdentifiers(@Body NewClientsIdentifiersRequest request);
 }

@@ -38,6 +38,8 @@ public class Constants {
 	
 	public static final class MyCareHubSettingType {
 		
-		public static final String PATIENT_REGISTRATIONS = "PATIENT_REGISTRATIONS";
+		public static final String KENYAEMR_PATIENT_REGISTRATIONS = "KENYAEMR_PATIENT_REGISTRATIONS";
+		public static final String KENYAEMR_MEDICAL_RECORDS = "KENYAEMR_MEDICAL_RECORDS";
+		public static final String MYCAREHUB_CLIENT_REGISTRATIONS = "MYCAREHUB_CLIENT_REGISTRATIONS";
 	}
 }

@@ -18,7 +18,8 @@ import java.util.Date;
 import java.util.List;
 
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_REGISTRATIONS;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_CONTACT;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
@@ -42,11 +43,11 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	
 	private void uploadNewOrUpdatedPatientDemographics() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(PATIENT_REGISTRATIONS);
+		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(KENYAEMR_PATIENT_REGISTRATIONS);
 		
 		if (setting != null) {
 			List<Patient> patients = myCareHubPatientDao.getCccPatientsCreatedOrUpdatedSinceDate(setting.getLastSyncTime());
-			MyCareHubSetting latestPatientRegistrationSetting = new MyCareHubSetting(PATIENT_REGISTRATIONS, new Date());
+			MyCareHubSetting latestPatientRegistrationSetting = new MyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, new Date());
 			settingsService.saveMyCareHubSettings(latestPatientRegistrationSetting);
 			
 			for (Patient patient : patients) {
@@ -115,16 +116,17 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				uploadPatientRegistrationRecord(registrationRequest);
 			}
 		} else {
-			MyCareHubSetting latestPatientRegistrationSetting = new MyCareHubSetting(PATIENT_REGISTRATIONS, new Date());
+			MyCareHubSetting latestPatientRegistrationSetting = new MyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, new Date());
 			settingsService.saveMyCareHubSettings(latestPatientRegistrationSetting);
 		}
 	}
 	
 	private void fetchRegisteredPatientIdentifiers() {
-		
+		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
+		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(MYCAREHUB_CLIENT_REGISTRATIONS);
 	}
 	
-	private void uploadUpdatedPatientsMedicalRecords() {
+	private void uploadUpdatedPatientsMedicalRecords(List<Patient> patients) {
 		
 	}
 }
