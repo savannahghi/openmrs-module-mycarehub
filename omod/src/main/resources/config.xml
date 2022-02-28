@@ -29,6 +29,12 @@
 		<class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminList</class>
 	</extension>
 
+	<mappingFiles>
+		AppointmentRequests.hbm.xml
+		HealthDiary.hbm.xml
+		MyCareHubSettings.hbm.xml
+	</mappingFiles>
+
 	<!-- Any required properties goes here-->
 	<globalProperty>
 		<property>mycarehub.api.url</property>
