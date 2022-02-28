@@ -30,6 +30,8 @@
 		<openMRSVersion>2.3.3</openMRSVersion>
 		<webservicesRestVersion>2.1</webservicesRestVersion>
 		<appointmentschedulingVersion>1.13.0</appointmentschedulingVersion>
+		<retrofitVersion>2.9.0</retrofitVersion>
+		<gsonVersion>2.9.0</gsonVersion>
     </properties>
 
 	<distributionManagement>
@@ -48,7 +50,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<!-- Begin OpenMRS core -->
-
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -129,7 +130,7 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.3.6</version>
+				<version>4.5.13</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
@@ -145,7 +146,6 @@
 				<classifier>tests</classifier>
 				<scope>test</scope>
 			</dependency>
-
 			<!-- End OpenMRS core -->
 
 			<dependency>
@@ -161,6 +161,35 @@
 				<artifactId>appointmentscheduling-omod</artifactId>
 				<version>${appointmentschedulingVersion}</version>
 				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.retrofit2</groupId>
+				<artifactId>retrofit</artifactId>
+				<version>${retrofitVersion}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.squareup.retrofit2</groupId>
+				<artifactId>converter-gson</artifactId>
+				<version>${retrofitVersion}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gsonVersion}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-validator</groupId>
+				<artifactId>commons-validator</artifactId>
+				<version>1.7</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <module configVersion="1.2">
-	
+
 	<!-- Base Module Properties -->
 	<id>${project.parent.artifactId}</id>
 	<name>${project.parent.name}</name>
@@ -13,22 +13,48 @@
 	</description>
 
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.MyCareHubModuleActivator</activator>
-	
+
 	<!-- <updateURL>https://modules.openmrs.org/modules/download/@MODULE_ID@/update.rdf</updateURL> -->
 	<!-- /Base Module Properties -->
-	
+
 	<require_version>${openmrs.platform.version}</require_version>
 
 	<require_modules>
 		<require_module version="2.1">org.openmrs.module.webservices.rest</require_module>
 	</require_modules>
-	
+
 	<!-- Extensions -->
 	<extension>
 		<point>org.openmrs.admin.list</point>
 		<class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminList</class>
 	</extension>
-	
+
+	<mappingFiles>
+		AppointmentRequests.hbm.xml
+		HealthDiary.hbm.xml
+		MyCareHubSettings.hbm.xml
+	</mappingFiles>
+
+	<!-- Any required properties goes here-->
+	<globalProperty>
+		<property>mycarehub.api.url</property>
+		<description>The URL of the myCareHub backend server</description>
+	</globalProperty>
+	<globalProperty>
+		<property>mycarehub.api.username</property>
+		<defaultValue>admin</defaultValue>
+		<description>Username for myCareHub api user</description>
+	</globalProperty>
+	<globalProperty>
+		<property>mycarehub.api.password</property>
+		<defaultValue>test</defaultValue>
+		<description>Password to authenticate myCareHub api user</description>
+	</globalProperty>
+	<globalProperty>
+		<property>mycarehub.api.token</property>
+		<description>Time based oauth2.0 token for myCareHub backend server</description>
+	</globalProperty>
+
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
 	<messages>
@@ -44,6 +70,6 @@
 		<file>messages_es.properties</file>
 	</messages>
 	<!-- /Internationalization -->
-	
+
 </module>
 
