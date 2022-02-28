@@ -2,6 +2,8 @@ package org.openmrs.module.mycarehub.api.rest;
 
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -14,4 +16,6 @@ public interface RestApiService {
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("login")
 	Call<LoginResponse> login(@Body LoginRequest request);
+	
+	Call<PatientRegistrationResponse> uploadPatientRegistration(@Body PatientRegistrationRequest request);
 }
