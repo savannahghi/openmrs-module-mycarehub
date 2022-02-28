@@ -29,6 +29,7 @@
     <properties>
 		<openMRSVersion>2.3.3</openMRSVersion>
 		<webservicesRestVersion>2.1</webservicesRestVersion>
+		<appointmentschedulingVersion>1.13.0</appointmentschedulingVersion>
     </properties>
 
 	<distributionManagement>
@@ -155,6 +156,12 @@
 				<scope>provided</scope>
 			</dependency>
 
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>appointmentscheduling-omod</artifactId>
+				<version>${appointmentschedulingVersion}</version>
+				<type>jar</type>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
