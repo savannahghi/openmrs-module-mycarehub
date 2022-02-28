@@ -1,24 +1,32 @@
 package org.openmrs.module.mycarehub.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.rest.ApiClient;
 import org.openmrs.module.mycarehub.api.rest.RestApiService;
+import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
+import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
+import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import retrofit2.Call;
 import retrofit2.Response;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Date;
+
+import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_DEFAULT_LOCATION_MFL_CODE;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_PASSWORD;
@@ -27,6 +35,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_PASS
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 
 public class MyCareHubUtil {
 	
@@ -162,5 +171,46 @@ public class MyCareHubUtil {
 		catch (Throwable throwable) {
 			log.error("Error uploading patient registration record: " + throwable.getMessage());
 		}
+	}
+	
+	public static void uploadPatientAppointments(JsonObject appointmentRequests, Date newSyncDate) {
+		RestApiService restApiService = ApiClient.getRestService();
+		if (restApiService == null) {
+			log.error(TAG, new Throwable("Cant create REST API service"));
+			return;
+		}
+		
+		Call<AppointmentResponse> call = restApiService.uploadPatientAppointments(appointmentRequests);
+		
+		try {
+			Response<AppointmentResponse> response = call.execute();
+			if (!response.isSuccessful()) {
+				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
+				MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting(PATIENT_APPOINTMENTS,
+				        newSyncDate);
+				settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
+				try {
+					if (response.errorBody() != null) {
+						log.error(response.errorBody().charStream());
+					} else
+						log.error(response.message());
+				}
+				catch (NullPointerException e) {
+					log.error(response.message());
+				}
+				catch (JsonParseException e) {
+					log.error(response.message());
+				}
+			}
+		}
+		catch (Throwable throwable) {
+			log.error("Error uploading patient registration record: " + throwable.getMessage());
+		}
+	}
+	
+	public static PatientIdentifierType getcccPatientIdentifierType() {
+		PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
+		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
+		return cccIdentifierType;
 	}
 }

@@ -29,6 +29,7 @@
     <properties>
 		<openMRSVersion>2.3.3</openMRSVersion>
 		<webservicesRestVersion>2.1</webservicesRestVersion>
+		<appointmentschedulingVersion>1.13.0</appointmentschedulingVersion>
 		<retrofitVersion>2.9.0</retrofitVersion>
 		<gsonVersion>2.9.0</gsonVersion>
     </properties>
@@ -156,6 +157,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>appointmentscheduling-omod</artifactId>
+				<version>${appointmentschedulingVersion}</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
 				<groupId>com.squareup.retrofit2</groupId>
 				<artifactId>retrofit</artifactId>
 				<version>${retrofitVersion}</version>
@@ -184,7 +191,6 @@
 				<artifactId>commons-validator</artifactId>
 				<version>1.7</version>
 			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 

@@ -52,6 +52,12 @@
 		<!-- End OpenMRS core -->
 
 		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>appointmentscheduling-omod</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>com.squareup.retrofit2</groupId>
 			<artifactId>retrofit</artifactId>
 			<type>jar</type>
@@ -74,6 +80,5 @@
 			<artifactId>commons-validator</artifactId>
 			<type>jar</type>
 		</dependency>
-
 	</dependencies>
 </project>
