@@ -39,5 +39,7 @@ public class Constants {
 	public static final class MyCareHubSettingType {
 		
 		public static final String PATIENT_REGISTRATIONS = "PATIENT_REGISTRATIONS";
+		
+		public static final String PATIENT_APPOINTMENTS = "PATIENT_APPOINTMENTS";
 	}
 }

@@ -23,14 +23,11 @@ public class HibernateAppointmentRequestsDao implements AppointmentRequestsDao {
 	@Override
 	public List<Appointment> getAppointmentsByLastSyncDate(Date lastSyncDate) {
 		if (lastSyncDate != null) {
-			String sql = "select aa.appointment_id, aa.uuid, ats.start_date, ats.enddate, aa.patient_id, aat.name  "
-			        + "from appointmentscheduling_appointment aa "
-			        + "left join appointmentscheduling_time_slot ats on ats.time_slot_id = aa.time_slot_id "
-			        + "left join appointmentscheduling_appointment_type aat on aat.appointment_type_id = aa.appointment_type_id "
-			        + "where date_created >= :lastSyncDate " + "or date_changed >= :lastSyncDate";
-			SQLQuery myquery = session().createSQLQuery(sql);
-			myquery.setParameter("lastSyncDate", lastSyncDate);
-			return myquery.list();
+			Criteria criteria = session().createCriteria(Appointment.class);
+			criteria.add(Restrictions.or(Restrictions.ge("dateCreated", lastSyncDate),
+			    Restrictions.ge("dateChanged", lastSyncDate)));
+			criteria.add(Restrictions.eq("voided", false));
+			return criteria.list();
 		}
 		return null;
 	}
