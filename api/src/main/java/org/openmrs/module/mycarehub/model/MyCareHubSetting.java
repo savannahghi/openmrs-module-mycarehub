@@ -9,6 +9,8 @@ public class MyCareHubSetting extends BaseOpenmrsData {
 	
 	private String settingType;
 	
+	private Integer id;
+	
 	private Date lastSyncTime;
 	
 	// Used by hibernate
@@ -22,12 +24,12 @@ public class MyCareHubSetting extends BaseOpenmrsData {
 	
 	@Override
 	public Integer getId() {
-		return null;
+		return id;
 	}
 	
 	@Override
-	public void setId(Integer integer) {
-		
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	
 	public String getSettingType() {

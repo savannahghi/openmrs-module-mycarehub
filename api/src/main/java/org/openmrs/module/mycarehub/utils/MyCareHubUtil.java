@@ -138,7 +138,7 @@ public class MyCareHubUtil {
 		return as.getGlobalProperty(GP_DEFAULT_LOCATION_MFL_CODE, EMPTY);
 	}
 	
-	public static void uploadPatientAppointments(JsonObject appointmentRequests, Date newSyncDate) {
+	public static void uploadPatientAppointments(JsonObject appointmentRequests, MyCareHubSetting setting) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -151,9 +151,7 @@ public class MyCareHubUtil {
 			Response<AppointmentResponse> response = call.execute();
 			if (!response.isSuccessful()) {
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting(PATIENT_APPOINTMENTS,
-				        newSyncDate);
-				settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
+				settingsService.saveMyCareHubSettings(setting);
 				try {
 					if (response.errorBody() != null) {
 						log.error(response.errorBody().charStream());
