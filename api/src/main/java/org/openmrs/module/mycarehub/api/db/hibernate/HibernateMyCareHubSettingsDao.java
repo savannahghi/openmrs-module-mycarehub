@@ -21,7 +21,7 @@ public class HibernateMyCareHubSettingsDao implements MyCareHubSettingsDao {
 	public MyCareHubSetting getMyCareHubSettingByType(String settingType) {
 		Criteria criteria = session().createCriteria(mappedClass);
 		criteria.add(Restrictions.eq("settingType", settingType));
-		criteria.add(Restrictions.eq("retired", Boolean.FALSE));
+		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
 		return (MyCareHubSetting) criteria.uniqueResult();
 	}
 	
