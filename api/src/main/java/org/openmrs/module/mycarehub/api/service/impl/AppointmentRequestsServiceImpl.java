@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointmentscheduling.Appointment;
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 
@@ -81,12 +83,22 @@ public class AppointmentRequestsServiceImpl extends BaseOpenmrsService implement
 				
 				containerObject.addProperty("MFLCODE", getDefaultLocationMflCode());
 				containerObject.add("appointments", appointmentsObject);
+
+				setting.setLastSyncTime(newSyncDate);
+				uploadPatientAppointments(containerObject, setting);
 				
-				uploadPatientAppointments(containerObject, newSyncDate);
-				
+			} else {
+				setting.setLastSyncTime(newSyncDate);
+				settingsService.saveMyCareHubSettings(setting);
 			}
 		} else {
-			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting(PATIENT_APPOINTMENTS, new Date());
+			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
+			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_APPOINTMENTS);
+			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
+			newPatientAppointmengtSyncDateSetting.setUuid(UUID.randomUUID().toString());
+			newPatientAppointmengtSyncDateSetting.setCreator(new User(1));
+			newPatientAppointmengtSyncDateSetting.setVoided(false);
+			newPatientAppointmengtSyncDateSetting.setDateCreated(new Date());
 			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
 		}
 	}

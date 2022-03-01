@@ -19,6 +19,9 @@
 
 	<require_version>${openmrs.platform.version}</require_version>
 
+	<aware_of_modules>
+		<aware_of_module version="1.13.0">org.openmrs.module.appointmentscheduling</aware_of_module>
+	</aware_of_modules>
 	<require_modules>
 		<require_module version="2.1">org.openmrs.module.webservices.rest</require_module>
 	</require_modules>
