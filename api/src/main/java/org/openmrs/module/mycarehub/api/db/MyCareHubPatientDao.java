@@ -8,4 +8,8 @@ import java.util.List;
 public interface MyCareHubPatientDao {
 	
 	List<Patient> getCccPatientsCreatedOrUpdatedSinceDate(Date lastSyncDate);
+	
+	List<Patient> getCccPatientsByIdentifier(String cccNumber);
+	
+	List<Patient> getCccPatientsWithUpdatedMedicalRecordsSinceDate(Date lastSyncDate);
 }
