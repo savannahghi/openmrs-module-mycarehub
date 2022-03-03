@@ -221,4 +221,12 @@ public class MyCareHubUtil {
 		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
 		return cccIdentifierType;
 	}
+
+	public static List<Integer> getMedicalRecordConceptsList(){
+
+	}
+
+	public static List<Integer> getMyCareHubObservationsConceptsList(){
+
+	}
 }

@@ -46,4 +46,36 @@ public class Constants {
 		
 		public static final String PATIENT_APPOINTMENTS = "PATIENT_APPOINTMENTS";
 	}
+
+	public static final class MedicalRecordConcepts {
+		public static final class VitalSigns {
+			public static final int PULSE = 5087;
+			public static final int TEMPERATURE = 5088;
+			public static final int WEIGHT = 5089;
+			public static final int HEIGHT = 5090;
+			public static final int BMI = 1342;
+			public static final int SPO2 = 5092;
+			public static final int CD4_COUNT = 5497;
+			public static final int VIRAL_LOAD = 856;
+			public static final int RESPIRATORY_RATE = 5242;
+		}
+
+		public static final class Tests {
+			public static final int WIDAL = 306;
+			public static final int HIV_POLYMERASE = 1030;
+
+		}
+
+		public static final class Medications {
+			public static final int REGIMEN = 164855;
+		}
+
+		public static final class Allergies {
+			public static final int ALLERGY_GROUP = 5089;
+			public static final int ALLERGEN = 5089;
+			public static final int ALLERGY_REACTION = 5089;
+			public static final int ALLERGY_SEVERITY = 5089;
+			public static final int ALLERGY_DATE = 5089;
+		}
+	}
 }

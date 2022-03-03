@@ -1,11 +1,15 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +19,8 @@ import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
+import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getMedicalRecordConceptsList;
+import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getMyCareHubObservationsConceptsList;
 
 public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	
@@ -23,7 +29,10 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	public HibernateMyCareHubPatientDao(DbSessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
+	private DbSession getSession(){
+		return sessionFactory.getCurrentSession();
+	}
 	@Override
 	public List<Patient> getCccPatientsCreatedOrUpdatedSinceDate(Date lastSyncDate) {
 		String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
@@ -81,6 +90,34 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	}
 	
 	public List<Patient> getCccPatientsWithUpdatedMedicalRecordsSinceDate(Date lastSyncDate) {
-		return null;
+
+		SQLQuery query = getSession().createSQLQuery("SELECT patient.patient_id FROM patient " +
+				"INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id " +
+				"INNER JOIN obs ON obs.person_id = patient.patient_id " +
+				"WHERE patient_identifier.identifier_type IN ( " +
+				"SELECT patient_identifier_type_id FROM patient_identifier_type WHERE uuid = :cccIdentifierTypeUuid) " +
+				"AND patient.voided=0 " +
+				"AND obs.voided=0 " +
+				"AND obs.concept_id IN (:conceptIds) " +
+				"AND obs.date_created >=:formattedLastSyncDate");
+		query.setParameter("cccIdentifierTypeUuid",CCC_NUMBER_IDENTIFIER_TYPE_UUID);
+		query.setParameterList("conceptIds",getMedicalRecordConceptsList());
+
+		String formattedLastSyncDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
+		query.setParameter("formattedLastSyncDate",formattedLastSyncDate);
+
+		query.setResultTransformer(Transformers.aliasToBean(Patient.class));
+		return query.list();
+	}
+
+	public List<Obs> getUpdatedVitalSignsSinceDate(Patient patient, Date lastSyncDate){
+		Criteria criteria = getSession().createCriteria(Obs.class);
+		criteria.add(Restrictions.eq("person_id",patient.getPatientId()));
+		criteria.add(Restrictions.ge("date_created",lastSyncDate));
+		criteria.add(Restrictions.in("concept_id",getMyCareHubObservationsConceptsList()));
+		return criteria.list();
+	}
+	public List<Obs> getUpdatedAllergiesSinceDate(Patient patient, Date lastSyncDate){
+
 	}
 }
