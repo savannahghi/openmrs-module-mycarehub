@@ -16,6 +16,8 @@ import org.openmrs.module.mycarehub.api.rest.RestApiService;
 import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
@@ -30,8 +32,8 @@ import retrofit2.Response;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Date;
 import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
@@ -43,7 +45,6 @@ import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_PASS
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 
 public class MyCareHubUtil {
 	
@@ -71,37 +72,6 @@ public class MyCareHubUtil {
 	public static String getApiToken() {
 		AdministrationService as = Context.getAdministrationService();
 		return as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
-	}
-	
-	public static void uploadPatientRegistrationRecord(PatientRegistrationRequest patientRegistrationRequest) {
-		RestApiService restApiService = ApiClient.getRestService();
-		if (restApiService == null) {
-			log.error(TAG, new Throwable("Cant create REST API service"));
-			return;
-		}
-		
-		Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistration(patientRegistrationRequest);
-		
-		try {
-			Response<PatientRegistrationResponse> response = call.execute();
-			if (!response.isSuccessful()) {
-				try {
-					if (response.errorBody() != null) {
-						log.error(response.errorBody().charStream());
-					} else
-						log.error(response.message());
-				}
-				catch (NullPointerException e) {
-					log.error(response.message());
-				}
-				catch (JsonParseException e) {
-					log.error(response.message());
-				}
-			}
-		}
-		catch (Throwable throwable) {
-			log.error("Error uploading patient registration record: " + throwable.getMessage());
-		}
 	}
 	
 	public static void authenticateMyCareHub() {
@@ -149,6 +119,76 @@ public class MyCareHubUtil {
 	public static String getDefaultLocationMflCode() {
 		AdministrationService as = Context.getAdministrationService();
 		return as.getGlobalProperty(GP_DEFAULT_LOCATION_MFL_CODE, EMPTY);
+	}
+	
+	public static void uploadPatientRegistrationRecord(PatientRegistrationRequest patientRegistrationRequest) {
+		RestApiService restApiService = ApiClient.getRestService();
+		if (restApiService == null) {
+			log.error(TAG, new Throwable("Cant create REST API service"));
+			return;
+		}
+		
+		Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistration(patientRegistrationRequest);
+		
+		try {
+			Response<PatientRegistrationResponse> response = call.execute();
+			if (!response.isSuccessful()) {
+				try {
+					if (response.errorBody() != null) {
+						log.error(response.errorBody().charStream());
+					} else
+						log.error(response.message());
+				}
+				catch (NullPointerException e) {
+					log.error(response.message());
+				}
+				catch (JsonParseException e) {
+					log.error(response.message());
+				}
+			}
+		}
+		catch (Throwable throwable) {
+			log.error("Error uploading patient registration record: " + throwable.getMessage());
+		}
+	}
+	
+	public static List<String> getNewMyCareHubClientCccIdentifiers(Date lastSynyTime) {
+		List<String> cccList = new ArrayList<String>();
+		RestApiService restApiService = ApiClient.getRestService();
+		if (restApiService == null) {
+			log.error(TAG, new Throwable("Cant create REST API service"));
+			return cccList;
+		}
+		
+		String facility = getDefaultLocationMflCode();
+		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+		SimpleDateFormat sf = new SimpleDateFormat(pattern);
+		Call<NewClientsIdentifiersResponse> call = restApiService.getNewClientsIdentifiers(new NewClientsIdentifiersRequest(
+		        facility, sf.format(lastSynyTime)));
+		
+		try {
+			Response<NewClientsIdentifiersResponse> response = call.execute();
+			if (response.isSuccessful()) {
+				cccList = response.body().getPatientsIdentifiers();
+			} else {
+				try {
+					if (response.errorBody() != null) {
+						log.error(response.errorBody().charStream());
+					} else
+						log.error(response.message());
+				}
+				catch (NullPointerException e) {
+					log.error(response.message());
+				}
+				catch (JsonParseException e) {
+					log.error(response.message());
+				}
+			}
+		}
+		catch (Throwable throwable) {
+			log.error("Error uploading patient registration record: " + throwable.getMessage());
+		}
+		return cccList;
 	}
 	
 	public static void uploadPatientAppointments(JsonObject appointmentRequests, MyCareHubSetting setting) {
@@ -413,5 +453,4 @@ public class MyCareHubUtil {
 		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
 		return cccIdentifierType;
 	}
-	
 }
