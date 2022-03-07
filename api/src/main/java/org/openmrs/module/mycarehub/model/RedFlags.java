@@ -4,25 +4,21 @@ import org.openmrs.BaseOpenmrsData;
 
 import java.util.Date;
 
-public class AppointmentRequests extends BaseOpenmrsData {
+public class RedFlags extends BaseOpenmrsData {
 	
-	private int id;
-	
-	private String appointmentUUID;
+	private Integer id;
 	
 	private String mycarehubId;
 	
-	private String appointmentType;
+	private String request;
 	
-	private String appointmentReason;
+	private String requestType;
 	
-	private String provider;
+	private String screeningTool;
+	
+	private String screeningScore;
 	
 	private String status;
-	
-	private Date requestedDate;
-	
-	private String requestedTimeSlot;
 	
 	private Date progressDate;
 	
@@ -40,7 +36,7 @@ public class AppointmentRequests extends BaseOpenmrsData {
 	
 	private String mflCode;
 	
-	public AppointmentRequests() {
+	public RedFlags() {
 	}
 	
 	@Override
@@ -53,30 +49,6 @@ public class AppointmentRequests extends BaseOpenmrsData {
 		this.id = id;
 	}
 	
-	public String getAppointmentUUID() {
-		return appointmentUUID;
-	}
-	
-	public void setAppointmentUUID(String appointmentUUID) {
-		this.appointmentUUID = appointmentUUID;
-	}
-	
-	public Date getRequestedDate() {
-		return requestedDate;
-	}
-	
-	public void setRequestedDate(Date requestedDate) {
-		this.requestedDate = requestedDate;
-	}
-	
-	public String getRequestedTimeSlot() {
-		return requestedTimeSlot;
-	}
-	
-	public void setRequestedTimeSlot(String requestedTimeSlot) {
-		this.requestedTimeSlot = requestedTimeSlot;
-	}
-	
 	public String getMycarehubId() {
 		return mycarehubId;
 	}
@@ -85,28 +57,36 @@ public class AppointmentRequests extends BaseOpenmrsData {
 		this.mycarehubId = mycarehubId;
 	}
 	
-	public String getAppointmentType() {
-		return appointmentType;
+	public String getRequest() {
+		return request;
 	}
 	
-	public void setAppointmentType(String appointmentType) {
-		this.appointmentType = appointmentType;
+	public void setRequest(String request) {
+		this.request = request;
 	}
 	
-	public String getAppointmentReason() {
-		return appointmentReason;
+	public String getRequestType() {
+		return requestType;
 	}
 	
-	public void setAppointmentReason(String appointmentReason) {
-		this.appointmentReason = appointmentReason;
+	public void setRequestType(String requestType) {
+		this.requestType = requestType;
 	}
 	
-	public String getProvider() {
-		return provider;
+	public String getScreeningTool() {
+		return screeningTool;
 	}
 	
-	public void setProvider(String provider) {
-		this.provider = provider;
+	public void setScreeningTool(String screeningTool) {
+		this.screeningTool = screeningTool;
+	}
+	
+	public String getScreeningScore() {
+		return screeningScore;
+	}
+	
+	public void setScreeningScore(String screeningScore) {
+		this.screeningScore = screeningScore;
 	}
 	
 	public String getStatus() {

@@ -16,11 +16,25 @@
             <column name="id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="mycarehub_id" type="varchar(255)"/>
             <column name="appointment_uuid" type="varchar(255)"/>
-            <column name="patient_id" type="int"/>
+            <column name="appointment_type" type="varchar(255)"/>
+            <column name="appointment_reason" type="text"/>
+            <column name="provider" type="varchar(255)"/>
             <column name="requested_date" type="date"/>
-            <column name="requested_time_slot" type="varchar(32)"/>
-            <column name="creator" valueNumeric="1" type="int"/>
+            <column name="requested_time_slot" type="varchar(255)"/>
+            <column name="status" type="ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED')" defaultValue="'PENDING'">
+                <constraints nullable="false"/>
+            </column>
+            <column name="progress_by" type="int"/>
+            <column name="progress_date" type="datetime"/>
+            <column name="resolved_by" type="int"/>
+            <column name="resolved_on" type="datetime"/>
+            <column name="client_name" type="text"/>
+            <column name="client_contact" type="varchar(255)"/>
+            <column name="ccc_number" type="varchar(255)"/>
+            <column name="mfl_code" type="varchar(255)"/>
+            <column name="creator" type="int"/>
             <column name="date_created" type="datetime"/>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="datetime"/>
@@ -36,19 +50,30 @@
 
 	<changeSet id="mycarehub-202202221545" author="bmokaya">
 		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="mycarehub_healthdiary"/></not>
+			<not><tableExists tableName="mycarehub_red_flag"/></not>
 		</preConditions>
 		<comment>
-			Creating health diary table
+			Creating red flag table
 		</comment>
-		<createTable tableName="mycarehub_healthdiary">
+		<createTable tableName="mycarehub_red_flag">
 			<column name="id" type="int">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="patient_id" type="int"/>
-			<column name="mood" type="varchar(255)"/>
-			<column name="elaboration" type="text"/>
-			<column name="date_recorded" type="datetime"/>
+			<column name="request" type="text"/>
+			<column name="request_type" type="varchar(255)"/>
+			<column name="screening_tool" type="varchar(255)"/>
+			<column name="screening_score" type="varchar(255)"/>
+            <column name="status" type="ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED')" defaultValue="'PENDING'">
+                <constraints nullable="false"/>
+            </column>
+            <column name="progress_by" type="int"/>
+            <column name="progress_date" type="datetime"/>
+            <column name="resolved_by" type="int"/>
+            <column name="resolved_on" type="datetime"/>
+            <column name="client_name" type="text"/>
+            <column name="client_contact" type="varchar(255)"/>
+            <column name="ccc_number" type="varchar(255)"/>
+            <column name="mfl_code" type="varchar(255)"/>
             <column name="creator" valueNumeric="1" type="int"/>
             <column name="date_created" type="datetime"/>
             <column name="changed_by" type="int"/>
