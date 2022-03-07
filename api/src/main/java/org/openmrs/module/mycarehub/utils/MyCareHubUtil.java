@@ -14,6 +14,8 @@ import org.openmrs.module.mycarehub.api.rest.RestApiService;
 import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
@@ -38,7 +40,22 @@ import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_PASS
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Medications.REGIMEN;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Tests.HIV_POLYMERASE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Tests.WIDAL;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.CD4_COUNT;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.HEIGHT;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.PULSE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.RESPIRATORY_RATE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.SPO2;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.TEMPERATURE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.VIRAL_LOAD;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.WEIGHT;
+import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_CONTACT;
+import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
+import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
+import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
 
 public class MyCareHubUtil {
 	
@@ -215,6 +232,37 @@ public class MyCareHubUtil {
 			log.error("Error uploading patient registration record: " + throwable.getMessage());
 		}
 	}
+
+	public static void uploadPatientMedicalRecord(MedicalRecordRequest request){
+		RestApiService restApiService = ApiClient.getRestService();
+		if (restApiService == null) {
+			log.error(TAG, new Throwable("Cant create REST API service"));
+			return;
+		}
+
+		Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecord(request);
+
+		try {
+			Response<MedicalRecordResponse> response = call.execute();
+			if (!response.isSuccessful()) {
+				try {
+					if (response.errorBody() != null) {
+						log.error(response.errorBody().charStream());
+					} else
+						log.error(response.message());
+				}
+				catch (NullPointerException e) {
+					log.error(response.message());
+				}
+				catch (JsonParseException e) {
+					log.error(response.message());
+				}
+			}
+		}
+		catch (Throwable throwable) {
+			log.error("Error uploading medical record: " + throwable.getMessage());
+		}
+	}
 	
 	public static PatientIdentifierType getcccPatientIdentifierType() {
 		PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
@@ -223,10 +271,46 @@ public class MyCareHubUtil {
 	}
 
 	public static List<Integer> getMedicalRecordConceptsList(){
-
+		List<Integer> medicalRecordConceptsList = new ArrayList<Integer>();
+		medicalRecordConceptsList.addAll(getMedicationsConceptsList());
+		medicalRecordConceptsList.addAll(getTestsConceptsList());
+		medicalRecordConceptsList.addAll(getVitalSignsConceptsList());
+		return medicalRecordConceptsList;
 	}
 
-	public static List<Integer> getMyCareHubObservationsConceptsList(){
+	public static List<Integer> getMedicationsConceptsList(){
+		List<Integer> medicationsConceptsList = new ArrayList<Integer>();
+		medicationsConceptsList.add(REGIMEN);
+		return medicationsConceptsList;
+	}
 
+	public static List<Integer> getTestsConceptsList(){
+		List<Integer> testsConceptsList = new ArrayList<Integer>();
+		testsConceptsList.add(WIDAL);
+		testsConceptsList.add(HIV_POLYMERASE);
+		return testsConceptsList;
+	}
+
+	public static List<Integer> getVitalSignsConceptsList(){
+		List<Integer> vitalSignsConceptsList = new ArrayList<Integer>();
+		vitalSignsConceptsList.add(PULSE);
+		vitalSignsConceptsList.add(TEMPERATURE);
+		vitalSignsConceptsList.add(WEIGHT);
+		vitalSignsConceptsList.add(HEIGHT);
+		vitalSignsConceptsList.add(BMI);
+		vitalSignsConceptsList.add(SPO2);
+		vitalSignsConceptsList.add(CD4_COUNT);
+		vitalSignsConceptsList.add(VIRAL_LOAD);
+		vitalSignsConceptsList.add(RESPIRATORY_RATE);
+		return vitalSignsConceptsList;
+	}
+
+	public static List<String> getPersonAttributeTypesList(){
+		List<String> personAttributeTypeUuids = new ArrayList<String>();
+		personAttributeTypeUuids.add(TELEPHONE_CONTACT);
+		personAttributeTypeUuids.add(NEXT_OF_KIN_NAME);
+		personAttributeTypeUuids.add(NEXT_OF_KIN_CONTACT);
+		personAttributeTypeUuids.add(NEXT_OF_KIN_RELATIONSHIP);
+		return personAttributeTypeUuids;
 	}
 }

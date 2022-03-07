@@ -12,6 +12,9 @@ public class MyCareHubAllergy{
     @SerializedName("reaction")
     private String reaction;
 
+    @SerializedName("other_reaction")
+    private String otherReaction;
+
     @SerializedName("severity")
     private String severity;
 
@@ -28,6 +31,14 @@ public class MyCareHubAllergy{
 
     public void setReaction(String reaction) {
         this.reaction = reaction;
+    }
+
+    public void setOtherReaction(String otherReaction) {
+        this.otherReaction = otherReaction;
+    }
+
+    public String getOtherReaction() {
+        return otherReaction;
     }
 
     public String getReaction() {

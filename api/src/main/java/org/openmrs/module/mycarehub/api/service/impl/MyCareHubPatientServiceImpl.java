@@ -47,6 +47,7 @@ import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
+import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.uploadPatientMedicalRecord;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.uploadPatientRegistrationRecord;
 
 public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements MyCareHubPatientService {
@@ -298,7 +299,6 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 
 			List<MyCareHubAllergy> allergies = myCareHubPatientDao.getUpdatedAllergiesSinceDate(patient, lastSyncDate);
 			medicalRecordRequest.setAllergies(allergies);
-
 
 			uploadPatientMedicalRecord(medicalRecordRequest);
 		}

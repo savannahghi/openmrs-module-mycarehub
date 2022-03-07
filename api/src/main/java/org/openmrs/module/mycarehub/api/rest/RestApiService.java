@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
@@ -31,4 +33,8 @@ public interface RestApiService {
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("appointment")
 	Call<AppointmentResponse> uploadPatientAppointments(@Body JsonObject request);
+
+	@Headers({ "Accept: application/json", "Content-Type: application/json" })
+	@POST("obs")
+	Call<MedicalRecordResponse> uploadMedicalRecord(@Body MedicalRecordRequest request);
 }

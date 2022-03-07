@@ -71,11 +71,11 @@ public class Constants {
 		}
 
 		public static final class Allergies {
-			public static final int ALLERGY_GROUP = 5089;
-			public static final int ALLERGEN = 5089;
-			public static final int ALLERGY_REACTION = 5089;
-			public static final int ALLERGY_SEVERITY = 5089;
-			public static final int ALLERGY_DATE = 5089;
+			public static final int ALLERGEN = 160643;
+			public static final int ALLERGY_REACTION = 160646;
+			public static final int ALLERGY_OTHER_REACTION = 160644;
+			public static final int ALLERGY_SEVERITY = 160759;
+			public static final int ALLERGY_DATE = 160753;
 		}
 	}
 }

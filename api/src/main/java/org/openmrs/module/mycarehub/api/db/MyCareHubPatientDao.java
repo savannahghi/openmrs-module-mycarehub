@@ -15,7 +15,7 @@ public interface MyCareHubPatientDao {
 	
 	List<Patient> getCccPatientsWithUpdatedMedicalRecordsSinceDate(Date lastSyncDate);
 	List<Obs> getUpdatedVitalSignsSinceDate(Patient patient, Date lastSyncDate);
+	List<MyCareHubAllergy> getUpdatedAllergiesSinceDate(Patient patient, Date lastSyncDate);
 	List<Obs> getUpdatedTestsSinceDate(Patient patient, Date lastSyncDate);
 	List<Obs> getUpdatedMedicationsSinceDate(Patient patient, Date lastSyncDate);
-	List<MyCareHubAllergy> getUpdatedAllergiesSinceDate(Patient patient, Date lastSyncDate);
 }
