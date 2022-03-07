@@ -186,120 +186,156 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	}
 	
 	private void uploadPatientsMedicalRecordsSinceDate(List<Patient> patients, Date lastSyncDate) {
-		for(Patient patient:patients){
+		for (Patient patient : patients) {
 			MedicalRecordRequest medicalRecordRequest = new MedicalRecordRequest();
-
+			
 			List<MyCareHubVitalSign> vitalSigns = new ArrayList<MyCareHubVitalSign>();
 			medicalRecordRequest.setVitalSigns(vitalSigns);
-			List<Obs> observations = myCareHubPatientDao.getUpdatedVitalSignsSinceDate(patient,lastSyncDate);
-			for(final Obs obs:observations){
-				switch (obs.getConcept().getConceptId()){
+			List<Obs> observations = myCareHubPatientDao.getUpdatedVitalSignsSinceDate(patient, lastSyncDate);
+			for (final Obs obs : observations) {
+				switch (obs.getConcept().getConceptId()) {
 					case TEMPERATURE:
-						vitalSigns.add(new MyCareHubVitalSign(){{
-							setConcept("temperature");
-							setObsDatetime(obs.getObsDatetime());
-							setValue(obs.getValueAsString(Locale.ENGLISH));
-						}});
+						vitalSigns.add(new MyCareHubVitalSign() {
+							
+							{
+								setConcept("temperature");
+								setObsDatetime(obs.getObsDatetime());
+								setValue(obs.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 					case WEIGHT:
-						vitalSigns.add(new MyCareHubVitalSign(){{
-							setConcept("weight");
-							setObsDatetime(obs.getObsDatetime());
-							setValue(obs.getValueAsString(Locale.ENGLISH));
-						}});
+						vitalSigns.add(new MyCareHubVitalSign() {
+							
+							{
+								setConcept("weight");
+								setObsDatetime(obs.getObsDatetime());
+								setValue(obs.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 					case HEIGHT:
-						vitalSigns.add(new MyCareHubVitalSign(){{
-							setConcept("height");
-							setObsDatetime(obs.getObsDatetime());
-							setValue(obs.getValueAsString(Locale.ENGLISH));
-						}});
+						vitalSigns.add(new MyCareHubVitalSign() {
+							
+							{
+								setConcept("height");
+								setObsDatetime(obs.getObsDatetime());
+								setValue(obs.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 					case BMI:
-						vitalSigns.add(new MyCareHubVitalSign(){{
-							setConcept("bmi");
-							setObsDatetime(obs.getObsDatetime());
-							setValue(obs.getValueAsString(Locale.ENGLISH));
-						}});
+						vitalSigns.add(new MyCareHubVitalSign() {
+							
+							{
+								setConcept("bmi");
+								setObsDatetime(obs.getObsDatetime());
+								setValue(obs.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 					case SPO2:
-						vitalSigns.add(new MyCareHubVitalSign(){{
-							setConcept("spo2");
-							setObsDatetime(obs.getObsDatetime());
-							setValue(obs.getValueAsString(Locale.ENGLISH));
-						}});
+						vitalSigns.add(new MyCareHubVitalSign() {
+							
+							{
+								setConcept("spo2");
+								setObsDatetime(obs.getObsDatetime());
+								setValue(obs.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 					case PULSE:
-						vitalSigns.add(new MyCareHubVitalSign(){{
-							setConcept("pulse");
-							setObsDatetime(obs.getObsDatetime());
-							setValue(obs.getValueAsString(Locale.ENGLISH));
-						}});
+						vitalSigns.add(new MyCareHubVitalSign() {
+							
+							{
+								setConcept("pulse");
+								setObsDatetime(obs.getObsDatetime());
+								setValue(obs.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 					case CD4_COUNT:
-						vitalSigns.add(new MyCareHubVitalSign(){{
-							setConcept("cd4");
-							setObsDatetime(obs.getObsDatetime());
-							setValue(obs.getValueAsString(Locale.ENGLISH));
-						}});
+						vitalSigns.add(new MyCareHubVitalSign() {
+							
+							{
+								setConcept("cd4");
+								setObsDatetime(obs.getObsDatetime());
+								setValue(obs.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 					case VIRAL_LOAD:
-						vitalSigns.add(new MyCareHubVitalSign(){{
-							setConcept("viral_load");
-							setObsDatetime(obs.getObsDatetime());
-							setValue(obs.getValueAsString(Locale.ENGLISH));
-						}});
+						vitalSigns.add(new MyCareHubVitalSign() {
+							
+							{
+								setConcept("viral_load");
+								setObsDatetime(obs.getObsDatetime());
+								setValue(obs.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 					case RESPIRATORY_RATE:
-						vitalSigns.add(new MyCareHubVitalSign(){{
-							setConcept("respiratory_rate");
-							setObsDatetime(obs.getObsDatetime());
-							setValue(obs.getValueAsString(Locale.ENGLISH));
-						}});
+						vitalSigns.add(new MyCareHubVitalSign() {
+							
+							{
+								setConcept("respiratory_rate");
+								setObsDatetime(obs.getObsDatetime());
+								setValue(obs.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 				}
 			}
-
+			
 			List<MyCareHubTest> myCareHubTests = new ArrayList<MyCareHubTest>();
 			medicalRecordRequest.setTests(myCareHubTests);
 			List<Obs> tests = myCareHubPatientDao.getUpdatedTestsSinceDate(patient, lastSyncDate);
-			for(final Obs test:tests) {
+			for (final Obs test : tests) {
 				switch (test.getConcept().getConceptId()) {
 					case WIDAL:
-						myCareHubTests.add(new MyCareHubTest(){{
-							setTestName("widal");
-							setTestDateTime(test.getObsDatetime());
-							setResult(test.getValueAsString(Locale.ENGLISH));
-						}});
+						myCareHubTests.add(new MyCareHubTest() {
+							
+							{
+								setTestName("widal");
+								setTestDateTime(test.getObsDatetime());
+								setResult(test.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 					case HIV_POLYMERASE:
-						myCareHubTests.add(new MyCareHubTest(){{
-							setTestName("hiv_polymerase");
-							setTestDateTime(test.getObsDatetime());
-							setResult(test.getValueAsString(Locale.ENGLISH));
-						}});
+						myCareHubTests.add(new MyCareHubTest() {
+							
+							{
+								setTestName("hiv_polymerase");
+								setTestDateTime(test.getObsDatetime());
+								setResult(test.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 				}
 			}
-
+			
 			List<MyCareHubMedication> myCareHubMedications = new ArrayList<MyCareHubMedication>();
 			medicalRecordRequest.setMedications(myCareHubMedications);
 			List<Obs> medications = myCareHubPatientDao.getUpdatedMedicationsSinceDate(patient, lastSyncDate);
-			for(final Obs medication:medications) {
+			for (final Obs medication : medications) {
 				switch (medication.getConcept().getConceptId()) {
 					case REGIMEN:
-						myCareHubMedications.add(new MyCareHubMedication(){{
-							setMedicationName("regimen");
-							setMedicationDateTime(medication.getObsDatetime());
-							setValue(medication.getValueAsString(Locale.ENGLISH));
-						}});
+						myCareHubMedications.add(new MyCareHubMedication() {
+							
+							{
+								setMedicationName("regimen");
+								setMedicationDateTime(medication.getObsDatetime());
+								setValue(medication.getValueAsString(Locale.ENGLISH));
+							}
+						});
 						break;
 				}
 			}
-
+			
 			List<MyCareHubAllergy> allergies = myCareHubPatientDao.getUpdatedAllergiesSinceDate(patient, lastSyncDate);
 			medicalRecordRequest.setAllergies(allergies);
-
+			
 			uploadPatientMedicalRecord(medicalRecordRequest);
 		}
 	}

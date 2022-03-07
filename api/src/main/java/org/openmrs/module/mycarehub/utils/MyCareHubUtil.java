@@ -232,16 +232,16 @@ public class MyCareHubUtil {
 			log.error("Error uploading patient registration record: " + throwable.getMessage());
 		}
 	}
-
-	public static void uploadPatientMedicalRecord(MedicalRecordRequest request){
+	
+	public static void uploadPatientMedicalRecord(MedicalRecordRequest request) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
 			return;
 		}
-
+		
 		Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecord(request);
-
+		
 		try {
 			Response<MedicalRecordResponse> response = call.execute();
 			if (!response.isSuccessful()) {
@@ -269,29 +269,29 @@ public class MyCareHubUtil {
 		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
 		return cccIdentifierType;
 	}
-
-	public static List<Integer> getMedicalRecordConceptsList(){
+	
+	public static List<Integer> getMedicalRecordConceptsList() {
 		List<Integer> medicalRecordConceptsList = new ArrayList<Integer>();
 		medicalRecordConceptsList.addAll(getMedicationsConceptsList());
 		medicalRecordConceptsList.addAll(getTestsConceptsList());
 		medicalRecordConceptsList.addAll(getVitalSignsConceptsList());
 		return medicalRecordConceptsList;
 	}
-
-	public static List<Integer> getMedicationsConceptsList(){
+	
+	public static List<Integer> getMedicationsConceptsList() {
 		List<Integer> medicationsConceptsList = new ArrayList<Integer>();
 		medicationsConceptsList.add(REGIMEN);
 		return medicationsConceptsList;
 	}
-
-	public static List<Integer> getTestsConceptsList(){
+	
+	public static List<Integer> getTestsConceptsList() {
 		List<Integer> testsConceptsList = new ArrayList<Integer>();
 		testsConceptsList.add(WIDAL);
 		testsConceptsList.add(HIV_POLYMERASE);
 		return testsConceptsList;
 	}
-
-	public static List<Integer> getVitalSignsConceptsList(){
+	
+	public static List<Integer> getVitalSignsConceptsList() {
 		List<Integer> vitalSignsConceptsList = new ArrayList<Integer>();
 		vitalSignsConceptsList.add(PULSE);
 		vitalSignsConceptsList.add(TEMPERATURE);
@@ -304,8 +304,8 @@ public class MyCareHubUtil {
 		vitalSignsConceptsList.add(RESPIRATORY_RATE);
 		return vitalSignsConceptsList;
 	}
-
-	public static List<String> getPersonAttributeTypesList(){
+	
+	public static List<String> getPersonAttributeTypesList() {
 		List<String> personAttributeTypeUuids = new ArrayList<String>();
 		personAttributeTypeUuids.add(TELEPHONE_CONTACT);
 		personAttributeTypeUuids.add(NEXT_OF_KIN_NAME);

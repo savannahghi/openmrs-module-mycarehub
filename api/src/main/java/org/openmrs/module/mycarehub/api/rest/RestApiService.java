@@ -33,7 +33,7 @@ public interface RestApiService {
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("appointment")
 	Call<AppointmentResponse> uploadPatientAppointments(@Body JsonObject request);
-
+	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("obs")
 	Call<MedicalRecordResponse> uploadMedicalRecord(@Body MedicalRecordRequest request);
