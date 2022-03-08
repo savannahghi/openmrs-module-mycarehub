@@ -83,7 +83,7 @@ public class AppointmentRequestsServiceImpl extends BaseOpenmrsService implement
 				
 				containerObject.addProperty("MFLCODE", getDefaultLocationMflCode());
 				containerObject.add("appointments", appointmentsObject);
-
+				
 				setting.setLastSyncTime(newSyncDate);
 				uploadPatientAppointments(containerObject, setting);
 				
