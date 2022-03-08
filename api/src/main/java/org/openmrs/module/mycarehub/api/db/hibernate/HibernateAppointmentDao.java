@@ -1,22 +1,21 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
 import org.hibernate.Criteria;
-import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.appointmentscheduling.Appointment;
-import org.openmrs.module.mycarehub.api.db.AppointmentRequestsDao;
+import org.openmrs.module.mycarehub.api.db.AppointmentDao;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
 
 import java.util.Date;
 import java.util.List;
 
-public class HibernateAppointmentRequestsDao implements AppointmentRequestsDao {
+public class HibernateAppointmentDao implements AppointmentDao {
 	
 	private DbSessionFactory sessionFactory;
 	
-	public HibernateAppointmentRequestsDao(DbSessionFactory sessionFactory) {
+	public HibernateAppointmentDao(DbSessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -40,9 +39,25 @@ public class HibernateAppointmentRequestsDao implements AppointmentRequestsDao {
 	}
 	
 	@Override
+	public List<AppointmentRequests> getAllAppointmentRequestsByLastSyncDate(Date lastSyncDate) {
+		Criteria criteria = session().createCriteria(AppointmentRequests.class);
+		criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.or(Restrictions.ge("progressDate", lastSyncDate),
+		    Restrictions.ge("dateResolved", lastSyncDate)));
+		return criteria.list();
+	}
+	
+	@Override
 	public List<AppointmentRequests> saveAppointmentRequests(List<AppointmentRequests> appointmentRequests) {
 		session().saveOrUpdate(appointmentRequests);
 		return appointmentRequests;
+	}
+	
+	@Override
+	public AppointmentRequests getAppointmentRequestByMycarehubId(String mycarehubId) {
+		Criteria criteria = session().createCriteria(AppointmentRequests.class);
+		criteria.add(Restrictions.eq("mycarehubId", mycarehubId));
+		return (AppointmentRequests) criteria.uniqueResult();
 	}
 	
 	private DbSession session() {

@@ -45,6 +45,14 @@ public class Constants {
 		public static final String MYCAREHUB_CLIENT_REGISTRATIONS = "MYCAREHUB_CLIENT_REGISTRATIONS";
 		
 		public static final String PATIENT_APPOINTMENTS = "PATIENT_APPOINTMENTS";
+		
+		public static final String PATIENT_APPOINTMENTS_REQUESTS_POST = "PATIENT_APPOINTMENTS_REQUESTS_POST";
+		
+		public static final String PATIENT_RED_FLAGS_REQUESTS_POST = "PATIENT_RED_FLAGS_REQUESTS_POST";
+		
+		public static final String PATIENT_APPOINTMENTS_REQUESTS_GET = "PATIENT_APPOINTMENTS_REQUESTS_GET";
+		
+		public static final String PATIENT_RED_FLAGS_REQUESTS_GET = "PATIENT_RED_FLAGS_REQUESTS_GET";
 	}
 	
 	public static final class MedicalRecordConcepts {

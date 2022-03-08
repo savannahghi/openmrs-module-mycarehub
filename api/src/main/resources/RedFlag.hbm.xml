@@ -3,18 +3,15 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.openmrs.module.mycarehub.model">
-    <class name="AppointmentRequests" table="mycarehub_appointment_requests">
+    <class name="HealthDiary" table="mycarehub_healthdiary">
         <id name="id" type="java.lang.Integer" column="id" unsaved-value="0">
             <generator class="native"/>
         </id>
-
-        <property name="appointmentUUID" type="java.lang.String" not-null="true" column="appointment_uuid" length="255"/>
         <property name="mycarehubId" type="java.lang.String" not-null="true" column="mycarehub_id" length="255"/>
-        <property name="appointmentType" type="java.lang.String" column="appointment_type" length="255"/>
-        <property name="appointmentReason" type="java.lang.String" column="appointment_reason" length="255"/>
-        <property name="provider" type="java.lang.String" column="provider" length="255"/>
-        <property name="requestedDate" type="java.util.Date" not-null="true" column="requested_date" length="19"/>
-        <property name="requestedTimeSlot" type="java.lang.String" not-null="true" column="requested_time_slot" length="255"/>
+        <property name="request" type="java.lang.String" not-null="true" column="request" length="255"/>
+        <property name="requestType" type="java.lang.String" not-null="true" column="request_type" length="255"/>
+        <property name="screeningTool" type="java.lang.String" column="screening_tool" length="255"/>
+        <property name="screeningScore" type="java.lang.String" column="screening_score" length="255"/>
         <property name="status" type="java.lang.String" not-null="true" column="status" length="255"/>
         <property name="progressDate" type="java.util.Date" column="progress_date" length="19" />
         <property name="progressBy" type="java.lang.String" column="progress_by" length="255"/>
