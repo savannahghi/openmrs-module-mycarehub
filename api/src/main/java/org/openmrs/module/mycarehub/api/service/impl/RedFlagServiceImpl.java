@@ -86,10 +86,11 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 				
 				containerObject.add("appointment-request", redFlagArray);
 				
-				setting.setLastSyncTime(newSyncDate);
-				postPatientRedFlags(containerObject, setting);
+				postPatientRedFlags(containerObject, newSyncDate);
 				
 			} else {
+				setting = new MyCareHubSetting();
+				setting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_POST);
 				setting.setLastSyncTime(newSyncDate);
 				settingsService.saveMyCareHubSettings(setting);
 			}
@@ -97,10 +98,6 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
 			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_POST);
 			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			newPatientAppointmengtSyncDateSetting.setUuid(UUID.randomUUID().toString());
-			newPatientAppointmengtSyncDateSetting.setCreator(new User(1));
-			newPatientAppointmengtSyncDateSetting.setVoided(false);
-			newPatientAppointmengtSyncDateSetting.setDateCreated(new Date());
 			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
 		}
 	}
@@ -112,22 +109,15 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 		if (setting != null) {
 			Date newSyncDate = new Date();
 			
-			setting.setLastSyncTime(newSyncDate);
-			
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
 			jsonObject.addProperty("lastSyncTime", dateTimeFormat.format(setting.getLastSyncTime()));
 			
-			setting.setLastSyncTime(newSyncDate);
-			fetchPatientAppointments(jsonObject, setting);
+			fetchPatientAppointments(jsonObject, newSyncDate);
 		} else {
 			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
 			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_GET);
 			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			newPatientAppointmengtSyncDateSetting.setUuid(UUID.randomUUID().toString());
-			newPatientAppointmengtSyncDateSetting.setCreator(new User(1));
-			newPatientAppointmengtSyncDateSetting.setVoided(false);
-			newPatientAppointmengtSyncDateSetting.setDateCreated(new Date());
 			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
 		}
 	}

@@ -147,18 +147,26 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	}
 	
 	public List<Obs> getUpdatedTestsSinceDate(Patient patient, Date lastSyncDate) {
+		SQLQuery testsConcepts = getSession().createSQLQuery(
+		    "SELECT concept_id FROM concept " + "WHERE class_id = 1 AND voided=0");
+		
 		Criteria criteria = getSession().createCriteria(Obs.class);
 		criteria.add(Restrictions.eq("person_id", patient.getPatientId()));
 		criteria.add(Restrictions.ge("date_created", lastSyncDate));
-		criteria.add(Restrictions.in("concept_id", getTestsConceptsList()));
+		criteria.add(Restrictions.in("concept_id", testsConcepts.list()));
 		return criteria.list();
 	}
 	
 	public List<Obs> getUpdatedMedicationsSinceDate(Patient patient, Date lastSyncDate) {
+		SQLQuery drugsConcepts = getSession().createSQLQuery(
+		    "SELECT concept_id FROM concept "
+		            + "WHERE (class_id = 3 OR concept_id In (SELECT concept_id FROM drug)) AND voided=0");
+		
 		Criteria criteria = getSession().createCriteria(Obs.class);
 		criteria.add(Restrictions.eq("person_id", patient.getPatientId()));
 		criteria.add(Restrictions.ge("date_created", lastSyncDate));
-		criteria.add(Restrictions.in("concept_id", getMedicalRecordConceptsList()));
+		criteria.add(Restrictions.in("value_coded", drugsConcepts.list()));
+		criteria.add(Restrictions.eq("voided", false));
 		return criteria.list();
 	}
 }
