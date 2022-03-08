@@ -134,10 +134,10 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				registrationRequest.setNextOfKin(nextOfKinJsonObject.toString());
 				patientRegistrationRequests.add(registrationRequest);
 			}
-			if(patientRegistrationRequests.size()>0) {
+			if (patientRegistrationRequests.size() > 0) {
 				uploadPatientRegistrationRecords(patientRegistrationRequests, newSyncTime);
 			} else {
-				setting = new MyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS,new Date());
+				setting = new MyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, new Date());
 				settingsService.saveMyCareHubSettings(setting);
 			}
 		} else {
@@ -145,7 +145,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			settingsService.saveMyCareHubSettings(setting);
 		}
 	}
-
+	
 	private void fetchRegisteredClientIdentifiersSinceLastSyncDate() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(MYCAREHUB_CLIENT_REGISTRATIONS);
@@ -166,7 +166,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		}
 		Date veryOldLastSyncTime = new Date(0);//to allow retrieval of all historical records
 		Date newSyncTime = new Date();
-
+		
 		uploadPatientsMedicalRecordsSinceDate(patients, veryOldLastSyncTime, newSyncTime);
 	}
 	

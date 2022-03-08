@@ -146,7 +146,8 @@ public class MyCareHubUtil {
 		return as.getGlobalProperty(GP_DEFAULT_LOCATION_MFL_CODE, EMPTY);
 	}
 	
-	public static void uploadPatientRegistrationRecords(List<PatientRegistrationRequest> patientRegistrationRequests, Date newSyncTime) {
+	public static void uploadPatientRegistrationRecords(List<PatientRegistrationRequest> patientRegistrationRequests,
+	        Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -200,7 +201,7 @@ public class MyCareHubUtil {
 			if (response.isSuccessful()) {
 				MyCareHubSetting setting = new MyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS, newSyncTime);
 				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
-
+				
 				cccList = response.body().getPatientsIdentifiers();
 			} else {
 				try {
