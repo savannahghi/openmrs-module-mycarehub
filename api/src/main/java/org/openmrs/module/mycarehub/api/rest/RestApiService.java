@@ -50,7 +50,7 @@ public interface RestApiService {
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@GET("red-flag-service-request")
 	Call<JsonObject> fetchPatientRedFlags(@Body JsonObject request);
-
+	
 	@POST("obs")
 	Call<MedicalRecordResponse> uploadMedicalRecord(@Body MedicalRecordRequest request);
 }

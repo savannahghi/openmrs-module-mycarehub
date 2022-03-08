@@ -47,7 +47,7 @@ public class AdminList extends AdministrationSectionExt {
 		
 		Map<String, String> map = new HashMap<String, String>();
 		
-		map.put("module/mycarehub/mycarehubLink.form", "mycarehub.replace.this.link.name");
+		map.put("/module/mycarehub/mycarehub.list", "Service Requests");
 		
 		return map;
 	}

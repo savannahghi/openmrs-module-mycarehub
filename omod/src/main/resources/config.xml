@@ -34,7 +34,7 @@
 
 	<mappingFiles>
 		AppointmentRequests.hbm.xml
-		HealthDiary.hbm.xml
+		RedFlag.hbm.xml
 		MyCareHubSettings.hbm.xml
 	</mappingFiles>
 

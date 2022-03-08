@@ -17,4 +17,8 @@ public interface AppointmentDao {
 	List<AppointmentRequests> saveAppointmentRequests(List<AppointmentRequests> appointmentRequests);
 	
 	AppointmentRequests getAppointmentRequestByMycarehubId(String mycarehubId);
+	
+	Number countAppointments();
+	
+	List<AppointmentRequests> getPagedAppointments(Integer pageNumber, Integer pageSize);
 }

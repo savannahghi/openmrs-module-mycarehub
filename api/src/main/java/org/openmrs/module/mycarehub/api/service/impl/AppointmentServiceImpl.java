@@ -65,6 +65,16 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	}
 	
 	@Override
+	public Number countAppointments() {
+		return dao.countAppointments();
+	}
+	
+	@Override
+	public List<AppointmentRequests> getPagedAppointments(Integer pageNumber, Integer pageSize) {
+		return dao.getPagedAppointments(pageNumber, pageSize);
+	}
+	
+	@Override
 	public void syncPatientAppointments() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(PATIENT_APPOINTMENTS);

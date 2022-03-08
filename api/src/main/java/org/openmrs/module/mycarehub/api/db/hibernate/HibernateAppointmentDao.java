@@ -1,6 +1,7 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
@@ -58,6 +59,26 @@ public class HibernateAppointmentDao implements AppointmentDao {
 		Criteria criteria = session().createCriteria(AppointmentRequests.class);
 		criteria.add(Restrictions.eq("mycarehubId", mycarehubId));
 		return (AppointmentRequests) criteria.uniqueResult();
+	}
+	
+	@Override
+	public Number countAppointments() {
+		Criteria criteria = session().createCriteria(AppointmentRequests.class);
+		criteria.setProjection(Projections.rowCount());
+		return (Number) criteria.uniqueResult();
+	}
+	
+	@Override
+	public List<AppointmentRequests> getPagedAppointments(Integer pageNumber, Integer pageSize) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AppointmentRequests.class);
+		if (pageNumber != null && pageNumber > 0) {
+			criteria.setFirstResult((pageNumber - 1) * pageSize);
+		}
+		if (pageSize != null) {
+			criteria.setMaxResults(pageSize);
+		}
+		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
+		return (List<AppointmentRequests>) criteria.list();
 	}
 	
 	private DbSession session() {
