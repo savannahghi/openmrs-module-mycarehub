@@ -58,7 +58,7 @@ public class MyCareHubController {
 			List<Object> objects = new ArrayList<Object>();
 			
 			for (AppointmentRequests appointmentRequest : appointmentService.getPagedAppointments(pageNumber, pageSize)) {
-				objects.add(convertToJsonMap(appointmentRequest));
+				objects.add(convertAppointmentRequestToJsonMap(appointmentRequest));
 			}
 			
 			response.put("pages", pages);
@@ -68,7 +68,7 @@ public class MyCareHubController {
 		return response;
 	}
 	
-	Map<String, Object> convertToJsonMap(final AppointmentRequests appointmentRequest) {
+	Map<String, Object> convertAppointmentRequestToJsonMap(final AppointmentRequests appointmentRequest) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (appointmentRequest != null) {
 			map.put("uuid", appointmentRequest.getUuid());
@@ -94,6 +94,56 @@ public class MyCareHubController {
 			map.put("clientName", appointmentRequest.getClientName());
 			map.put("clientContact", appointmentRequest.getClientContact());
 			map.put("cccNumber", appointmentRequest.getCccNumber());
+		}
+		return map;
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/serviceRequests.json")
+	public Map<String, Object> getRedFlagsByType(final @RequestParam(value = "requestType") String requestType,
+												 final @RequestParam(value = "pageNumber") Integer pageNumber,
+													  final @RequestParam(value = "pageSize") Integer pageSize) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			RedFlagService redFlagService = Context.getService(RedFlagService.class);
+			int pages = (redFlagService.countRedFlagsByType(requestType).intValue() + pageSize - 1) / pageSize;
+			List<Object> objects = new ArrayList<Object>();
+
+			for (RedFlags redFlags : redFlagService.getPagedRedFlagsByRequestType(requestType,pageNumber, pageSize)) {
+				objects.add(convertRedFlagsToJsonMap(redFlags));
+			}
+
+			response.put("pages", pages);
+			response.put("totalItems", redFlagService.countRedFlagsByType(requestType).intValue());
+			response.put("objects", objects);
+		}
+		return response;
+	}
+
+	Map<String, Object> convertRedFlagsToJsonMap(final RedFlags redFlags) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (redFlags != null) {
+			map.put("uuid", redFlags.getUuid());
+			map.put("Request", redFlags.getRequest());
+			map.put("RequestType", redFlags.getRequestType());
+			map.put("ScreeningToolName", redFlags.getScreeningTool());
+			map.put("ScreeningToolScore", redFlags.getScreeningScore());
+			map.put("Status", redFlags.getStatus());
+			if (redFlags.getProgressDate() != null) {
+				map.put("progressDate", redFlags.getProgressDate());
+			} else {
+				map.put("progressDate", "");
+			}
+			map.put("progressBy", redFlags.getProgressBy());
+			if (redFlags.getDateResolved() != null) {
+				map.put("dateResolved", redFlags.getDateResolved());
+			} else {
+				map.put("dateResolved", "");
+			}
+			map.put("resolvedBy", redFlags.getResolvedBy());
+			map.put("clientName", redFlags.getClientName());
+			map.put("clientContact", redFlags.getClientContact());
+			map.put("cccNumber", redFlags.getCccNumber());
+			map.put("MFLCode",redFlags.getMflCode());
 		}
 		return map;
 	}
