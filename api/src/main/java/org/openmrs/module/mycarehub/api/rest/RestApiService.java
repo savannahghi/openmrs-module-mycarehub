@@ -17,6 +17,8 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
+import java.util.List;
+
 public interface RestApiService {
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
@@ -25,7 +27,7 @@ public interface RestApiService {
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("client_registration")
-	Call<PatientRegistrationResponse> uploadPatientRegistration(@Body PatientRegistrationRequest request);
+	Call<PatientRegistrationResponse> uploadPatientRegistrations(@Body List<PatientRegistrationRequest> request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@GET("clients")
@@ -53,4 +55,7 @@ public interface RestApiService {
 	
 	@POST("obs")
 	Call<MedicalRecordResponse> uploadMedicalRecord(@Body MedicalRecordRequest request);
+	
+	@POST("obs")
+	Call<MedicalRecordResponse> uploadMedicalRecords(@Body List<MedicalRecordRequest> request);
 }

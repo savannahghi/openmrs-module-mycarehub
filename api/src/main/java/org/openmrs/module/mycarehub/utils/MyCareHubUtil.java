@@ -59,6 +59,13 @@ import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.TEMPERATURE;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.VIRAL_LOAD;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.WEIGHT;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_MEDICAL_RECORDS;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_CONTACT;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
@@ -139,18 +146,22 @@ public class MyCareHubUtil {
 		return as.getGlobalProperty(GP_DEFAULT_LOCATION_MFL_CODE, EMPTY);
 	}
 	
-	public static void uploadPatientRegistrationRecord(PatientRegistrationRequest patientRegistrationRequest) {
+	public static void uploadPatientRegistrationRecords(List<PatientRegistrationRequest> patientRegistrationRequests,
+	        Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
 			return;
 		}
 		
-		Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistration(patientRegistrationRequest);
+		Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(patientRegistrationRequests);
 		
 		try {
 			Response<PatientRegistrationResponse> response = call.execute();
-			if (!response.isSuccessful()) {
+			if (response.isSuccessful()) {
+				MyCareHubSetting setting = new MyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
+				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+			} else {
 				try {
 					if (response.errorBody() != null) {
 						log.error(response.errorBody().charStream());
@@ -185,8 +196,12 @@ public class MyCareHubUtil {
 		        facility, sf.format(lastSynyTime)));
 		
 		try {
+			Date newSyncTime = new Date();
 			Response<NewClientsIdentifiersResponse> response = call.execute();
 			if (response.isSuccessful()) {
+				MyCareHubSetting setting = new MyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS, newSyncTime);
+				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+				
 				cccList = response.body().getPatientsIdentifiers();
 			} else {
 				try {
@@ -209,7 +224,7 @@ public class MyCareHubUtil {
 		return cccList;
 	}
 	
-	public static void uploadPatientAppointments(JsonObject appointmentRequests, MyCareHubSetting setting) {
+	public static void uploadPatientAppointments(JsonObject appointmentRequests, Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -221,6 +236,11 @@ public class MyCareHubUtil {
 		try {
 			Response<AppointmentResponse> response = call.execute();
 			if (response.isSuccessful()) {
+				
+				MyCareHubSetting setting = new MyCareHubSetting();
+				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
+				setting.setLastSyncTime(newSyncTime);
+				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.saveMyCareHubSettings(setting);
 			} else {
@@ -243,7 +263,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static void uploadPatientAppointmentRequests(JsonObject appointmentRequests, MyCareHubSetting setting) {
+	public static void uploadPatientAppointmentRequests(JsonObject appointmentRequests, Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -255,6 +275,10 @@ public class MyCareHubUtil {
 		try {
 			Response<AppointmentResponse> response = call.execute();
 			if (response.isSuccessful()) {
+				MyCareHubSetting setting = new MyCareHubSetting();
+				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
+				setting.setLastSyncTime(newSyncTime);
+				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.saveMyCareHubSettings(setting);
 			} else {
@@ -277,7 +301,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static void fetchPatientAppointments(JsonObject jsonObject, MyCareHubSetting setting) {
+	public static void fetchPatientAppointments(JsonObject jsonObject, Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -290,6 +314,11 @@ public class MyCareHubUtil {
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
 				AppointmentService appointmentService = Context.getService(AppointmentService.class);
+				
+				MyCareHubSetting setting = new MyCareHubSetting();
+				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_GET);
+				setting.setLastSyncTime(newSyncTime);
+				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.saveMyCareHubSettings(setting);
 				JsonObject jsonResponse = response.body().getAsJsonObject();
@@ -357,7 +386,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static void postPatientRedFlags(JsonObject redflags, MyCareHubSetting setting) {
+	public static void postPatientRedFlags(JsonObject redflags, Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -369,6 +398,10 @@ public class MyCareHubUtil {
 		try {
 			Response<RedFlagResponse> response = call.execute();
 			if (response.isSuccessful()) {
+				MyCareHubSetting setting = new MyCareHubSetting();
+				setting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_POST);
+				setting.setLastSyncTime(newSyncTime);
+				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.saveMyCareHubSettings(setting);
 			} else {
@@ -391,7 +424,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static void fetchPatientRedFlagRequests(JsonObject jsonObject, MyCareHubSetting setting) {
+	public static void fetchPatientRedFlagRequests(JsonObject jsonObject, Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -404,6 +437,11 @@ public class MyCareHubUtil {
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
 				RedFlagService redFlagService = Context.getService(RedFlagService.class);
+				
+				MyCareHubSetting setting = new MyCareHubSetting();
+				setting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_GET);
+				setting.setLastSyncTime(newSyncTime);
+				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.saveMyCareHubSettings(setting);
 				JsonObject jsonResponse = response.body().getAsJsonObject();
@@ -466,7 +504,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static void uploadPatientMedicalRecord(MedicalRecordRequest request) {
+	public static void uploadPatientMedicalRecord(MedicalRecordRequest request, Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -477,7 +515,48 @@ public class MyCareHubUtil {
 		
 		try {
 			Response<MedicalRecordResponse> response = call.execute();
-			if (!response.isSuccessful()) {
+			if (response.isSuccessful()) {
+				MyCareHubSetting setting = new MyCareHubSetting();
+				setting.setSettingType(KENYAEMR_MEDICAL_RECORDS);
+				setting.setLastSyncTime(newSyncTime);
+				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+			} else {
+				try {
+					if (response.errorBody() != null) {
+						log.error(response.errorBody().charStream());
+					} else
+						log.error(response.message());
+				}
+				catch (NullPointerException e) {
+					log.error(response.message());
+				}
+				catch (JsonParseException e) {
+					log.error(response.message());
+				}
+			}
+		}
+		catch (Throwable throwable) {
+			log.error("Error uploading medical record: " + throwable.getMessage());
+		}
+	}
+	
+	public static void uploadPatientMedicalRecords(List<MedicalRecordRequest> requestList, Date newSyncTime) {
+		RestApiService restApiService = ApiClient.getRestService();
+		if (restApiService == null) {
+			log.error(TAG, new Throwable("Cant create REST API service"));
+			return;
+		}
+		
+		Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecords(requestList);
+		
+		try {
+			Response<MedicalRecordResponse> response = call.execute();
+			if (response.isSuccessful()) {
+				MyCareHubSetting setting = new MyCareHubSetting();
+				setting.setSettingType(KENYAEMR_MEDICAL_RECORDS);
+				setting.setLastSyncTime(newSyncTime);
+				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+			} else {
 				try {
 					if (response.errorBody() != null) {
 						log.error(response.errorBody().charStream());

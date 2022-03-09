@@ -109,10 +109,11 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				containerObject.addProperty("MFLCODE", getDefaultLocationMflCode());
 				containerObject.add("appointments", appointmentsObject);
 				
-				setting.setLastSyncTime(newSyncDate);
-				uploadPatientAppointments(containerObject, setting);
+				uploadPatientAppointments(containerObject, newSyncDate);
 				
 			} else {
+				setting = new MyCareHubSetting();
+				setting.setSettingType(PATIENT_APPOINTMENTS);
 				setting.setLastSyncTime(newSyncDate);
 				settingsService.saveMyCareHubSettings(setting);
 			}
@@ -120,10 +121,6 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
 			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_APPOINTMENTS);
 			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			newPatientAppointmengtSyncDateSetting.setUuid(UUID.randomUUID().toString());
-			newPatientAppointmengtSyncDateSetting.setCreator(new User(1));
-			newPatientAppointmengtSyncDateSetting.setVoided(false);
-			newPatientAppointmengtSyncDateSetting.setDateCreated(new Date());
 			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
 		}
 	}
@@ -168,10 +165,11 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				
 				containerObject.add("appointment-request", appointmentsObject);
 				
-				setting.setLastSyncTime(newSyncDate);
-				uploadPatientAppointments(containerObject, setting);
+				uploadPatientAppointments(containerObject, newSyncDate);
 				
 			} else {
+				setting = new MyCareHubSetting();
+				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
 				setting.setLastSyncTime(newSyncDate);
 				settingsService.saveMyCareHubSettings(setting);
 			}
@@ -179,10 +177,6 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
 			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
 			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			newPatientAppointmengtSyncDateSetting.setUuid(UUID.randomUUID().toString());
-			newPatientAppointmengtSyncDateSetting.setCreator(new User(1));
-			newPatientAppointmengtSyncDateSetting.setVoided(false);
-			newPatientAppointmengtSyncDateSetting.setDateCreated(new Date());
 			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
 		}
 	}
@@ -194,22 +188,15 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 		if (setting != null) {
 			Date newSyncDate = new Date();
 			
-			setting.setLastSyncTime(newSyncDate);
-			
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
 			jsonObject.addProperty("lastSyncTime", dateTimeFormat.format(setting.getLastSyncTime()));
 			
-			setting.setLastSyncTime(newSyncDate);
-			fetchPatientAppointments(jsonObject, setting);
+			fetchPatientAppointments(jsonObject, newSyncDate);
 		} else {
 			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
 			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_GET);
 			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			newPatientAppointmengtSyncDateSetting.setUuid(UUID.randomUUID().toString());
-			newPatientAppointmengtSyncDateSetting.setCreator(new User(1));
-			newPatientAppointmengtSyncDateSetting.setVoided(false);
-			newPatientAppointmengtSyncDateSetting.setDateCreated(new Date());
 			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
 		}
 	}
