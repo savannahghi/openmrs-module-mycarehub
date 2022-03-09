@@ -13,6 +13,7 @@ import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubMedication;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTestOrder;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubVitalSign;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.service.MyCareHubPatientService;
@@ -288,12 +289,24 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				}
 			}
 			
+			List<MyCareHubTestOrder> myCareHubTestOrders = new ArrayList<MyCareHubTestOrder>();
+			medicalRecordRequest.setTestOrders(myCareHubTestOrders);
+			List<Obs> testOrderObs = myCareHubPatientDao.getUpdatedTestOrdersSinceDate(patient, lastSyncTime);
+			for (final Obs order : testOrderObs) {
+				myCareHubTestOrders.add(new MyCareHubTestOrder() {
+					{
+						setOrderDateTime(order.getObsDatetime());
+						setOrderedTestName(order.getValueAsString(Locale.ENGLISH));
+					}
+				});
+			}
+
 			List<MyCareHubTest> myCareHubTests = new ArrayList<MyCareHubTest>();
 			medicalRecordRequest.setTests(myCareHubTests);
 			List<Obs> tests = myCareHubPatientDao.getUpdatedTestsSinceDate(patient, lastSyncTime);
 			for (final Obs test : tests) {
 				myCareHubTests.add(new MyCareHubTest() {
-					
+
 					{
 						setTestName(test.getConcept().getName().getName());
 						setTestDateTime(test.getObsDatetime());

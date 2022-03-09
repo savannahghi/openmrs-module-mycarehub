@@ -83,7 +83,8 @@ public class Constants {
 			public static final int WIDAL = 306;
 			
 			public static final int HIV_POLYMERASE = 1030;
-			
+
+			public static final int TESTS_ORDERED = 1271;
 		}
 		
 		public static final class Medications {
