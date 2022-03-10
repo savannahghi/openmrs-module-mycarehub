@@ -24,9 +24,11 @@ import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
 import org.openmrs.module.mycarehub.api.service.AppointmentService;
+import org.openmrs.module.mycarehub.api.service.HealthDiaryService;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.api.service.RedFlagService;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
+import org.openmrs.module.mycarehub.model.HealthDiary;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.openmrs.module.mycarehub.model.RedFlags;
 import retrofit2.Call;
@@ -64,6 +66,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_HEALTH_DIARY_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_CONTACT;
@@ -424,7 +427,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static void fetchPatientRedFlagRequests(JsonObject jsonObject, Date newSyncTime) {
+	public static void getPatientRedFlagRequests(JsonObject jsonObject, Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -479,7 +482,7 @@ public class MyCareHubUtil {
 					redFlag.setClientContact(jsonObject1.get("ClientContact").toString());
 					redFlag.setCccNumber(jsonObject1.get("CCCNumber").toString());
 					redFlag.setMflCode(jsonObject1.get("MFLCODE").toString());
-					
+
 					redFlags.add(redFlag);
 					
 				}
@@ -573,6 +576,74 @@ public class MyCareHubUtil {
 		}
 		catch (Throwable throwable) {
 			log.error("Error uploading medical record: " + throwable.getMessage());
+		}
+	}
+	
+	public static void getPatientHealthDiaries(JsonObject jsonObject, Date newSyncTime) {
+		RestApiService restApiService = ApiClient.getRestService();
+		if (restApiService == null) {
+			log.error(TAG, new Throwable("Cant create REST API service"));
+			return;
+		}
+		
+		Call<JsonObject> call = restApiService.fetchPatientHealthDiaries(jsonObject);
+		
+		try {
+			Response<JsonObject> response = call.execute();
+			if (response.isSuccessful()) {
+				HealthDiaryService healthDiaryService = Context.getService(HealthDiaryService.class);
+				
+				MyCareHubSetting setting = new MyCareHubSetting();
+				setting.setSettingType(PATIENT_HEALTH_DIARY_GET);
+				setting.setLastSyncTime(newSyncTime);
+				
+				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
+				settingsService.saveMyCareHubSettings(setting);
+				
+				JsonObject jsonResponse = response.body().getAsJsonObject();
+				JsonArray jsonArray = jsonResponse.getAsJsonArray("healthDiaries");
+				List<HealthDiary> healthDiaries = new ArrayList<HealthDiary>();
+				for (int i = 0; i < jsonArray.size(); i++) {
+					JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
+					HealthDiary healthDiary = new HealthDiary();
+					
+					healthDiary.setCccNumber(jsonObject1.get("CCCNumber").toString());
+					healthDiary.setMood(jsonObject1.get("mood").toString());
+					healthDiary.setNote(jsonObject1.get("note").toString());
+					healthDiary.setEntryType(jsonObject1.get("entryType").toString());
+					if (jsonObject1.get("createdAt").toString() != null) {
+						healthDiary.setDateRecorded(dateFormat.parse(jsonObject1.get("createdAt").toString()));
+					}
+					if (jsonObject1.get("sharedAt").toString() != null) {
+						healthDiary.setSharedOn(dateFormat.parse(jsonObject1.get("sharedAt").toString()));
+					}
+
+					healthDiary.setDateCreated(new Date());
+					healthDiary.setCreator(new User(1));
+					healthDiary.setVoided(false);
+					healthDiary.setUuid(UUID.randomUUID().toString());
+					
+					healthDiaries.add(healthDiary);
+					
+				}
+				healthDiaryService.saveHealthDiaries(healthDiaries);
+			} else {
+				try {
+					if (response.errorBody() != null) {
+						log.error(response.errorBody().charStream());
+					} else
+						log.error(response.message());
+				}
+				catch (NullPointerException e) {
+					log.error(response.message());
+				}
+				catch (JsonParseException e) {
+					log.error(response.message());
+				}
+			}
+		}
+		catch (Throwable throwable) {
+			log.error("Error uploading patient registration record: " + throwable.getMessage());
 		}
 	}
 	

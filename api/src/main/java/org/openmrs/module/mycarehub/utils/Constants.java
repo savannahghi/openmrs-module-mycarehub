@@ -53,6 +53,9 @@ public class Constants {
 		public static final String PATIENT_APPOINTMENTS_REQUESTS_GET = "PATIENT_APPOINTMENTS_REQUESTS_GET";
 		
 		public static final String PATIENT_RED_FLAGS_REQUESTS_GET = "PATIENT_RED_FLAGS_REQUESTS_GET";
+		
+		public static final String PATIENT_HEALTH_DIARY_GET = "PATIENT_HEALTH_DIARY_GET";
+		
 	}
 	
 	public static final class MedicalRecordConcepts {
@@ -83,7 +86,7 @@ public class Constants {
 			public static final int WIDAL = 306;
 			
 			public static final int HIV_POLYMERASE = 1030;
-
+			
 			public static final int TESTS_ORDERED = 1271;
 		}
 		

@@ -58,4 +58,8 @@ public interface RestApiService {
 	
 	@POST("obs")
 	Call<MedicalRecordResponse> uploadMedicalRecords(@Body List<MedicalRecordRequest> request);
+	
+	@Headers({ "Accept: application/json", "Content-Type: application/json" })
+	@GET("appointment-service-request")
+	Call<JsonObject> fetchPatientHealthDiaries(@Body JsonObject request);
 }

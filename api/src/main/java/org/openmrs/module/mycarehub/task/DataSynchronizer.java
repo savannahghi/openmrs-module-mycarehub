@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.service.AppointmentService;
+import org.openmrs.module.mycarehub.api.service.HealthDiaryService;
 import org.openmrs.module.mycarehub.api.service.MyCareHubPatientService;
 import org.openmrs.module.mycarehub.api.service.RedFlagService;
 
@@ -31,6 +32,7 @@ public class DataSynchronizer {
 			Context.getService(AppointmentService.class).fetchPatientAppointmentRequests();
 			Context.getService(RedFlagService.class).syncPatientRedFlagRequests();
 			Context.getService(RedFlagService.class).fetchPatientRedFlagRequests();
+			Context.getService(HealthDiaryService.class).fetchPatientHealthDiaries();
 		}
 		finally {
 			isRunning = false;

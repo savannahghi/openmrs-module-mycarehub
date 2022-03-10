@@ -20,8 +20,8 @@ public interface MyCareHubPatientDao {
 	List<MyCareHubAllergy> getUpdatedAllergiesSinceDate(Patient patient, Date lastSyncDate);
 	
 	List<Obs> getUpdatedTestsSinceDate(Patient patient, Date lastSyncDate);
-
+	
 	List<Obs> getUpdatedTestOrdersSinceDate(Patient patient, Date lastSyncDate);
-
+	
 	List<Obs> getUpdatedMedicationsSinceDate(Patient patient, Date lastSyncDate);
 }

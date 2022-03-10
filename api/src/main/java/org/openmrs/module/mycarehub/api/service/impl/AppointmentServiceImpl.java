@@ -31,8 +31,6 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	
 	AppointmentDao dao;
 	
-	SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-	
 	SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 	
 	public AppointmentServiceImpl(AppointmentDao dao) {

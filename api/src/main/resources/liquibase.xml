@@ -141,4 +141,35 @@
         </sql>
     </changeSet>
 
+    <changeSet id="mycarehub-202203101020" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="mycarehub_healthdiary"/></not>
+        </preConditions>
+        <comment>
+            Creating health diary table
+        </comment>
+        <createTable tableName="mycarehub_healthdiary">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="ccc_number" type="varchar(255)"/>
+            <column name="mood" type="varchar(255)"/>
+            <column name="note" type="text"/>
+            <column name="entry_type" type="varchar(255)"/>
+            <column name="date_recorded" type="datetime"/>
+            <column name="shared_on" type="datetime"/>
+            <column name="creator" valueNumeric="1" type="int"/>
+            <column name="date_created" type="datetime"/>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="voided" valueBoolean="false" type="boolean"/>
+            <column name="voided_by" type="int"/>
+            <column name="date_voided" type="datetime"/>
+            <column name="void_reason" type="text"/>
+            <column name="uuid" type="char(38)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
