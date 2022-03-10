@@ -12,10 +12,20 @@ mycarehubModule.
 
 mycarehubModule.factory('$appointmentRequests', function ($http) {
         var getAppointmentRequests = function (pageNumber, pageSize) {
-        return $http.get("appointmentRequests.json?&pageNumber=" + pageNumber + "&pageSize=" + pageSize);
+        return $http.get("appointmentRequests.json?pageNumber=" + pageNumber + "&pageSize=" + pageSize);
     };
 
     return {
         getAppointmentRequests: getAppointmentRequests
+    }
+});
+
+mycarehubModule.factory('$serviceRequests', function ($http) {
+        var getServiceRequests = function (requestType, pageNumber, pageSize) {
+        return $http.get("serviceRequests.json?requestType=" +requestType+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize);
+    };
+
+    return {
+        getServiceRequests: getServiceRequests
     }
 });

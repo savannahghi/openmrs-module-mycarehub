@@ -2,7 +2,6 @@ package org.openmrs.module.mycarehub.api.service.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.mycarehub.api.db.MyCareHubRedFlagDao;
@@ -41,7 +40,12 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	public List<RedFlags> getAllRedFlagRequestsByLastSyncDate(Date lastSyncDate) {
 		return dao.getAllRedFlagRequestsByLastSyncDate(lastSyncDate);
 	}
-	
+
+	@Override
+	public List<RedFlags> getPagedRedFlagsByRequestType(String requestType, Integer pageNumber, Integer pageSize) {
+		return dao.getPagedRedFlagsByRequestType(requestType, pageNumber, pageSize);
+	}
+
 	@Override
 	public List<RedFlags> saveRedFlagRequests(List<RedFlags> redFlags) {
 		return dao.saveRedFlagRequests(redFlags);
@@ -51,7 +55,12 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	public RedFlags getRedFlagRequestByMycarehubId(String mycarehubId) {
 		return dao.getRedFlagRequestByMycarehubId(mycarehubId);
 	}
-	
+
+	@Override
+	public Number countRedFlagsByType(String requestType) {
+		return dao.countRedFlagsByType(requestType);
+	}
+
 	@Override
 	public void syncPatientRedFlagRequests() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
@@ -68,6 +77,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 					redFlagObject = new JsonObject();
 					redFlagObject.addProperty("ID", redFlag.getMycarehubId());
 					redFlagObject.addProperty("status", redFlag.getStatus());
+					redFlagObject.addProperty("RequestType", redFlag.getRequestType());
 					if (redFlag.getProgressDate() != null) {
 						redFlagObject.addProperty("InProgressAt", dateTimeFormat.format(redFlag.getProgressDate()));
 					} else {
