@@ -13,7 +13,7 @@
             Creating appointment requests table
         </comment>
         <createTable tableName="mycarehub_appointment_requests">
-            <column name="id" type="int">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="mycarehub_id" type="varchar(255)"/>
@@ -56,7 +56,7 @@
 			Creating red flag table
 		</comment>
 		<createTable tableName="mycarehub_red_flag">
-			<column name="id" type="int">
+			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="request" type="text"/>
@@ -149,7 +149,7 @@
             Creating health diary table
         </comment>
         <createTable tableName="mycarehub_healthdiary">
-            <column name="id" type="int">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="ccc_number" type="varchar(255)"/>

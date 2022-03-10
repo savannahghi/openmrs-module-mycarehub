@@ -23,14 +23,14 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 	@Override
 	public List<RedFlags> getAllRedFlagRequests() {
 		Criteria criteria = session().createCriteria(RedFlags.class);
-		criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.eq("voided", false));
 		return criteria.list();
 	}
 	
 	@Override
 	public List<RedFlags> getAllRedFlagRequestsByLastSyncDate(Date lastSyncDate) {
 		Criteria criteria = session().createCriteria(RedFlags.class);
-		criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.or(Restrictions.ge("progressDate", lastSyncDate),
 		    Restrictions.ge("dateResolved", lastSyncDate)));
 		return criteria.list();
@@ -39,7 +39,7 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 	@Override
 	public List<RedFlags> getPagedRedFlagsByRequestType(String requestType, Integer pageNumber, Integer pageSize) {
 		Criteria criteria = session().createCriteria(RedFlags.class);
-		criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.eq("voided", false));
 		if (StringUtils.isNotEmpty(requestType)) {
 			criteria.add(Restrictions.eq("requestType", requestType));
 		}

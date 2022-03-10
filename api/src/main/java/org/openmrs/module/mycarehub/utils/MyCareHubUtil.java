@@ -482,7 +482,7 @@ public class MyCareHubUtil {
 					redFlag.setClientContact(jsonObject1.get("ClientContact").toString());
 					redFlag.setCccNumber(jsonObject1.get("CCCNumber").toString());
 					redFlag.setMflCode(jsonObject1.get("MFLCODE").toString());
-
+					
 					redFlags.add(redFlag);
 					
 				}
@@ -617,7 +617,7 @@ public class MyCareHubUtil {
 					if (jsonObject1.get("sharedAt").toString() != null) {
 						healthDiary.setSharedOn(dateFormat.parse(jsonObject1.get("sharedAt").toString()));
 					}
-
+					
 					healthDiary.setDateCreated(new Date());
 					healthDiary.setCreator(new User(1));
 					healthDiary.setVoided(false);

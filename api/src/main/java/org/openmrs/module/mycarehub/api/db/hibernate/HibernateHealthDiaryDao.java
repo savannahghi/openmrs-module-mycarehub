@@ -41,7 +41,8 @@ public class HibernateHealthDiaryDao implements HealthDiaryDao {
 			criteria.setMaxResults(pageSize);
 		}
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
-		return (List<HealthDiary>) criteria.list();
+		List<HealthDiary> healthDiaries = (List<HealthDiary>) criteria.list();
+		return healthDiaries;
 	}
 	
 	private DbSession session() {
