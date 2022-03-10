@@ -19,6 +19,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.fetchPatientAppointments;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
+import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPatientRedFlagRequests;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.postPatientRedFlags;
 
 public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagService {
@@ -40,12 +41,12 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	public List<RedFlags> getAllRedFlagRequestsByLastSyncDate(Date lastSyncDate) {
 		return dao.getAllRedFlagRequestsByLastSyncDate(lastSyncDate);
 	}
-
+	
 	@Override
 	public List<RedFlags> getPagedRedFlagsByRequestType(String requestType, Integer pageNumber, Integer pageSize) {
 		return dao.getPagedRedFlagsByRequestType(requestType, pageNumber, pageSize);
 	}
-
+	
 	@Override
 	public List<RedFlags> saveRedFlagRequests(List<RedFlags> redFlags) {
 		return dao.saveRedFlagRequests(redFlags);
@@ -55,12 +56,12 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	public RedFlags getRedFlagRequestByMycarehubId(String mycarehubId) {
 		return dao.getRedFlagRequestByMycarehubId(mycarehubId);
 	}
-
+	
 	@Override
 	public Number countRedFlagsByType(String requestType) {
 		return dao.countRedFlagsByType(requestType);
 	}
-
+	
 	@Override
 	public void syncPatientRedFlagRequests() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
@@ -123,7 +124,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
 			jsonObject.addProperty("lastSyncTime", dateTimeFormat.format(setting.getLastSyncTime()));
 			
-			fetchPatientAppointments(jsonObject, newSyncDate);
+			getPatientRedFlagRequests(jsonObject, newSyncDate);
 		} else {
 			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
 			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_GET);

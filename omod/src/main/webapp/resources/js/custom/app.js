@@ -20,6 +20,16 @@ mycarehubModule.factory('$appointmentRequests', function ($http) {
     }
 });
 
+mycarehubModule.factory('$healthDiary', function ($http) {
+        var getHealthDiaries = function (pageNumber, pageSize) {
+        return $http.get("healthDiaries.json?pageNumber=" + pageNumber + "&pageSize=" + pageSize);
+    };
+
+    return {
+        getHealthDiaries: getHealthDiaries
+    }
+});
+
 mycarehubModule.factory('$serviceRequests', function ($http) {
         var getServiceRequests = function (requestType, pageNumber, pageSize) {
         return $http.get("serviceRequests.json?requestType=" +requestType+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize);

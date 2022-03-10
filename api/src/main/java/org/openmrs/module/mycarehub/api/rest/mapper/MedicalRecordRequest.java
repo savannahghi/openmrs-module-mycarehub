@@ -14,7 +14,7 @@ public class MedicalRecordRequest {
 	
 	@SerializedName("testOrders")
 	private List<MyCareHubTestOrder> testOrders;
-
+	
 	@SerializedName("tests")
 	private List<MyCareHubTest> tests;
 	
@@ -36,15 +36,15 @@ public class MedicalRecordRequest {
 	public List<MyCareHubMedication> getMedications() {
 		return medications;
 	}
-
+	
 	public void setTestOrders(List<MyCareHubTestOrder> testOrders) {
 		this.testOrders = testOrders;
 	}
-
+	
 	public List<MyCareHubTestOrder> getTestOrders() {
 		return testOrders;
 	}
-
+	
 	public void setTests(List<MyCareHubTest> tests) {
 		this.tests = tests;
 	}

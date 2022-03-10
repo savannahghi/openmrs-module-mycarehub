@@ -29,7 +29,7 @@ import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getVitalSignsConc
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPersonAttributeTypesList;
 
 public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
-
+	
 	private DbSessionFactory sessionFactory;
 	
 	public HibernateMyCareHubPatientDao(DbSessionFactory sessionFactory) {
@@ -146,11 +146,11 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		
 		return allergenQuery.list();
 	}
-
+	
 	public List<Obs> getUpdatedTestsSinceDate(Patient patient, Date lastSyncDate) {
 		SQLQuery testsConcepts = getSession().createSQLQuery(
-			"SELECT concept_id FROM concept WHERE class_id = 1 AND voided=0");
-
+		    "SELECT concept_id FROM concept WHERE class_id = 1 AND voided=0");
+		
 		Criteria criteria = getSession().createCriteria(Obs.class);
 		criteria.add(Restrictions.eq("person_id", patient.getPatientId()));
 		criteria.add(Restrictions.ge("date_created", lastSyncDate));
@@ -158,7 +158,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		criteria.add(Restrictions.eq("voided", false));
 		return criteria.list();
 	}
-
+	
 	public List<Obs> getUpdatedTestOrdersSinceDate(Patient patient, Date lastSyncDate) {
 		Criteria criteria = getSession().createCriteria(Obs.class);
 		criteria.add(Restrictions.eq("person_id", patient.getPatientId()));

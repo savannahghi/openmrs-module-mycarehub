@@ -35,14 +35,14 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	@Override
 	public List<AppointmentRequests> getAllAppointmentRequests() {
 		Criteria criteria = session().createCriteria(AppointmentRequests.class);
-		criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.eq("voided", false));
 		return criteria.list();
 	}
 	
 	@Override
 	public List<AppointmentRequests> getAllAppointmentRequestsByLastSyncDate(Date lastSyncDate) {
 		Criteria criteria = session().createCriteria(AppointmentRequests.class);
-		criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.or(Restrictions.ge("progressDate", lastSyncDate),
 		    Restrictions.ge("dateResolved", lastSyncDate)));
 		return criteria.list();

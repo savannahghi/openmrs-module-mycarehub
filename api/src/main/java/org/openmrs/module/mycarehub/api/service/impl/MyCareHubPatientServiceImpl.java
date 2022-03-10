@@ -294,19 +294,20 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			List<Obs> testOrderObs = myCareHubPatientDao.getUpdatedTestOrdersSinceDate(patient, lastSyncTime);
 			for (final Obs order : testOrderObs) {
 				myCareHubTestOrders.add(new MyCareHubTestOrder() {
+					
 					{
 						setOrderDateTime(order.getObsDatetime());
 						setOrderedTestName(order.getValueAsString(Locale.ENGLISH));
 					}
 				});
 			}
-
+			
 			List<MyCareHubTest> myCareHubTests = new ArrayList<MyCareHubTest>();
 			medicalRecordRequest.setTests(myCareHubTests);
 			List<Obs> tests = myCareHubPatientDao.getUpdatedTestsSinceDate(patient, lastSyncTime);
 			for (final Obs test : tests) {
 				myCareHubTests.add(new MyCareHubTest() {
-
+					
 					{
 						setTestName(test.getConcept().getName().getName());
 						setTestDateTime(test.getObsDatetime());

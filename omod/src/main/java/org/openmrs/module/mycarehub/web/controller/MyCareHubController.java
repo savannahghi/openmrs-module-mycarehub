@@ -14,28 +14,25 @@
 package org.openmrs.module.mycarehub.web.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.service.AppointmentService;
+import org.openmrs.module.mycarehub.api.service.HealthDiaryService;
 import org.openmrs.module.mycarehub.api.service.RedFlagService;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
+import org.openmrs.module.mycarehub.model.HealthDiary;
 import org.openmrs.module.mycarehub.model.RedFlags;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class MyCareHubController {
@@ -49,25 +46,26 @@ public class MyCareHubController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/appointmentRequests.json")
+	@ResponseBody
 	public Map<String, Object> getAppointmentRequests(final @RequestParam(value = "pageNumber") Integer pageNumber,
-	        final @RequestParam(value = "pageSize") Integer pageSize) {
+			final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
 			AppointmentService appointmentService = Context.getService(AppointmentService.class);
 			int pages = (appointmentService.countAppointments().intValue() + pageSize - 1) / pageSize;
 			List<Object> objects = new ArrayList<Object>();
-			
+
 			for (AppointmentRequests appointmentRequest : appointmentService.getPagedAppointments(pageNumber, pageSize)) {
 				objects.add(convertAppointmentRequestToJsonMap(appointmentRequest));
 			}
-			
+
 			response.put("pages", pages);
 			response.put("totalItems", appointmentService.countAppointments().intValue());
 			response.put("objects", objects);
 		}
 		return response;
 	}
-	
+
 	Map<String, Object> convertAppointmentRequestToJsonMap(final AppointmentRequests appointmentRequest) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (appointmentRequest != null) {
@@ -99,16 +97,17 @@ public class MyCareHubController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/serviceRequests.json")
+	@ResponseBody
 	public Map<String, Object> getRedFlagsByType(final @RequestParam(value = "requestType") String requestType,
-												 final @RequestParam(value = "pageNumber") Integer pageNumber,
-													  final @RequestParam(value = "pageSize") Integer pageSize) {
+			final @RequestParam(value = "pageNumber") Integer pageNumber,
+			final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
 			RedFlagService redFlagService = Context.getService(RedFlagService.class);
 			int pages = (redFlagService.countRedFlagsByType(requestType).intValue() + pageSize - 1) / pageSize;
 			List<Object> objects = new ArrayList<Object>();
 
-			for (RedFlags redFlags : redFlagService.getPagedRedFlagsByRequestType(requestType,pageNumber, pageSize)) {
+			for (RedFlags redFlags : redFlagService.getPagedRedFlagsByRequestType(requestType, pageNumber, pageSize)) {
 				objects.add(convertRedFlagsToJsonMap(redFlags));
 			}
 
@@ -143,7 +142,49 @@ public class MyCareHubController {
 			map.put("clientName", redFlags.getClientName());
 			map.put("clientContact", redFlags.getClientContact());
 			map.put("cccNumber", redFlags.getCccNumber());
-			map.put("MFLCode",redFlags.getMflCode());
+			map.put("MFLCode", redFlags.getMflCode());
+		}
+		return map;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/healthDiaries.json")
+	@ResponseBody
+	public Map<String, Object> getHealthDiaries(final @RequestParam(value = "pageNumber") Integer pageNumber,
+	        final @RequestParam(value = "pageSize") Integer pageSize) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			HealthDiaryService healthDiaryService = Context.getService(HealthDiaryService.class);
+			int pages = (healthDiaryService.countHealthDiaries().intValue() + pageSize - 1) / pageSize;
+			List<Object> objects = new ArrayList<Object>();
+			
+			for (HealthDiary healthDiary : healthDiaryService.getPagedHealthDiaries(pageNumber, pageSize)) {
+				objects.add(convertHealthDiariesToJsonMap(healthDiary));
+			}
+			
+			response.put("pages", pages);
+			response.put("totalItems", healthDiaryService.countHealthDiaries().intValue());
+			response.put("objects", objects);
+		}
+		return response;
+	}
+	
+	Map<String, Object> convertHealthDiariesToJsonMap(final HealthDiary healthDiary) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (healthDiary != null) {
+			map.put("cccNumber", healthDiary.getCccNumber());
+			map.put("mood", healthDiary.getMood());
+			map.put("note", healthDiary.getNote());
+			map.put("entryType", healthDiary.getEntryType());
+			if (healthDiary.getDateRecorded() != null) {
+				map.put("dateRecorded", healthDiary.getDateRecorded());
+			} else {
+				map.put("dateRecorded", "");
+			}
+			if (healthDiary.getSharedOn() != null) {
+				map.put("sharedOn", healthDiary.getSharedOn());
+			} else {
+				map.put("sharedOn", "");
+			}
 		}
 		return map;
 	}

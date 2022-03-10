@@ -23,24 +23,24 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 	@Override
 	public List<RedFlags> getAllRedFlagRequests() {
 		Criteria criteria = session().createCriteria(RedFlags.class);
-		criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.eq("voided", false));
 		return criteria.list();
 	}
 	
 	@Override
 	public List<RedFlags> getAllRedFlagRequestsByLastSyncDate(Date lastSyncDate) {
 		Criteria criteria = session().createCriteria(RedFlags.class);
-		criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.or(Restrictions.ge("progressDate", lastSyncDate),
 		    Restrictions.ge("dateResolved", lastSyncDate)));
 		return criteria.list();
 	}
-
+	
 	@Override
 	public List<RedFlags> getPagedRedFlagsByRequestType(String requestType, Integer pageNumber, Integer pageSize) {
 		Criteria criteria = session().createCriteria(RedFlags.class);
-		criteria.add(Restrictions.eq("retired", false));
-		if(StringUtils.isNotEmpty(requestType)) {
+		criteria.add(Restrictions.eq("voided", false));
+		if (StringUtils.isNotEmpty(requestType)) {
 			criteria.add(Restrictions.eq("requestType", requestType));
 		}
 		if (pageNumber != null && pageNumber > 0) {
@@ -52,7 +52,7 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
 		return (List<RedFlags>) criteria.list();
 	}
-
+	
 	@Override
 	public List<RedFlags> saveRedFlagRequests(List<RedFlags> redFlags) {
 		session().saveOrUpdate(redFlags);
@@ -65,17 +65,17 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 		criteria.add(Restrictions.eq("mycarehubId", mycarehubId));
 		return (RedFlags) criteria.uniqueResult();
 	}
-
+	
 	@Override
 	public Number countRedFlagsByType(String requestType) {
 		Criteria criteria = session().createCriteria(RedFlags.class);
-		if(StringUtils.isNotEmpty(requestType)) {
+		if (StringUtils.isNotEmpty(requestType)) {
 			criteria.add(Restrictions.eq("requestType", requestType));
 		}
 		criteria.setProjection(Projections.rowCount());
 		return (Number) criteria.uniqueResult();
 	}
-
+	
 	private DbSession session() {
 		return sessionFactory.getCurrentSession();
 	}
