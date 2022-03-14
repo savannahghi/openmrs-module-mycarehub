@@ -13,9 +13,13 @@ public interface AppointmentService extends OpenmrsService {
 	
 	List<AppointmentRequests> getAllAppointmentRequests();
 	
+	AppointmentRequests getAppointmentRequestByUuid(String uuid);
+	
 	List<AppointmentRequests> getAllAppointmentRequestsByLastSyncDate(Date lastSyncDate);
 	
 	List<AppointmentRequests> saveAppointmentRequests(List<AppointmentRequests> appointmentRequests);
+	
+	AppointmentRequests saveAppointmentRequests(AppointmentRequests appointmentRequest);
 	
 	AppointmentRequests getAppointmentRequestByMycarehubId(String mycarehubId);
 	

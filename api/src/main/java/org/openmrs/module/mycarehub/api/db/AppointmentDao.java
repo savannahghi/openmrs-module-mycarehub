@@ -16,7 +16,11 @@ public interface AppointmentDao {
 	
 	List<AppointmentRequests> saveAppointmentRequests(List<AppointmentRequests> appointmentRequests);
 	
+	AppointmentRequests saveAppointmentRequests(AppointmentRequests appointmentRequest);
+	
 	AppointmentRequests getAppointmentRequestByMycarehubId(String mycarehubId);
+	
+	AppointmentRequests getAppointmentRequestByUuid(String uuid);
 	
 	Number countAppointments();
 	

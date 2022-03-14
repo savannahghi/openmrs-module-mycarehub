@@ -3,7 +3,6 @@ package org.openmrs.module.mycarehub.api.service.impl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointmentscheduling.Appointment;
@@ -48,6 +47,11 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	}
 	
 	@Override
+	public AppointmentRequests getAppointmentRequestByUuid(String uuid) {
+		return dao.getAppointmentRequestByUuid(uuid);
+	}
+	
+	@Override
 	public List<AppointmentRequests> getAllAppointmentRequestsByLastSyncDate(Date lastSyncDate) {
 		return dao.getAllAppointmentRequestsByLastSyncDate(lastSyncDate);
 	}
@@ -55,6 +59,11 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	@Override
 	public List<AppointmentRequests> saveAppointmentRequests(List<AppointmentRequests> appointmentRequests) {
 		return dao.saveAppointmentRequests(appointmentRequests);
+	}
+	
+	@Override
+	public AppointmentRequests saveAppointmentRequests(AppointmentRequests appointmentRequest) {
+		return dao.saveAppointmentRequests(appointmentRequest);
 	}
 	
 	@Override
@@ -81,7 +90,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			Date newSyncDate = new Date();
 			
 			JsonObject containerObject = new JsonObject();
-			JsonObject appointmentsObject = new JsonObject();
+			JsonArray appointmentsArray = new JsonArray();
 			JsonObject appointmentObject = new JsonObject();
 			PatientIdentifierType cccPatientIdentifierType = getcccPatientIdentifierType();
 			if (appointments.size() > 0) {
@@ -100,12 +109,13 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 					            + timeFormat.format(appointment.getTimeSlot().getEndDate())));
 					appointmentObject.addProperty("appointment_type", appointment.getAppointmentType().getName());
 					appointmentObject.addProperty("status", appointment.getStatus().getName());
-					appointmentsObject.add(appointment.getPatient().getPatientIdentifier(cccPatientIdentifierType)
-					        .getIdentifier(), appointmentObject);
+					appointmentObject.addProperty("ccc_number",
+					    appointment.getPatient().getPatientIdentifier(cccPatientIdentifierType).getIdentifier());
+					appointmentsArray.add(appointmentObject);
 				}
 				
 				containerObject.addProperty("MFLCODE", getDefaultLocationMflCode());
-				containerObject.add("appointments", appointmentsObject);
+				containerObject.add("appointments", appointmentsArray);
 				
 				uploadPatientAppointments(containerObject, newSyncDate);
 				

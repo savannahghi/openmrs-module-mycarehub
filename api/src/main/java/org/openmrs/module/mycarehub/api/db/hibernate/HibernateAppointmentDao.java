@@ -8,6 +8,7 @@ import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.mycarehub.api.db.AppointmentDao;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -49,15 +50,30 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	}
 	
 	@Override
+	@Transactional
 	public List<AppointmentRequests> saveAppointmentRequests(List<AppointmentRequests> appointmentRequests) {
 		session().saveOrUpdate(appointmentRequests);
 		return appointmentRequests;
 	}
 	
 	@Override
+	@Transactional
+	public AppointmentRequests saveAppointmentRequests(AppointmentRequests appointmentRequest) {
+		session().saveOrUpdate(appointmentRequest);
+		return appointmentRequest;
+	}
+	
+	@Override
 	public AppointmentRequests getAppointmentRequestByMycarehubId(String mycarehubId) {
 		Criteria criteria = session().createCriteria(AppointmentRequests.class);
 		criteria.add(Restrictions.eq("mycarehubId", mycarehubId));
+		return (AppointmentRequests) criteria.uniqueResult();
+	}
+	
+	@Override
+	public AppointmentRequests getAppointmentRequestByUuid(String uuid) {
+		Criteria criteria = session().createCriteria(AppointmentRequests.class);
+		criteria.add(Restrictions.eq("uuid", uuid));
 		return (AppointmentRequests) criteria.uniqueResult();
 	}
 	

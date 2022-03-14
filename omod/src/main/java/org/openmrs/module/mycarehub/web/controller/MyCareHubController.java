@@ -13,11 +13,12 @@
  */
 package org.openmrs.module.mycarehub.web.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,115 +41,58 @@ public class MyCareHubController {
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+	
 	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/mycarehub.list")
 	public void view() {
 		// do nothing here, the rest will be handled by angular
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/appointmentRequests.json")
 	@ResponseBody
+	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/appointmentRequests.json")
 	public Map<String, Object> getAppointmentRequests(final @RequestParam(value = "pageNumber") Integer pageNumber,
-			final @RequestParam(value = "pageSize") Integer pageSize) {
+	        final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
 			AppointmentService appointmentService = Context.getService(AppointmentService.class);
 			int pages = (appointmentService.countAppointments().intValue() + pageSize - 1) / pageSize;
 			List<Object> objects = new ArrayList<Object>();
-
+			
 			for (AppointmentRequests appointmentRequest : appointmentService.getPagedAppointments(pageNumber, pageSize)) {
 				objects.add(convertAppointmentRequestToJsonMap(appointmentRequest));
 			}
-
+			
 			response.put("pages", pages);
 			response.put("totalItems", appointmentService.countAppointments().intValue());
 			response.put("objects", objects);
 		}
 		return response;
 	}
-
-	Map<String, Object> convertAppointmentRequestToJsonMap(final AppointmentRequests appointmentRequest) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		if (appointmentRequest != null) {
-			map.put("uuid", appointmentRequest.getUuid());
-			map.put("appointmentUuid", appointmentRequest.getAppointmentUUID());
-			map.put("appointmentType", appointmentRequest.getAppointmentType());
-			map.put("appointmentReason", appointmentRequest.getAppointmentReason());
-			map.put("provider", appointmentRequest.getProvider());
-			map.put("requestedDate", Context.getDateTimeFormat().format(appointmentRequest.getRequestedDate()));
-			map.put("requestedTimeSlot", appointmentRequest.getRequestedTimeSlot());
-			map.put("status", appointmentRequest.getStatus());
-			if (appointmentRequest.getProgressDate() != null) {
-				map.put("progressDate", appointmentRequest.getProgressDate());
-			} else {
-				map.put("progressDate", "");
-			}
-			map.put("progressBy", appointmentRequest.getProgressBy());
-			if (appointmentRequest.getDateResolved() != null) {
-				map.put("dateResolved", appointmentRequest.getDateResolved());
-			} else {
-				map.put("dateResolved", "");
-			}
-			map.put("resolvedBy", appointmentRequest.getResolvedBy());
-			map.put("clientName", appointmentRequest.getClientName());
-			map.put("clientContact", appointmentRequest.getClientContact());
-			map.put("cccNumber", appointmentRequest.getCccNumber());
-		}
-		return map;
-	}
-
-	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/serviceRequests.json")
+	
 	@ResponseBody
+	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/serviceRequests.json")
 	public Map<String, Object> getRedFlagsByType(final @RequestParam(value = "requestType") String requestType,
-			final @RequestParam(value = "pageNumber") Integer pageNumber,
-			final @RequestParam(value = "pageSize") Integer pageSize) {
+	        final @RequestParam(value = "pageNumber") Integer pageNumber,
+	        final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
 			RedFlagService redFlagService = Context.getService(RedFlagService.class);
 			int pages = (redFlagService.countRedFlagsByType(requestType).intValue() + pageSize - 1) / pageSize;
 			List<Object> objects = new ArrayList<Object>();
-
+			
 			for (RedFlags redFlags : redFlagService.getPagedRedFlagsByRequestType(requestType, pageNumber, pageSize)) {
 				objects.add(convertRedFlagsToJsonMap(redFlags));
 			}
-
+			
 			response.put("pages", pages);
 			response.put("totalItems", redFlagService.countRedFlagsByType(requestType).intValue());
 			response.put("objects", objects);
 		}
 		return response;
 	}
-
-	Map<String, Object> convertRedFlagsToJsonMap(final RedFlags redFlags) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		if (redFlags != null) {
-			map.put("uuid", redFlags.getUuid());
-			map.put("Request", redFlags.getRequest());
-			map.put("RequestType", redFlags.getRequestType());
-			map.put("ScreeningToolName", redFlags.getScreeningTool());
-			map.put("ScreeningToolScore", redFlags.getScreeningScore());
-			map.put("Status", redFlags.getStatus());
-			if (redFlags.getProgressDate() != null) {
-				map.put("progressDate", redFlags.getProgressDate());
-			} else {
-				map.put("progressDate", "");
-			}
-			map.put("progressBy", redFlags.getProgressBy());
-			if (redFlags.getDateResolved() != null) {
-				map.put("dateResolved", redFlags.getDateResolved());
-			} else {
-				map.put("dateResolved", "");
-			}
-			map.put("resolvedBy", redFlags.getResolvedBy());
-			map.put("clientName", redFlags.getClientName());
-			map.put("clientContact", redFlags.getClientContact());
-			map.put("cccNumber", redFlags.getCccNumber());
-			map.put("MFLCode", redFlags.getMflCode());
-		}
-		return map;
-	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/healthDiaries.json")
 	@ResponseBody
+	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/healthDiaries.json")
 	public Map<String, Object> getHealthDiaries(final @RequestParam(value = "pageNumber") Integer pageNumber,
 	        final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -166,6 +110,121 @@ public class MyCareHubController {
 			response.put("objects", objects);
 		}
 		return response;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value = "/module/mycarehub/setRedFlagInProgress.json")
+	public Map<String, Object> setRedFlagInProgress(final @RequestParam(value = "uuid") String uuid) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			RedFlagService redFlagService = Context.getService(RedFlagService.class);
+			RedFlags redFlag = redFlagService.getRedFlagByUuid(uuid);
+			redFlag.setProgressDate(new Date());
+			redFlag.setStatus("IN_PROGRESS");
+			redFlag.setProgressBy(Context.getAuthenticatedUser().getUsername());
+			redFlagService.saveRedFlagRequests(redFlag);
+		}
+		return response;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value = "/module/mycarehub/setRedFlagResolved.json")
+	public Map<String, Object> setRedFlagResolved(final @RequestParam(value = "uuid") String uuid) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			RedFlagService redFlagService = Context.getService(RedFlagService.class);
+			RedFlags redFlag = redFlagService.getRedFlagByUuid(uuid);
+			redFlag.setDateResolved(new Date());
+			redFlag.setStatus("COMPLETED");
+			redFlag.setResolvedBy(Context.getAuthenticatedUser().getUsername());
+			redFlagService.saveRedFlagRequests(redFlag);
+		}
+		return response;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value = "/module/mycarehub/setAppointmentInProgress.json")
+	public Map<String, Object> setAppointmentInProgress(final @RequestParam(value = "uuid") String uuid) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			AppointmentService appointmentService = Context.getService(AppointmentService.class);
+			AppointmentRequests appointmentRequest = appointmentService.getAppointmentRequestByUuid(uuid);
+			appointmentRequest.setProgressDate(new Date());
+			appointmentRequest.setStatus("IN_PROGRESS");
+			appointmentRequest.setProgressBy(Context.getAuthenticatedUser().getUsername());
+			appointmentService.saveAppointmentRequests(appointmentRequest);
+		}
+		return response;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value = "/module/mycarehub/setAppointmentResolved.json")
+	public Map<String, Object> setAppointmentResolved(final @RequestParam(value = "uuid") String uuid) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			AppointmentService appointmentService = Context.getService(AppointmentService.class);
+			AppointmentRequests appointmentRequest = appointmentService.getAppointmentRequestByUuid(uuid);
+			appointmentRequest.setProgressDate(new Date());
+			appointmentRequest.setStatus("COMPLETED");
+			appointmentRequest.setProgressBy(Context.getAuthenticatedUser().getUsername());
+			appointmentService.saveAppointmentRequests(appointmentRequest);
+		}
+		return response;
+	}
+	
+	Map<String, Object> convertAppointmentRequestToJsonMap(final AppointmentRequests appointmentRequest) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (appointmentRequest != null) {
+			map.put("uuid", appointmentRequest.getUuid());
+			map.put("appointmentUuid", appointmentRequest.getAppointmentUUID());
+			map.put("appointmentType", appointmentRequest.getAppointmentType());
+			map.put("appointmentReason", appointmentRequest.getAppointmentReason());
+			map.put("provider", appointmentRequest.getProvider());
+			map.put("requestedDate", Context.getDateTimeFormat().format(appointmentRequest.getRequestedDate()));
+			map.put("requestedTimeSlot", appointmentRequest.getRequestedTimeSlot());
+			map.put("status", appointmentRequest.getStatus());
+			if (appointmentRequest.getProgressDate() != null) {
+				map.put("progressDate", appointmentRequest.getProgressDate().toString());
+			} else {
+				map.put("progressDate", "");
+			}
+			map.put("progressBy", appointmentRequest.getProgressBy());
+			if (appointmentRequest.getDateResolved() != null) {
+				map.put("dateResolved", appointmentRequest.getDateResolved().toString());
+			} else {
+				map.put("dateResolved", "");
+			}
+			map.put("resolvedBy", appointmentRequest.getResolvedBy());
+			map.put("clientName", appointmentRequest.getClientName());
+			map.put("clientContact", appointmentRequest.getClientContact());
+			map.put("cccNumber", appointmentRequest.getCccNumber());
+		}
+		return map;
+	}
+	
+	Map<String, Object> convertRedFlagsToJsonMap(final RedFlags redFlags) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (redFlags != null) {
+			map.put("uuid", redFlags.getUuid());
+			map.put("Request", redFlags.getRequest());
+			map.put("RequestType", redFlags.getRequestType());
+			map.put("ScreeningToolName", redFlags.getScreeningTool());
+			map.put("ScreeningToolScore", redFlags.getScreeningScore());
+			map.put("Status", redFlags.getStatus());
+			if (redFlags.getProgressDate() != null) {
+				map.put("progressDate", redFlags.getProgressDate().toString());
+			} else {
+				map.put("progressDate", "");
+			}
+			map.put("progressBy", redFlags.getProgressBy());
+			if (redFlags.getDateResolved() != null) {
+				map.put("dateResolved", redFlags.getDateResolved().toString());
+			} else {
+				map.put("dateResolved", "");
+			}
+			map.put("resolvedBy", redFlags.getResolvedBy());
+			map.put("clientName", redFlags.getClientName());
+			map.put("clientContact", redFlags.getClientContact());
+			map.put("cccNumber", redFlags.getCccNumber());
+			map.put("MFLCode", redFlags.getMflCode());
+		}
+		return map;
 	}
 	
 	Map<String, Object> convertHealthDiariesToJsonMap(final HealthDiary healthDiary) {
