@@ -13,11 +13,9 @@ import org.openmrs.module.mycarehub.model.RedFlags;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.fetchPatientAppointments;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPatientRedFlagRequests;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.postPatientRedFlags;
@@ -100,16 +98,10 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 				postPatientRedFlags(containerObject, newSyncDate);
 				
 			} else {
-				setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_POST);
-				setting.setLastSyncTime(newSyncDate);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncDate);
 			}
 		} else {
-			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
-			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_POST);
-			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
+			settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, new Date());
 		}
 	}
 	
@@ -126,10 +118,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 			
 			getPatientRedFlagRequests(jsonObject, newSyncDate);
 		} else {
-			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
-			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_GET);
-			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
+			settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_GET, new Date());
 		}
 	}
 }

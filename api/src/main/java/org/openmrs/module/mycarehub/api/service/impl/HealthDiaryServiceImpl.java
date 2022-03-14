@@ -55,10 +55,7 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
 			
 			getPatientHealthDiaries(jsonObject, newSyncDate);
 		} else {
-			MyCareHubSetting myCareHubSetting = new MyCareHubSetting();
-			myCareHubSetting.setSettingType(PATIENT_HEALTH_DIARY_GET);
-			myCareHubSetting.setLastSyncTime(new Date());
-			settingsService.saveMyCareHubSettings(myCareHubSetting);
+			settingsService.createMyCareHubSetting(PATIENT_HEALTH_DIARY_GET, new Date());
 		}
 	}
 }

@@ -138,12 +138,10 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			if (patientRegistrationRequests.size() > 0) {
 				uploadPatientRegistrationRecords(patientRegistrationRequests, newSyncTime);
 			} else {
-				setting = new MyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, new Date());
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
 			}
 		} else {
-			setting = new MyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, new Date());
-			settingsService.saveMyCareHubSettings(setting);
+			settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, new Date());
 		}
 	}
 	
@@ -175,14 +173,13 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(KENYAEMR_MEDICAL_RECORDS);
 		
+		Date newSyncTime = new Date();
 		if (setting != null) {
-			Date newSyncTime = new Date();
 			List<Patient> patientsWithUpdatedMedicalRecords = myCareHubPatientDao
 			        .getCccPatientsWithUpdatedMedicalRecordsSinceDate(setting.getLastSyncTime());
 			uploadPatientsMedicalRecordsSinceDate(patientsWithUpdatedMedicalRecords, setting.getLastSyncTime(), newSyncTime);
 		} else {
-			MyCareHubSetting latestMedicalRecordsSyncSetting = new MyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, new Date());
-			settingsService.saveMyCareHubSettings(latestMedicalRecordsSyncSetting);
+			settingsService.createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, newSyncTime);
 		}
 	}
 	
@@ -338,8 +335,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		if (medicalRecordRequestList.size() > 0) {
 			uploadPatientMedicalRecords(medicalRecordRequestList, newSyncTime);
 		} else {
-			MyCareHubSetting setting = new MyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, newSyncTime);
-			Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+			Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, newSyncTime);
 		}
 	}
 }
