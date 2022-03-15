@@ -51,7 +51,7 @@
             </div>
             <div  class="row">
                 <div class="col-lg-8">
-                    <ul ng-show="appointmentPages > 1" uib-pagination total-items="appointmentsTotalItems" ng-model="$parent.appointmentsCurrentPage" max-size="maxSize"
+                    <ul ng-show="appointmentPages > 1" uib-pagination total-items="appointmentsTotalItems" ng-model="appointmentsCurrentPage" max-size="maxSize" ng-change="appointmentPagination(appointmentsCurrentPage)"
                         items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
                 </div>
             </div>
@@ -85,7 +85,7 @@
             </div>
             <div  class="row">
                 <div class="col-lg-8">
-                    <ul ng-show="healthDiariesPages > 1" uib-pagination total-items="healthDiariesTotalItems" ng-model="healthDiaryCurrentPage" max-size="maxSize"
+                    <ul ng-show="healthDiariesPages > 1" uib-pagination total-items="healthDiariesTotalItems" ng-model="healthDiaryCurrentPage" max-size="maxSize" ng-change="healthDiaryPagination(healthDiaryCurrentPage)"
                         items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
                 </div>
             </div>
@@ -132,7 +132,7 @@
             </div>
             <div  class="row">
                 <div class="col-lg-8">
-                    <ul ng-show="redFlagsPages > 1" uib-pagination total-items="redFlagsTotalItems" ng-model="$parent.redFlagCurrentPage" max-size="maxSize"
+                    <ul ng-show="redFlagsPages > 1" uib-pagination total-items="redFlagsTotalItems" ng-model="redFlagCurrentPage" max-size="maxSize" ng-change="redFlagPagination(redFlagCurrentPage)"
                         items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
                 </div>
             </div>
@@ -183,7 +183,7 @@
             </div>
             <div  class="row">
                 <div class="col-lg-8">
-                    <ul ng-show="screeningToolRedFlagPages > 1" uib-pagination total-items="screeningToolRedFlagTotalItems" ng-model="$parent.screeningToolRedFlagCurrentPage" max-size="maxSize"
+                    <ul ng-show="screeningToolRedFlagPages > 1" uib-pagination total-items="screeningToolRedFlagTotalItems" ng-model="screeningToolRedFlagCurrentPage" max-size="maxSize" ng-change="screeningToolRedFlagPagination(screeningToolRedFlagCurrentPage)"
                         items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
                 </div>
             </div>

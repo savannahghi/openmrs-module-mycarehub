@@ -19,8 +19,6 @@
 <openmrs:htmlInclude file="/moduleResources/mycarehub/js/angular/angular-translate-interpolation-messageformat.min.js" />
 <openmrs:htmlInclude file="/moduleResources/mycarehub/js/angular/angular-translate-loader-static-files.min.js"/>
 <openmrs:htmlInclude file="/moduleResources/mycarehub/js/custom/controllers/AppointmentRequestsController.js"/>
-<openmrs:htmlInclude file="/moduleResources/mycarehub/js/custom/controllers/ServiceRequestsController.js"/>
-<openmrs:htmlInclude file="/moduleResources/mycarehub/js/custom/controllers/HealthDiaryController.js"/>
 
 <div class="bootstrap-scope" ng-app="mycarehubModule">
     <div ng-view ></div>
