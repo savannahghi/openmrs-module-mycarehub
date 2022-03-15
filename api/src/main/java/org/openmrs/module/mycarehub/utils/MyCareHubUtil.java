@@ -107,8 +107,7 @@ public class MyCareHubUtil {
 
 				if (calNow.before(calExpiryTime))
 					return token;
-			}
-			catch (ParseException e) {
+			} catch (ParseException e) {
 				log.error(e.getMessage());
 			}
 		}
@@ -121,16 +120,13 @@ public class MyCareHubUtil {
 			throw e;
 		}
 		token = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
-
 		return token;
 	}
 	
 	public static void authenticateMyCareHub() throws AuthenticationException {
 		RestApiService restApiService = ApiClient.getRestService();
-		if (restApiService == null) {
-			log.error(TAG, new Throwable("Cant create myCareHub REST API service"));
-			return;
-		}
+		if (restApiService == null)
+			throw new AuthenticationException("Cant create myCareHub REST API service");
 		
 		Call<LoginResponse> call = restApiService.login(new LoginRequest(EMPTY, getApiUsername(), getApiPassword()));
 		try {
@@ -139,9 +135,6 @@ public class MyCareHubUtil {
 				log.info("Successful authentication");
 				LoginResponse loginResponse = response.body();
 				if (loginResponse != null) {
-					Gson gson = new Gson();
-					log.error(gson.toJson(loginResponse));
-					
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.SECOND, 3600);
 					Date dt = cal.getTime();
@@ -176,10 +169,10 @@ public class MyCareHubUtil {
 			log.error(TAG, new Throwable("Cant create REST API service"));
 			return;
 		}
-
+		
 		try {
 			Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(getApiToken(),
-					patientRegistrationRequests);
+			    patientRegistrationRequests);
 			Response<PatientRegistrationResponse> response = call.execute();
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS,
@@ -329,10 +322,10 @@ public class MyCareHubUtil {
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
 				AppointmentService appointmentService = Context.getService(AppointmentService.class);
-
+				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_GET, newSyncTime);
-
+				
 				//ToDo: move logic to service
 				JsonObject jsonResponse = response.body().getAsJsonObject();
 				JsonArray jsonArray = jsonResponse.getAsJsonArray("appointments");
@@ -448,10 +441,10 @@ public class MyCareHubUtil {
 			if (response.isSuccessful()) {
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_GET, newSyncTime);
-
+				
 				//ToDo: Move logic to service
 				RedFlagService redFlagService = Context.getService(RedFlagService.class);
-
+				
 				JsonObject jsonResponse = response.body().getAsJsonObject();
 				JsonArray jsonArray = jsonResponse.getAsJsonArray("redFlags");
 				List<RedFlags> redFlags = new ArrayList<RedFlags>();
