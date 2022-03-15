@@ -176,14 +176,14 @@ public class MyCareHubUtil {
 			log.error(TAG, new Throwable("Cant create REST API service"));
 			return;
 		}
-		
-		Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(patientRegistrationRequests);
-		
+
 		try {
+			Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(getApiToken(),
+					patientRegistrationRequests);
 			Response<PatientRegistrationResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
-				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS,
+				    newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -222,8 +222,8 @@ public class MyCareHubUtil {
 			Date newSyncTime = new Date();
 			Response<NewClientsIdentifiersResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS, newSyncTime);
-				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS,
+				    newSyncTime);
 				
 				cccList = response.body().getPatientsIdentifiers();
 			} else {
@@ -259,13 +259,8 @@ public class MyCareHubUtil {
 		try {
 			Response<AppointmentResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
-				setting.setLastSyncTime(newSyncTime);
-				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -298,12 +293,9 @@ public class MyCareHubUtil {
 		try {
 			Response<AppointmentResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
-				setting.setLastSyncTime(newSyncTime);
 				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -337,13 +329,11 @@ public class MyCareHubUtil {
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
 				AppointmentService appointmentService = Context.getService(AppointmentService.class);
-				
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_GET);
-				setting.setLastSyncTime(newSyncTime);
-				
+
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_GET, newSyncTime);
+
+				//ToDo: move logic to service
 				JsonObject jsonResponse = response.body().getAsJsonObject();
 				JsonArray jsonArray = jsonResponse.getAsJsonArray("appointments");
 				List<AppointmentRequests> appointmentRequests = new ArrayList<AppointmentRequests>();
@@ -421,12 +411,9 @@ public class MyCareHubUtil {
 		try {
 			Response<RedFlagResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_POST);
-				setting.setLastSyncTime(newSyncTime);
 				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -459,14 +446,12 @@ public class MyCareHubUtil {
 		try {
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
-				RedFlagService redFlagService = Context.getService(RedFlagService.class);
-				
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_GET);
-				setting.setLastSyncTime(newSyncTime);
-				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_GET, newSyncTime);
+
+				//ToDo: Move logic to service
+				RedFlagService redFlagService = Context.getService(RedFlagService.class);
+
 				JsonObject jsonResponse = response.body().getAsJsonObject();
 				JsonArray jsonArray = jsonResponse.getAsJsonArray("redFlags");
 				List<RedFlags> redFlags = new ArrayList<RedFlags>();
@@ -539,10 +524,8 @@ public class MyCareHubUtil {
 		try {
 			Response<MedicalRecordResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(KENYAEMR_MEDICAL_RECORDS);
-				setting.setLastSyncTime(newSyncTime);
-				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,
+				    newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -575,10 +558,8 @@ public class MyCareHubUtil {
 		try {
 			Response<MedicalRecordResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(KENYAEMR_MEDICAL_RECORDS);
-				setting.setLastSyncTime(newSyncTime);
-				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,
+				    newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -611,15 +592,11 @@ public class MyCareHubUtil {
 		try {
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
-				HealthDiaryService healthDiaryService = Context.getService(HealthDiaryService.class);
-				
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_HEALTH_DIARY_GET);
-				setting.setLastSyncTime(newSyncTime);
-				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_HEALTH_DIARY_GET, newSyncTime);
 				
+				//ToDo: Move logic to service
+				HealthDiaryService healthDiaryService = Context.getService(HealthDiaryService.class);
 				JsonObject jsonResponse = response.body().getAsJsonObject();
 				JsonArray jsonArray = jsonResponse.getAsJsonArray("healthDiaries");
 				List<HealthDiary> healthDiaries = new ArrayList<HealthDiary>();
