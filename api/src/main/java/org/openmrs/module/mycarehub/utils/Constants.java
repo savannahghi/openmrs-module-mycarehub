@@ -20,6 +20,9 @@ public class Constants {
 	/** Time based oauth2.0 token for myCareHub backend server. **/
 	public final static String GP_MYCAREHUB_API_TOKEN = "mycarehub.api.token";
 	
+	/** Date-time when the current token expires. **/
+	public final static String GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME = "mycarehub.api.token.expiry";
+	
 	/** MFL code for the default location on the KenyaEmr instance. **/
 	public final static String GP_DEFAULT_LOCATION_MFL_CODE = "kenyaemr.defaultLocation";
 	

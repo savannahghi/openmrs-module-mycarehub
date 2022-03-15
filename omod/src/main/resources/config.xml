@@ -58,6 +58,10 @@
 		<property>mycarehub.api.token</property>
 		<description>Time based oauth2.0 token for myCareHub backend server</description>
 	</globalProperty>
+	<globalProperty>
+		<property>mycarehub.api.token.expiry</property>
+		<description>Date-time when the current token expires</description>
+	</globalProperty>
 
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
