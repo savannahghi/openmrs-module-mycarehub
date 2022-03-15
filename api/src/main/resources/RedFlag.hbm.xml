@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs.module.mycarehub.model">
+    <class name="RedFlags" table="mycarehub_red_flag">
+        <id name="id" type="java.lang.Integer" column="id" unsaved-value="0">
+            <generator class="native"/>
+        </id>
+        <property name="mycarehubId" type="java.lang.String" not-null="true" column="mycarehub_id" length="255"/>
+        <property name="request" type="java.lang.String" not-null="true" column="request" length="255"/>
+        <property name="requestType" type="java.lang.String" not-null="true" column="request_type" length="255"/>
+        <property name="screeningTool" type="java.lang.String" column="screening_tool" length="255"/>
+        <property name="screeningScore" type="java.lang.String" column="screening_score" length="255"/>
+        <property name="status" type="java.lang.String" not-null="true" column="status" length="255"/>
+        <property name="progressDate" type="java.util.Date" column="progress_date" length="19" />
+        <property name="progressBy" type="java.lang.String" column="progress_by" length="255"/>
+        <property name="dateResolved" type="java.util.Date" column="resolved_on" length="19" />
+        <property name="resolvedBy" type="java.lang.String" column="resolved_by" length="255"/>
+        <property name="clientName" type="java.lang.String" column="client_name" length="255"/>
+        <property name="clientContact" type="java.lang.String" column="client_contact" length="255"/>
+        <property name="cccNumber" type="java.lang.String" column="ccc_number" length="255"/>
+        <property name="mflCode" type="java.lang.String" column="mfl_code" length="255"/>
+
+        <property name="dateCreated" type="java.util.Date" column="date_created" length="19" />
+        <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+        <property name="voided" type="java.lang.Boolean" column="voided" length="1"/>
+        <property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
+        <property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
+
+        <many-to-one name="creator" class="org.openmrs.User"/>
+        <many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
+        <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
+        <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+    </class>
+</hibernate-mapping>

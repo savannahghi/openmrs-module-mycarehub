@@ -13,14 +13,28 @@
             Creating appointment requests table
         </comment>
         <createTable tableName="mycarehub_appointment_requests">
-            <column name="id" type="int">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="mycarehub_id" type="varchar(255)"/>
             <column name="appointment_uuid" type="varchar(255)"/>
-            <column name="patient_id" type="int"/>
+            <column name="appointment_type" type="varchar(255)"/>
+            <column name="appointment_reason" type="text"/>
+            <column name="provider" type="varchar(255)"/>
             <column name="requested_date" type="date"/>
-            <column name="requested_time_slot" type="varchar(32)"/>
-            <column name="creator" valueNumeric="1" type="int"/>
+            <column name="requested_time_slot" type="varchar(255)"/>
+            <column name="status" type="ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED')" defaultValue="'PENDING'">
+                <constraints nullable="false"/>
+            </column>
+            <column name="progress_by" type="int"/>
+            <column name="progress_date" type="datetime"/>
+            <column name="resolved_by" type="int"/>
+            <column name="resolved_on" type="datetime"/>
+            <column name="client_name" type="text"/>
+            <column name="client_contact" type="varchar(255)"/>
+            <column name="ccc_number" type="varchar(255)"/>
+            <column name="mfl_code" type="varchar(255)"/>
+            <column name="creator" type="int"/>
             <column name="date_created" type="datetime"/>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="datetime"/>
@@ -36,19 +50,30 @@
 
 	<changeSet id="mycarehub-202202221545" author="bmokaya">
 		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="mycarehub_healthdiary"/></not>
+			<not><tableExists tableName="mycarehub_red_flag"/></not>
 		</preConditions>
 		<comment>
-			Creating health diary table
+			Creating red flag table
 		</comment>
-		<createTable tableName="mycarehub_healthdiary">
-			<column name="id" type="int">
+		<createTable tableName="mycarehub_red_flag">
+			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="patient_id" type="int"/>
-			<column name="mood" type="varchar(255)"/>
-			<column name="elaboration" type="text"/>
-			<column name="date_recorded" type="datetime"/>
+			<column name="request" type="text"/>
+			<column name="request_type" type="varchar(255)"/>
+			<column name="screening_tool" type="varchar(255)"/>
+			<column name="screening_score" type="varchar(255)"/>
+            <column name="status" type="ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED')" defaultValue="'PENDING'">
+                <constraints nullable="false"/>
+            </column>
+            <column name="progress_by" type="int"/>
+            <column name="progress_date" type="datetime"/>
+            <column name="resolved_by" type="int"/>
+            <column name="resolved_on" type="datetime"/>
+            <column name="client_name" type="text"/>
+            <column name="client_contact" type="varchar(255)"/>
+            <column name="ccc_number" type="varchar(255)"/>
+            <column name="mfl_code" type="varchar(255)"/>
             <column name="creator" valueNumeric="1" type="int"/>
             <column name="date_created" type="datetime"/>
             <column name="changed_by" type="int"/>
@@ -114,6 +139,101 @@
             '2022-02-22 17:18:00','MM/dd/yyyy HH:mm:ss',86400, 1, 1,
             1, now(), NULL, NULL, NULL, uuid());
         </sql>
+    </changeSet>
+
+    <changeSet id="mycarehub-202203101020" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="mycarehub_healthdiary"/></not>
+        </preConditions>
+        <comment>
+            Creating health diary table
+        </comment>
+        <createTable tableName="mycarehub_healthdiary">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="ccc_number" type="varchar(255)"/>
+            <column name="mood" type="varchar(255)"/>
+            <column name="note" type="text"/>
+            <column name="entry_type" type="varchar(255)"/>
+            <column name="date_recorded" type="datetime"/>
+            <column name="shared_on" type="datetime"/>
+            <column name="creator" valueNumeric="1" type="int"/>
+            <column name="date_created" type="datetime"/>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="voided" valueBoolean="false" type="boolean"/>
+            <column name="voided_by" type="int"/>
+            <column name="date_voided" type="datetime"/>
+            <column name="void_reason" type="text"/>
+            <column name="uuid" type="char(38)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="mycarehub-202203141250" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="mycarehub_red_flag"/>
+        </preConditions>
+        <comment>
+            Add Column mycarehub_id
+        </comment>
+        <addColumn tableName="mycarehub_red_flag">
+            <column name="mycarehub_id" type="varchar(255)"></column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="mycarehub-202203141600" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="mycarehub_red_flag" columnName="progress_by"/>
+            </and>
+        </preConditions>
+        <comment>
+            Alter column progress_by from int to text
+        </comment>
+        <modifyColumn tableName="mycarehub_red_flag">
+            <column name="progress_by" type="text"></column>
+        </modifyColumn>
+    </changeSet>
+    <changeSet id="mycarehub-202203141603" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="mycarehub_red_flag" columnName="resolved_by"/>
+            </and>
+        </preConditions>
+        <comment>
+            Alter column resolved_by from int to text
+        </comment>
+        <modifyColumn tableName="mycarehub_red_flag">
+            <column name="resolved_by" type="text"></column>
+        </modifyColumn>
+    </changeSet>
+    <changeSet id="mycarehub-202203141630" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="mycarehub_appointment_requests" columnName="progress_by"/>
+            </and>
+        </preConditions>
+        <comment>
+            Alter column progress_by from int to text
+        </comment>
+        <modifyColumn tableName="mycarehub_appointment_requests">
+            <column name="progress_by" type="text"></column>
+        </modifyColumn>
+    </changeSet>
+    <changeSet id="mycarehub-202203141635" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="mycarehub_appointment_requests" columnName="resolved_by"/>
+            </and>
+        </preConditions>
+        <comment>
+            Alter column resolved_by from int to text
+        </comment>
+        <modifyColumn tableName="mycarehub_appointment_requests">
+            <column name="resolved_by" type="text"></column>
+        </modifyColumn>
     </changeSet>
 
 </databaseChangeLog>

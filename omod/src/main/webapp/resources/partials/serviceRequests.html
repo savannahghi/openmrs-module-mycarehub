@@ -1,0 +1,195 @@
+<div class="container">
+    <div class="row">
+        <div class="col"><h3>Service Requests</h3><br></div>
+    </div>
+    <uib-tabset active="active">
+        <uib-tab heading="Appointment Requests">
+            <div class="row">
+                <div class="col-lg-12">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Client Contact</th>
+                            <th>CCC Number</th>
+                            <th>Appointment Type</th>
+                            <th>Appointment Reason</th>
+                            <th>Provider</th>
+                            <th>Requested Date</th>
+                            <th>Requested TimeSlot</th>
+                            <th>Status</th>
+                            <th>Progress Date</th>
+                            <th>Progress By</th>
+                            <th>Date Resolved</th>
+                            <th>Resolved By</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="appointmentRequest in appointmentRequests">
+                            <td>{{appointmentRequest.clientName}}</td>
+                            <td>{{appointmentRequest.clientContact}}</td>
+                            <td>{{appointmentRequest.cccNumber}}</td>
+                            <td>{{appointmentRequest.appointmentType}}</td>
+                            <td>{{appointmentRequest.appointmentReason}}</td>
+                            <td>{{appointmentRequest.provider}}</td>
+                            <td>{{appointmentRequest.requestedDate}}</td>
+                            <td>{{appointmentRequest.requestedTimeSlot}}</td>
+                            <td>{{appointmentRequest.status}}</td>
+                            <td>{{appointmentRequest.progressDate}}</td>
+                            <td>{{appointmentRequest.progressBy}}</td>
+                            <td>{{appointmentRequest.dateResolved}}</td>
+                            <td>{{appointmentRequest.resolvedBy}}</td>
+                            <td>
+                                <button ng-hide="appointmentRequest.progressDate != '' || appointmentRequest.dateResolved != ''" type="submit" ng-click="appointmentRequest(redFlag.uuid)" class="btn btn-primary">IN PROGRESS</button>&nbsp;
+                                <button ng-hide="appointmentRequest.dateResolved != ''" type="submit" ng-click="setAppointmentResolved(appointmentRequest.uuid)" class="btn btn-warning">RESOLVED</button>&nbsp;
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div  class="row">
+                <div class="col-lg-8">
+                    <ul ng-show="appointmentPages > 1" uib-pagination total-items="appointmentsTotalItems" ng-model="appointmentsCurrentPage" max-size="maxSize" ng-change="appointmentPagination(appointmentsCurrentPage)"
+                        items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
+                </div>
+            </div>
+        </uib-tab>
+        <uib-tab heading="Health Diary Entries">
+            <div class="row">
+                <div class="col-lg-12">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>CCC Number</th>
+                            <th>Mood</th>
+                            <th>Note</th>
+                            <th>Entry Type</th>
+                            <th>Shared On</th>
+                            <th>Created On</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="healthDiary in healthDiaries">
+                            <td>{{healthDiary.cccNumber}}</td>
+                            <td>{{healthDiary.mood}}</td>
+                            <td>{{healthDiary.note}}</td>
+                            <td>{{healthDiary.entryType}}</td>
+                            <td>{{healthDiary.sharedOn}}</td>
+                            <td>{{healthDiary.dateRecorded}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div  class="row">
+                <div class="col-lg-8">
+                    <ul ng-show="healthDiariesPages > 1" uib-pagination total-items="healthDiariesTotalItems" ng-model="healthDiaryCurrentPage" max-size="maxSize" ng-change="healthDiaryPagination(healthDiaryCurrentPage)"
+                        items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
+                </div>
+            </div>
+        </uib-tab>
+        <uib-tab heading="Red Flags">
+            <div class="row">
+                <div class="col-lg-12">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Client Contact</th>
+                            <th>CCC Number</th>
+                            <th>Request</th>
+                            <th>Request Type</th>
+                            <th>Status</th>
+                            <th>Progress Date</th>
+                            <th>Progress By</th>
+                            <th>Date Resolved</th>
+                            <th>Resolved By</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="redFlag in redFlags">
+                            <td>{{redFlag.clientName}}</td>
+                            <td>{{redFlag.clientContact}}</td>
+                            <td>{{redFlag.cccNumber}}</td>
+                            <td>{{redFlag.Request}}</td>
+                            <td>{{redFlag.RequestType}}</td>
+                            <td>{{redFlag.Status}}</td>
+                            <td>{{redFlag.progressDate}}</td>
+                            <td>{{redFlag.progressBy}}</td>
+                            <td>{{redFlag.dateResolved}}</td>
+                            <td>{{redFlag.resolvedBy}}</td>
+                            <td>
+                                <button ng-hide="redFlag.progressDate != '' || redFlag.dateResolved != ''" type="submit" ng-click="setRedFlagInProgress(redFlag.uuid)" class="btn btn-primary">IN PROGRESS</button>&nbsp;
+                                <button ng-hide="redFlag.dateResolved != ''" type="submit" ng-click="setRedFlagResolved(redFlag.uuid)" class="btn btn-warning">RESOLVED</button>&nbsp;
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div  class="row">
+                <div class="col-lg-8">
+                    <ul ng-show="redFlagsPages > 1" uib-pagination total-items="redFlagsTotalItems" ng-model="redFlagCurrentPage" max-size="maxSize" ng-change="redFlagPagination(redFlagCurrentPage)"
+                        items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
+                </div>
+            </div>
+        </uib-tab>
+        <uib-tab heading="Screening Tool Red Flags">
+            <div class="row">
+                <div class="col-lg-12">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Client Contact</th>
+                            <th>CCC Number</th>
+                            <th>Request</th>
+                            <th>Request Type</th>
+                            <th>Screening Tool Name</th>
+                            <th>Screening Score</th>
+                            <th>Status</th>
+                            <th>Progress Date</th>
+                            <th>Progress By</th>
+                            <th>Date Resolved</th>
+                            <th>Resolved By</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="screeningToolRedFlag in screeningToolRedFlags">
+                            <td>{{screeningToolRedFlag.clientName}}</td>
+                            <td>{{screeningToolRedFlag.clientContact}}</td>
+                            <td>{{screeningToolRedFlag.cccNumber}}</td>
+                            <td>{{screeningToolRedFlag.Request}}</td>
+                            <td>{{screeningToolRedFlag.RequestType}}</td>
+                            <td>{{screeningToolRedFlag.ScreeningToolName}}</td>
+                            <td>{{screeningToolRedFlag.ScreeningToolScore}}</td>
+                            <td>{{screeningToolRedFlag.Status}}</td>
+                            <td>{{screeningToolRedFlag.progressDate}}</td>
+                            <td>{{screeningToolRedFlag.progressBy}}</td>
+                            <td>{{screeningToolRedFlag.dateResolved}}</td>
+                            <td>{{screeningToolRedFlag.resolvedBy}}</td>
+                            <td>
+                                <button ng-hide="screeningToolRedFlag.progressDate != '' || screeningToolRedFlag.dateResolved != ''" type="submit" ng-click="setRedFlagInProgress(screeningToolRedFlag.uuid)" class="btn btn-primary">IN PROGRESS</button>&nbsp;
+                                <button ng-hide="screeningToolRedFlag.dateResolved != ''" type="submit" ng-click="setRedFlagResolved(screeningToolRedFlag.uuid)" class="btn btn-warning">RESOLVED</button>&nbsp;
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div  class="row">
+                <div class="col-lg-8">
+                    <ul ng-show="screeningToolRedFlagPages > 1" uib-pagination total-items="screeningToolRedFlagTotalItems" ng-model="screeningToolRedFlagCurrentPage" max-size="maxSize" ng-change="screeningToolRedFlagPagination(screeningToolRedFlagCurrentPage)"
+                        items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
+                </div>
+            </div>
+        </uib-tab>
+    </uib-tabset>
+    <div>
+
+    </div>
+</div>

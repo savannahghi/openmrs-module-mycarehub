@@ -19,7 +19,7 @@ public class Constants {
 	
 	/** Time based oauth2.0 token for myCareHub backend server. **/
 	public final static String GP_MYCAREHUB_API_TOKEN = "mycarehub.api.token";
-
+	
 	/** Date-time when the current token expires. **/
 	public final static String GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME = "mycarehub.api.token.expiry";
 	
@@ -48,5 +48,67 @@ public class Constants {
 		public static final String MYCAREHUB_CLIENT_REGISTRATIONS = "MYCAREHUB_CLIENT_REGISTRATIONS";
 		
 		public static final String PATIENT_APPOINTMENTS = "PATIENT_APPOINTMENTS";
+		
+		public static final String PATIENT_APPOINTMENTS_REQUESTS_POST = "PATIENT_APPOINTMENTS_REQUESTS_POST";
+		
+		public static final String PATIENT_RED_FLAGS_REQUESTS_POST = "PATIENT_RED_FLAGS_REQUESTS_POST";
+		
+		public static final String PATIENT_APPOINTMENTS_REQUESTS_GET = "PATIENT_APPOINTMENTS_REQUESTS_GET";
+		
+		public static final String PATIENT_RED_FLAGS_REQUESTS_GET = "PATIENT_RED_FLAGS_REQUESTS_GET";
+		
+		public static final String PATIENT_HEALTH_DIARY_GET = "PATIENT_HEALTH_DIARY_GET";
+		
+	}
+	
+	public static final class MedicalRecordConcepts {
+		
+		public static final class VitalSigns {
+			
+			public static final int PULSE = 5087;
+			
+			public static final int TEMPERATURE = 5088;
+			
+			public static final int WEIGHT = 5089;
+			
+			public static final int HEIGHT = 5090;
+			
+			public static final int BMI = 1342;
+			
+			public static final int SPO2 = 5092;
+			
+			public static final int CD4_COUNT = 5497;
+			
+			public static final int VIRAL_LOAD = 856;
+			
+			public static final int RESPIRATORY_RATE = 5242;
+		}
+		
+		public static final class Tests {
+			
+			public static final int WIDAL = 306;
+			
+			public static final int HIV_POLYMERASE = 1030;
+			
+			public static final int TESTS_ORDERED = 1271;
+		}
+		
+		public static final class Medications {
+			
+			public static final int REGIMEN = 164855;
+		}
+		
+		public static final class Allergies {
+			
+			public static final int ALLERGEN = 160643;
+			
+			public static final int ALLERGY_REACTION = 160646;
+			
+			public static final int ALLERGY_OTHER_REACTION = 160644;
+			
+			public static final int ALLERGY_SEVERITY = 160759;
+			
+			public static final int ALLERGY_DATE = 160753;
+		}
 	}
 }

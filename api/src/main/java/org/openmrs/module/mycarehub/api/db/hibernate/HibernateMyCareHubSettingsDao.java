@@ -1,6 +1,7 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
@@ -22,6 +23,8 @@ public class HibernateMyCareHubSettingsDao implements MyCareHubSettingsDao {
 		Criteria criteria = session().createCriteria(mappedClass);
 		criteria.add(Restrictions.eq("settingType", settingType));
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
+		criteria.addOrder(Order.desc("dateCreated"));
+		criteria.setMaxResults(1);
 		return (MyCareHubSetting) criteria.uniqueResult();
 	}
 	

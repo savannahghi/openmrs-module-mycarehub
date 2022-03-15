@@ -6,30 +6,28 @@ import java.util.Date;
 
 public class HealthDiary extends BaseOpenmrsData {
 	
-	private int patientId;
+	private Integer id;
+	
+	private String cccNumber;
 	
 	private String mood;
 	
-	private String elaboration;
+	private String note;
 	
 	private Date dateRecorded;
 	
+	private String entryType;
+	
+	private Date sharedOn;
+	
 	@Override
 	public Integer getId() {
-		return null;
+		return id;
 	}
 	
 	@Override
-	public void setId(Integer integer) {
-		
-	}
-	
-	public int getPatientId() {
-		return patientId;
-	}
-	
-	public void setPatientId(int patientId) {
-		this.patientId = patientId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	
 	public String getMood() {
@@ -40,19 +38,43 @@ public class HealthDiary extends BaseOpenmrsData {
 		this.mood = mood;
 	}
 	
-	public String getElaboration() {
-		return elaboration;
-	}
-	
-	public void setElaboration(String elaboration) {
-		this.elaboration = elaboration;
-	}
-	
 	public Date getDateRecorded() {
 		return dateRecorded;
 	}
 	
 	public void setDateRecorded(Date dateRecorded) {
 		this.dateRecorded = dateRecorded;
+	}
+	
+	public String getCccNumber() {
+		return cccNumber;
+	}
+	
+	public void setCccNumber(String cccNumber) {
+		this.cccNumber = cccNumber;
+	}
+	
+	public String getNote() {
+		return note;
+	}
+	
+	public void setNote(String note) {
+		this.note = note;
+	}
+	
+	public String getEntryType() {
+		return entryType;
+	}
+	
+	public void setEntryType(String entryType) {
+		this.entryType = entryType;
+	}
+	
+	public Date getSharedOn() {
+		return sharedOn;
+	}
+	
+	public void setSharedOn(Date sharedOn) {
+		this.sharedOn = sharedOn;
 	}
 }

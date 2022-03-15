@@ -61,14 +61,14 @@
     <bean parent="serviceContext">
         <property name="moduleService">
             <list>
-                <value>org.openmrs.module.mycarehub.api.service.AppointmentRequestsService</value>
+                <value>org.openmrs.module.mycarehub.api.service.AppointmentService</value>
                 <bean
                         class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
                     <property name="transactionManager">
                         <ref bean="transactionManager" />
                     </property>
                     <property name="target">
-                        <bean class="org.openmrs.module.mycarehub.api.service.impl.AppointmentRequestsServiceImpl">
+                        <bean class="org.openmrs.module.mycarehub.api.service.impl.AppointmentServiceImpl">
                             <constructor-arg name="dao" ref="appointmentRequestsDAO"/>
                         </bean>
                     </property>
@@ -82,10 +82,66 @@
             </list>
         </property>
     </bean>
-    <bean id="appointmentRequestsDAO" class="org.openmrs.module.mycarehub.api.db.hibernate.HibernateAppointmentRequestsDao">
+    <bean id="appointmentRequestsDAO" class="org.openmrs.module.mycarehub.api.db.hibernate.HibernateAppointmentDao">
         <constructor-arg ref="dbSessionFactory"/>
     </bean>
     <bean id="myCareHubPatientDao" class="org.openmrs.module.mycarehub.api.db.hibernate.HibernateMyCareHubPatientDao">
+        <constructor-arg ref="dbSessionFactory"/>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>org.openmrs.module.mycarehub.api.service.RedFlagService</value>
+                <bean
+                        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+                    <property name="transactionManager">
+                        <ref bean="transactionManager" />
+                    </property>
+                    <property name="target">
+                        <bean class="org.openmrs.module.mycarehub.api.service.impl.RedFlagServiceImpl">
+                            <constructor-arg name="dao" ref="redFlagDao"/>
+                        </bean>
+                    </property>
+                    <property name="preInterceptors">
+                        <ref bean="serviceInterceptors" />
+                    </property>
+                    <property name="transactionAttributeSource">
+                        <ref bean="transactionAttributeSource" />
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    <bean id="redFlagDao" class="org.openmrs.module.mycarehub.api.db.hibernate.HibernateMyCareHubRedFlagDao">
+        <constructor-arg ref="dbSessionFactory"/>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>org.openmrs.module.mycarehub.api.service.HealthDiaryService</value>
+                <bean
+                        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+                    <property name="transactionManager">
+                        <ref bean="transactionManager" />
+                    </property>
+                    <property name="target">
+                        <bean class="org.openmrs.module.mycarehub.api.service.impl.HealthDiaryServiceImpl">
+                            <constructor-arg name="dao" ref="healthDiaryDao"/>
+                        </bean>
+                    </property>
+                    <property name="preInterceptors">
+                        <ref bean="serviceInterceptors" />
+                    </property>
+                    <property name="transactionAttributeSource">
+                        <ref bean="transactionAttributeSource" />
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    <bean id="healthDiaryDao" class="org.openmrs.module.mycarehub.api.db.hibernate.HibernateHealthDiaryDao">
         <constructor-arg ref="dbSessionFactory"/>
     </bean>
 </beans>
