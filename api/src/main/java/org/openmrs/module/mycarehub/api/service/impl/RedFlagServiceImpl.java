@@ -36,6 +36,11 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	}
 	
 	@Override
+	public RedFlags getRedFlagByUuid(String uuid) {
+		return dao.getRedFlagByUuid(uuid);
+	}
+	
+	@Override
 	public List<RedFlags> getAllRedFlagRequestsByLastSyncDate(Date lastSyncDate) {
 		return dao.getAllRedFlagRequestsByLastSyncDate(lastSyncDate);
 	}
@@ -47,6 +52,11 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	
 	@Override
 	public List<RedFlags> saveRedFlagRequests(List<RedFlags> redFlags) {
+		return dao.saveRedFlagRequests(redFlags);
+	}
+	
+	@Override
+	public RedFlags saveRedFlagRequests(RedFlags redFlags) {
 		return dao.saveRedFlagRequests(redFlags);
 	}
 	
@@ -93,7 +103,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 					redFlagArray.add(redFlagObject);
 				}
 				
-				containerObject.add("appointment-request", redFlagArray);
+				containerObject.add("redFlags", redFlagArray);
 				
 				postPatientRedFlags(containerObject, newSyncDate);
 				
