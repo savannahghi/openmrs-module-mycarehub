@@ -22,7 +22,6 @@ import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.uploadPatientAppo
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 
@@ -120,16 +119,10 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				uploadPatientAppointments(containerObject, newSyncDate);
 				
 			} else {
-				setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_APPOINTMENTS);
-				setting.setLastSyncTime(newSyncDate);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS, newSyncDate);
 			}
 		} else {
-			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
-			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_APPOINTMENTS);
-			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
+			settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS, new Date());
 		}
 	}
 	
@@ -176,16 +169,10 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				uploadPatientAppointments(containerObject, newSyncDate);
 				
 			} else {
-				setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
-				setting.setLastSyncTime(newSyncDate);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);
 			}
 		} else {
-			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
-			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
-			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
+			settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, new Date());
 		}
 	}
 	
@@ -202,10 +189,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			
 			fetchPatientAppointments(jsonObject, newSyncDate);
 		} else {
-			MyCareHubSetting newPatientAppointmengtSyncDateSetting = new MyCareHubSetting();
-			newPatientAppointmengtSyncDateSetting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_GET);
-			newPatientAppointmengtSyncDateSetting.setLastSyncTime(new Date());
-			settingsService.saveMyCareHubSettings(newPatientAppointmengtSyncDateSetting);
+			settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_GET, new Date());
 		}
 	}
 	
