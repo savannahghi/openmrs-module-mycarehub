@@ -29,15 +29,7 @@ import java.util.List;
 
 import java.util.Date;
 
-import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
-import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_DEFAULT_LOCATION_MFL_CODE;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_PASSWORD;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_USERNAME;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_PASSWORD;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
+import static org.openmrs.module.mycarehub.utils.Constants.*;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 
 public class MyCareHubUtil {
@@ -64,6 +56,11 @@ public class MyCareHubUtil {
 	public static String getApiToken() {
 		AdministrationService as = Context.getAdministrationService();
 		return as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
+	}
+
+	public static String getApiTokenExpiryTime() {
+		AdministrationService as = Context.getAdministrationService();
+		return as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, EMPTY);
 	}
 	
 	public static void authenticateMyCareHub() {
