@@ -8,6 +8,7 @@ import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.mycarehub.api.db.MyCareHubRedFlagDao;
 import org.openmrs.module.mycarehub.model.RedFlags;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,13 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 		Criteria criteria = session().createCriteria(RedFlags.class);
 		criteria.add(Restrictions.eq("voided", false));
 		return criteria.list();
+	}
+	
+	@Override
+	public RedFlags getRedFlagByUuid(String uuid) {
+		Criteria criteria = session().createCriteria(RedFlags.class);
+		criteria.add(Restrictions.eq("uuid", uuid));
+		return (RedFlags) criteria.uniqueResult();
 	}
 	
 	@Override
@@ -54,9 +62,17 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 	}
 	
 	@Override
+	@Transactional
 	public List<RedFlags> saveRedFlagRequests(List<RedFlags> redFlags) {
 		session().saveOrUpdate(redFlags);
 		return redFlags;
+	}
+	
+	@Override
+	@Transactional
+	public RedFlags saveRedFlagRequests(RedFlags redFlag) {
+		session().saveOrUpdate(redFlag);
+		return redFlag;
 	}
 	
 	@Override
