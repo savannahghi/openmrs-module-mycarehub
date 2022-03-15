@@ -21,16 +21,22 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
         $('#wait').hide();
     });
 
+    $scope.appointmentPagination = function (appointmentsCurrentPage) {
+        $('#wait').show();
+        $scope.appointmentsCurrentPage = appointmentsCurrentPage;
+        $serviceRequests.getAppointmentRequests($scope.appointmentsCurrentPage, $scope.pageSize).
+        then(function (response) {
+            var serverData = response.data;
+            $scope.appointmentRequests = serverData.objects;
+            $scope.appointmentPages = serverData.pages;
+            $scope.appointmentsTotalItems = serverData.totalItems;
+            $('#wait').hide();
+        });
+    };
+
     $scope.$watch('appointmentsCurrentPage', function (newValue, oldValue) {
         if (newValue != oldValue) {
-            $serviceRequests.getAppointmentRequests($scope.appointmentsCurrentPage, $scope.pageSize).
-            then(function (response) {
-                var serverData = response.data;
-                $scope.appointmentRequests = serverData.objects;
-                $scope.appointmentPages = serverData.pages;
-                $scope.appointmentsTotalItems = serverData.totalItems;
-                $('#wait').hide();
-            });
+
         }
     }, true);
 
@@ -44,20 +50,18 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
         $('#wait').hide();
     });
 
-    $scope.$watch('healthDiaryCurrentPage', function (newValue, oldValue) {
-        if (newValue != oldValue) {
-            $serviceRequests.getHealthDiaries($scope.healthDiaryCurrentPage, $scope.pageSize).
-            then(function (response) {
-                var serverData = response.data;
-                $scope.healthDiaries = serverData.objects;
-                $scope.healthDiariesPages = serverData.pages;
-                $scope.healthDiariesTotalItems = serverData.totalItems;
-                $('#wait').hide();
-            });
-        }
-    }, true);
-
-
+    $scope.healthDiaryPagination = function (healthDiaryCurrentPage) {
+        $('#wait').show();
+        $scope.healthDiaryCurrentPage = healthDiaryCurrentPage;
+        $serviceRequests.getHealthDiaries($scope.healthDiaryCurrentPage, $scope.pageSize).
+        then(function (response) {
+            var serverData = response.data;
+            $scope.healthDiaries = serverData.objects;
+            $scope.healthDiariesPages = serverData.pages;
+            $scope.healthDiariesTotalItems = serverData.totalItems;
+            $('#wait').hide();
+        });
+    };
 //Red Flags
     $serviceRequests.getServiceRequests("RED_FLAG", $scope.redFlagCurrentPage, $scope.pageSize).
     then(function (response) {
@@ -68,18 +72,18 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
         $('#wait').hide();
     });
 
-    $scope.$watch('redFlagCurrentPage', function (newValue, oldValue) {
-        if (newValue != oldValue) {
-            $serviceRequests.getHealthDiaries($scope.redFlagCurrentPage, $scope.pageSize).
-            then(function (response) {
-                var serverData = response.data;
-                $scope.redFlags = serverData.objects;
-                $scope.redFlagsPages = serverData.pages;
-                $scope.redFlagsTotalItems = serverData.totalItems;
-                $('#wait').hide();
-            });
-        }
-    }, true);
+    $scope.redFlagPagination = function (redFlagCurrentPage) {
+        $('#wait').show();
+        $scope.redFlagCurrentPage = redFlagCurrentPage;
+        $serviceRequests.getServiceRequests("RED_FLAG", $scope.redFlagCurrentPage, $scope.pageSize).
+        then(function (response) {
+            var serverData = response.data;
+            $scope.redFlags = serverData.objects;
+            $scope.redFlagsPages = serverData.pages;
+            $scope.redFlagsTotalItems = serverData.totalItems;
+            $('#wait').hide();
+        });
+    };
 
 //Screening Tool Red Flags
     $serviceRequests.getServiceRequests("SCREENING_TOOL_RED_FLAG", $scope.screeningToolRedFlagCurrentPage, $scope.pageSize).
@@ -91,18 +95,18 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
         $('#wait').hide();
     });
 
-    $scope.$watch('screeningToolRedFlagCurrentPage', function (newValue, oldValue) {
-        if (newValue != oldValue) {
-            $serviceRequests.getServiceRequests("SCREENING_TOOL_RED_FLAG", $scope.screeningToolRedFlagCurrentPage, $scope.pageSize).
-            then(function (response) {
-                var serverData = response.data;
-                $scope.screeningToolRedFlags = serverData.objects;
-                $scope.screeningToolRedFlagPages = serverData.pages;
-                $scope.screeningToolRedFlagTotalItems = serverData.totalItems;
-                $('#wait').hide();
-            });
-        }
-    }, true);
+    $scope.screeningToolRedFlagPagination = function (screeningToolRedFlagCurrentPage) {
+        $('#wait').show();
+        $scope.screeningToolRedFlagCurrentPage = screeningToolRedFlagCurrentPage;
+        $serviceRequests.getServiceRequests("SCREENING_TOOL_RED_FLAG", $scope.screeningToolRedFlagCurrentPage, $scope.pageSize).
+        then(function (response) {
+           var serverData = response.data;
+           $scope.screeningToolRedFlags = serverData.objects;
+           $scope.screeningToolRedFlagPages = serverData.pages;
+           $scope.screeningToolRedFlagTotalItems = serverData.totalItems;
+           $('#wait').hide();
+        });
+    };
 
     //Setting status for redflags
      $scope.setRedFlagInProgress = function (uuid) {
