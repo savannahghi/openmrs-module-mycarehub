@@ -56,15 +56,16 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		this.myCareHubPatientDao = myCareHubPatientDao;
 	}
 	
+	@Override
 	public void syncPatientData() {
 		uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate();
 		fetchRegisteredClientIdentifiersSinceLastSyncDate();
 		uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate();
 	}
 	
-	private void uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate() {
+	public void uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(KENYAEMR_PATIENT_REGISTRATIONS);
+		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(KENYAEMR_PATIENT_REGISTRATIONS);
 		
 		if (setting != null) {
 			List<PatientRegistrationRequest> patientRegistrationRequests = new ArrayList<PatientRegistrationRequest>();
@@ -147,7 +148,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	
 	private void fetchRegisteredClientIdentifiersSinceLastSyncDate() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(MYCAREHUB_CLIENT_REGISTRATIONS);
+		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(MYCAREHUB_CLIENT_REGISTRATIONS);
 		Date lastSyncTime = new Date(0);
 		if (setting != null) {
 			lastSyncTime = setting.getLastSyncTime();
@@ -171,7 +172,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	
 	private void uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(KENYAEMR_MEDICAL_RECORDS);
+		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(KENYAEMR_MEDICAL_RECORDS);
 		
 		Date newSyncTime = new Date();
 		if (setting != null) {
