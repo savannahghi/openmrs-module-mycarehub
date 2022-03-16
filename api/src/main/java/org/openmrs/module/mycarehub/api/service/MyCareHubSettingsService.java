@@ -7,7 +7,7 @@ import java.util.Date;
 
 public interface MyCareHubSettingsService extends OpenmrsService {
 	
-	MyCareHubSetting getMyCareHubSettingByType(String settingType);
+	MyCareHubSetting getLatestMyCareHubSettingByType(String settingType);
 	
 	MyCareHubSetting createMyCareHubSetting(String settingType, Date syncDate);
 }

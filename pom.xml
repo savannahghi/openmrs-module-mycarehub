@@ -27,7 +27,7 @@
 	</modules>
 
     <properties>
-		<openMRSVersion>2.3.3</openMRSVersion>
+		<openMRSVersion>1.12.0</openMRSVersion>
 		<webservicesRestVersion>2.1</webservicesRestVersion>
 		<appointmentschedulingVersion>1.13.0</appointmentschedulingVersion>
 		<retrofitVersion>2.9.0</retrofitVersion>
@@ -158,7 +158,7 @@
 
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
-				<artifactId>appointmentscheduling-omod</artifactId>
+				<artifactId>appointmentscheduling-api</artifactId>
 				<version>${appointmentschedulingVersion}</version>
 				<type>jar</type>
 			</dependency>
@@ -193,7 +193,6 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 	<repositories>
 		<repository>
 			<id>openmrs-repo</id>

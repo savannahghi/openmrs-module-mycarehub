@@ -1,3 +1,11 @@
 package org.openmrs.module.mycarehub.utils;
 
-public class MyCareHubUtilTest {}
+import org.junit.Test;
+
+public class MyCareHubUtilTest {
+	
+	@Test
+	public void getNewMyCareHubClientCccIdentifiers_shouldCreateCorrectSyncTimeSetting() {
+		
+	}
+}
