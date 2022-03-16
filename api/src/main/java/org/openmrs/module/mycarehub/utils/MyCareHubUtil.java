@@ -8,18 +8,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.rest.ApiClient;
 import org.openmrs.module.mycarehub.api.rest.RestApiService;
-import org.openmrs.module.mycarehub.api.rest.mapper.*;
-import org.openmrs.module.mycarehub.api.service.AppointmentService;
-import org.openmrs.module.mycarehub.api.service.HealthDiaryService;
+import org.openmrs.module.mycarehub.api.rest.mapper.ApiError;
+import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.exception.AuthenticationException;
-import org.openmrs.module.mycarehub.model.AppointmentRequests;
-import org.openmrs.module.mycarehub.model.HealthDiary;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -29,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
@@ -96,7 +100,7 @@ public class MyCareHubUtil {
 		String expiryTime = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, EMPTY);
 		String token = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
 		// Check if we have an expiry time.
-		if (!expiryTime.isEmpty() && !token.isEmpty()) {
+		if (expiryTime != null && !expiryTime.isEmpty() && token != null && !token.isEmpty()) {
 			//check if its past now or within 5 secs of expiring due to latency in making calls
 			try {
 				Date dtExpiryTime = dateTimeFormat.parse(expiryTime);
@@ -155,7 +159,7 @@ public class MyCareHubUtil {
 			}
 		}
 		catch (Throwable throwable) {
-			throw new AuthenticationException(throwable.getMessage());
+			throw new AuthenticationException(throwable);
 		}
 	}
 	
@@ -199,7 +203,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static List<String> getNewMyCareHubClientCccIdentifiers(Date lastSynyTime) {
+	public static List<String> getNewMyCareHubClientCccIdentifiers(Date lastSycTime, Date newSyncTime) {
 		List<String> cccList = new ArrayList<String>();
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
@@ -209,14 +213,15 @@ public class MyCareHubUtil {
 		
 		try {
 			String facility = getDefaultLocationMflCode();
+			
 			String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 			SimpleDateFormat sf = new SimpleDateFormat(pattern);
 			
-			Date newSyncTime = new Date();
 			Call<NewClientsIdentifiersResponse> call = restApiService.getNewClientsIdentifiers(getApiToken(),
-			    new NewClientsIdentifiersRequest(facility, sf.format(lastSynyTime)));
+			    new NewClientsIdentifiersRequest(facility, sf.format(lastSycTime)));
 			
 			Response<NewClientsIdentifiersResponse> response = call.execute();
+			System.out.println("The response is: " + response.isSuccessful());
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS,
 				    newSyncTime);
@@ -238,7 +243,7 @@ public class MyCareHubUtil {
 			}
 		}
 		catch (Throwable throwable) {
-			log.error("Error uploading patient registration record: " + throwable.getMessage());
+			log.error("Error uploading patient registration record: ", throwable);
 		}
 		return cccList;
 	}

@@ -23,6 +23,7 @@ import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -154,7 +155,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			lastSyncTime = setting.getLastSyncTime();
 		}
 		
-		List<String> patientCccs = MyCareHubUtil.getNewMyCareHubClientCccIdentifiers(lastSyncTime);
+		List<String> patientCccs = MyCareHubUtil.getNewMyCareHubClientCccIdentifiers(lastSyncTime, new Date());
 		
 		List<Patient> patients = new ArrayList<Patient>();
 		
@@ -164,10 +165,14 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				patients.addAll(patientsWithCcc);
 			}
 		}
-		Date veryOldLastSyncTime = new Date(0);//to allow retrieval of all historical records
+
+		//set last sync time to 3 years back, to get historical records for the period
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, 3);
+		lastSyncTime = cal.getTime();
 		Date newSyncTime = new Date();
 		
-		uploadPatientsMedicalRecordsSinceDate(patients, veryOldLastSyncTime, newSyncTime);
+		uploadPatientsMedicalRecordsSinceDate(patients, lastSyncTime, newSyncTime);
 	}
 	
 	private void uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate() {
