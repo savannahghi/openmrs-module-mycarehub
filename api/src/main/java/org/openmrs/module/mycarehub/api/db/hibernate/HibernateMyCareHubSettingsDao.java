@@ -23,7 +23,7 @@ public class HibernateMyCareHubSettingsDao implements MyCareHubSettingsDao {
 		Criteria criteria = session().createCriteria(mappedClass);
 		criteria.add(Restrictions.eq("settingType", settingType));
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
-		criteria.addOrder(Order.desc("dateCreated"));
+		criteria.addOrder(Order.desc("lastSyncTime"));
 		criteria.setMaxResults(1);
 		return (MyCareHubSetting) criteria.uniqueResult();
 	}

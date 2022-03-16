@@ -2,7 +2,10 @@ package org.openmrs.module.mycarehub.api.service.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointmentscheduling.Appointment;
@@ -19,17 +22,24 @@ import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocatio
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getcccPatientIdentifierType;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.uploadPatientAppointments;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 
 public class AppointmentServiceImpl extends BaseOpenmrsService implements AppointmentService {
 	
-	AppointmentDao dao;
+	private static final Log log = LogFactory.getLog(AppointmentServiceImpl.class);
 	
-	SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+	private AppointmentDao dao;
+	
+	private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+	
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public AppointmentServiceImpl(AppointmentDao dao) {
 		this.dao = dao;
@@ -83,7 +93,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	@Override
 	public void syncPatientAppointments() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(PATIENT_APPOINTMENTS);
+		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS);
 		if (setting != null) {
 			List<Appointment> appointments = dao.getAppointmentsByLastSyncDate(setting.getLastSyncTime());
 			Date newSyncDate = new Date();
@@ -129,7 +139,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	@Override
 	public void syncPatientAppointmentRequests() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(PATIENT_APPOINTMENTS_REQUESTS_POST);
+		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS_REQUESTS_POST);
 		if (setting != null) {
 			List<AppointmentRequests> appointmentRequests = dao.getAllAppointmentRequestsByLastSyncDate(setting
 			        .getLastSyncTime());
@@ -179,7 +189,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	@Override
 	public void fetchPatientAppointmentRequests() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-		MyCareHubSetting setting = settingsService.getMyCareHubSettingByType(PATIENT_APPOINTMENTS_REQUESTS_GET);
+		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS_REQUESTS_GET);
 		if (setting != null) {
 			Date newSyncDate = new Date();
 			
@@ -187,7 +197,65 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
 			jsonObject.addProperty("lastSyncTime", dateTimeFormat.format(setting.getLastSyncTime()));
 			
-			fetchPatientAppointments(jsonObject, newSyncDate);
+			JsonArray jsonArray = fetchPatientAppointments(jsonObject, newSyncDate);
+			
+			List<AppointmentRequests> appointmentRequests = new ArrayList<AppointmentRequests>();
+			for (int i = 0; i < jsonArray.size(); i++) {
+				JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
+				AppointmentRequests appointmentRequest = new AppointmentRequests();
+				String mycarehubId = jsonObject1.get("ID").toString();
+				AppointmentRequests existingRequests = getAppointmentRequestByMycarehubId(mycarehubId);
+				if (existingRequests != null && existingRequests.getMycarehubId() != null) {
+					appointmentRequest = existingRequests;
+				} else {
+					appointmentRequest.setCreator(new User(1));
+					appointmentRequest.setDateCreated(new Date());
+					appointmentRequest.setUuid(UUID.randomUUID().toString());
+					appointmentRequest.setVoided(false);
+				}
+				
+				appointmentRequest.setAppointmentUUID(jsonObject1.get("appointmentUuid").toString());
+				appointmentRequest.setMycarehubId(jsonObject1.get("ID").toString());
+				appointmentRequest.setAppointmentType(jsonObject1.get("AppointmentType").toString());
+				appointmentRequest.setAppointmentReason(jsonObject1.get("AppointmentReason").toString());
+				appointmentRequest.setProvider(jsonObject1.get("AppointmentReason").toString());
+				appointmentRequest.setAppointmentReason(jsonObject1.get("Provider").toString());
+				appointmentRequest.setRequestedTimeSlot(jsonObject1.get("SuggestedTime").toString());
+				try {
+					appointmentRequest.setRequestedDate(dateFormat.parse(jsonObject1.get("SuggestedDate").getAsString()));
+				}
+				catch (ParseException e) {
+					log.error("Cannot parse SuggestedDate date", e);
+				}
+				appointmentRequest.setStatus(jsonObject1.get("Status").toString());
+				if (jsonObject1.get("InProgressAt").toString() != null) {
+					try {
+						appointmentRequest.setProgressDate(dateFormat.parse(jsonObject1.get("InProgressAt").toString()));
+					}
+					catch (ParseException e) {
+						log.error("Cannot parse InProgressAt date", e);
+					}
+				}
+				appointmentRequest.setProgressBy(jsonObject1.get("InProgressBy").toString());
+				if (jsonObject1.get("ResolvedAt").toString() != null) {
+					try {
+						appointmentRequest.setProgressDate(dateFormat.parse(jsonObject1.get("ResolvedAt").toString()));
+					}
+					catch (ParseException e) {
+						log.error("Cannot parse ResolvedAt date", e);
+					}
+				}
+				
+				appointmentRequest.setResolvedBy(jsonObject1.get("ResolvedBy").toString());
+				appointmentRequest.setClientName(jsonObject1.get("ClientName").toString());
+				appointmentRequest.setClientContact(jsonObject1.get("ClientContact").toString());
+				appointmentRequest.setCccNumber(jsonObject1.get("CCCNumber").toString());
+				appointmentRequest.setMflCode(jsonObject1.get("MFLCODE").toString());
+				
+				appointmentRequests.add(appointmentRequest);
+				
+			}
+			saveAppointmentRequests(appointmentRequests);
 		} else {
 			settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_GET, new Date());
 		}

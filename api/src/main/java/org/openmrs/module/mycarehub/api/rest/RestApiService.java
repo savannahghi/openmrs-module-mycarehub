@@ -33,35 +33,40 @@ public interface RestApiService {
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@GET("clients")
-	Call<NewClientsIdentifiersResponse> getNewClientsIdentifiers(@Body NewClientsIdentifiersRequest request);
+	Call<NewClientsIdentifiersResponse> getNewClientsIdentifiers(@Header("Authorization") String authorization,
+	        @Body NewClientsIdentifiersRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("appointment")
-	Call<AppointmentResponse> uploadPatientAppointments(@Body JsonObject request);
+	Call<AppointmentResponse> uploadPatientAppointments(@Header("Authorization") String authorization,
+	        @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("appointment-service-request")
-	Call<AppointmentResponse> uploadPatientAppointmentRequests(@Body JsonObject request);
+	Call<AppointmentResponse> uploadPatientAppointmentRequests(@Header("Authorization") String authorization,
+	        @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@GET("appointment-service-request")
-	Call<JsonObject> fetchPatientAppointmentRequests(@Body JsonObject request);
+	Call<JsonObject> fetchPatientAppointmentRequests(@Header("Authorization") String authorization, @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("red-flag-service-request")
-	Call<RedFlagResponse> postPatientRedFlags(@Body JsonObject request);
+	Call<RedFlagResponse> postPatientRedFlags(@Header("Authorization") String authorization, @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@GET("red-flag-service-request")
-	Call<JsonObject> fetchPatientRedFlags(@Body JsonObject request);
+	Call<JsonObject> fetchPatientRedFlags(@Header("Authorization") String authorization, @Body JsonObject request);
 	
 	@POST("obs")
-	Call<MedicalRecordResponse> uploadMedicalRecord(@Body MedicalRecordRequest request);
+	Call<MedicalRecordResponse> uploadMedicalRecord(@Header("Authorization") String authorization,
+	        @Body MedicalRecordRequest request);
 	
 	@POST("obs")
-	Call<MedicalRecordResponse> uploadMedicalRecords(@Body List<MedicalRecordRequest> request);
+	Call<MedicalRecordResponse> uploadMedicalRecords(@Header("Authorization") String authorization,
+	        @Body List<MedicalRecordRequest> request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@GET("appointment-service-request")
-	Call<JsonObject> fetchPatientHealthDiaries(@Body JsonObject request);
+	Call<JsonObject> fetchPatientHealthDiaries(@Header("Authorization") String authorization, @Body JsonObject request);
 }

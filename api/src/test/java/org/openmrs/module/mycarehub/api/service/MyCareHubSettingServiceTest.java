@@ -9,11 +9,9 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.util.Date;
 
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
-
 public class MyCareHubSettingServiceTest extends BaseModuleContextSensitiveTest {
 	
-	MyCareHubSettingsService settingsService = null;
+	MyCareHubSettingsService settingsService;
 	
 	@Before
 	public void setup() throws Exception {
@@ -25,13 +23,22 @@ public class MyCareHubSettingServiceTest extends BaseModuleContextSensitiveTest 
 	@Test
 	public void createMyCareHubSetting_shouldCreateSettingOfMatchingTypeAndDate() {
 		Date syncDate = new Date();
-		MyCareHubSetting myCareHubSetting = settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, syncDate);
+		String settingType = "dummySettingType";
+		MyCareHubSetting myCareHubSetting = settingsService.createMyCareHubSetting(settingType, syncDate);
 		Assert.assertEquals(syncDate, myCareHubSetting.getLastSyncTime());
-		Assert.assertEquals(KENYAEMR_PATIENT_REGISTRATIONS, myCareHubSetting.getSettingType());
+		Assert.assertEquals(settingType, myCareHubSetting.getSettingType());
 	}
 	
-	//	@Test
-	//	public void getLatestSettingForLocalPatientRegistrations_shouldGetLatestSettingOfMatchingType() {
-	//
-	//	}
+	@Test
+	public void getMyCareHubSettingByType_shouldGetLatestSettingBySyncTime() {
+		String settingType = "dummySettingType";
+		MyCareHubSetting myCareHubSetting1 = settingsService.createMyCareHubSetting(settingType, new Date(1000000));
+		Assert.assertEquals(myCareHubSetting1, settingsService.getLatestMyCareHubSettingByType(settingType));
+		
+		MyCareHubSetting myCareHubSetting2 = settingsService.createMyCareHubSetting(settingType, new Date());
+		Assert.assertEquals(myCareHubSetting2, settingsService.getLatestMyCareHubSettingByType(settingType));
+		
+		settingsService.createMyCareHubSetting(settingType, new Date(0));
+		Assert.assertEquals(myCareHubSetting2, settingsService.getLatestMyCareHubSettingByType(settingType));
+	}
 }
