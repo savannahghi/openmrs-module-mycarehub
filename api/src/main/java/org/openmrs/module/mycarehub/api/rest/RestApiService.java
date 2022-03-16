@@ -14,6 +14,7 @@ import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
@@ -27,7 +28,8 @@ public interface RestApiService {
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("client_registration")
-	Call<PatientRegistrationResponse> uploadPatientRegistrations(@Body List<PatientRegistrationRequest> request);
+	Call<PatientRegistrationResponse> uploadPatientRegistrations(@Header("Authorization") String authorization,
+	        @Body List<PatientRegistrationRequest> request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@GET("clients")

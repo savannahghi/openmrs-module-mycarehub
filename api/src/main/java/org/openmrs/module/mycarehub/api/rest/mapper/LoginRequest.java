@@ -7,11 +7,15 @@ public class LoginRequest {
 	@SerializedName("email")
 	private String email;
 	
+	@SerializedName("username")
+	private String username;
+	
 	@SerializedName("password")
 	private String password;
 	
-	public LoginRequest(String email, String password) {
+	public LoginRequest(String email, String username, String password) {
 		this.email = email;
+		this.username = username;
 		this.password = password;
 	}
 	
@@ -21,6 +25,14 @@ public class LoginRequest {
 	
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	public String getPassword() {

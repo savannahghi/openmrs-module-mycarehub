@@ -13,20 +13,12 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.rest.ApiClient;
 import org.openmrs.module.mycarehub.api.rest.RestApiService;
-import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
-import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
-import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.*;
 import org.openmrs.module.mycarehub.api.service.AppointmentService;
 import org.openmrs.module.mycarehub.api.service.HealthDiaryService;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.api.service.RedFlagService;
+import org.openmrs.module.mycarehub.exception.AuthenticationException;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
 import org.openmrs.module.mycarehub.model.HealthDiary;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
@@ -34,12 +26,12 @@ import org.openmrs.module.mycarehub.model.RedFlags;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
+import static org.openmrs.module.mycarehub.utils.Constants.*;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_DEFAULT_LOCATION_MFL_CODE;
@@ -80,7 +72,9 @@ public class MyCareHubUtil {
 	
 	private static final Log log = LogFactory.getLog(MyCareHubUtil.class);
 	
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	
+	private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	public static String getApiUrl() {
 		AdministrationService as = Context.getAdministrationService();
@@ -97,50 +91,69 @@ public class MyCareHubUtil {
 		return as.getGlobalProperty(GP_MYCAREHUB_API_PASSWORD, GP_MYCAREHUB_API_DEFAULT_PASSWORD);
 	}
 	
-	public static String getApiToken() {
+	public static String getApiToken() throws AuthenticationException {
 		AdministrationService as = Context.getAdministrationService();
-		return as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
+		String expiryTime = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, EMPTY);
+		String token = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
+		// Check if we have an expiry time.
+		if (!expiryTime.isEmpty() && !token.isEmpty()) {
+			//check if its past now or within 5 secs of expiring due to latency in making calls
+			try {
+				Date dtExpiryTime = dateTimeFormat.parse(expiryTime);
+				Calendar calNow = Calendar.getInstance();
+				Calendar calExpiryTime = Calendar.getInstance();
+				calExpiryTime.setTime(dtExpiryTime);
+				calExpiryTime.add(Calendar.SECOND, -5);
+
+				if (calNow.before(calExpiryTime))
+					return token;
+			} catch (ParseException e) {
+				log.error(e.getMessage());
+			}
+		}
+		// if we are here we MUST get a new token and on failure return EMPTY
+		try {
+			authenticateMyCareHub();
+		} catch (AuthenticationException e) {
+			as.saveGlobalProperty(new GlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY));
+			as.saveGlobalProperty(new GlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, EMPTY));
+			throw e;
+		}
+		token = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
+		return token;
 	}
 	
-	public static void authenticateMyCareHub() {
+	public static void authenticateMyCareHub() throws AuthenticationException {
 		RestApiService restApiService = ApiClient.getRestService();
-		if (restApiService == null) {
-			log.error(TAG, new Throwable("Cant create REST API service"));
-			return;
-		}
+		if (restApiService == null)
+			throw new AuthenticationException("Cant create myCareHub REST API service");
 		
-		Call<LoginResponse> call = restApiService.login(new LoginRequest(getApiUsername(), getApiPassword()));
-		
+		Call<LoginResponse> call = restApiService.login(new LoginRequest(EMPTY, getApiUsername(), getApiPassword()));
 		try {
 			Response<LoginResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				log.error("Success subscription");
+				log.info("Successful authentication");
 				LoginResponse loginResponse = response.body();
 				if (loginResponse != null) {
-					Gson gson = new Gson();
-					log.error(gson.toJson(loginResponse));
+					Calendar cal = Calendar.getInstance();
+					cal.add(Calendar.SECOND, 3600);
+					Date dt = cal.getTime();
 					
 					AdministrationService as = Context.getAdministrationService();
-					//TODO: @Savai and @Mokaya I feel we should save this in settings
-					as.saveGlobalProperty(new GlobalProperty(GP_MYCAREHUB_API_TOKEN, loginResponse.getData().getToken()));
-				}
+					as.saveGlobalProperty(new GlobalProperty(GP_MYCAREHUB_API_TOKEN, loginResponse.getAccessToken()));
+					as.saveGlobalProperty(new GlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, dateTimeFormat.format(dt)));
+				} else
+					throw new AuthenticationException("Received a null response despite successfully authenticating");
 			} else {
-				try {
-					if (response.errorBody() != null) {
-						log.error(response.errorBody().charStream());
-					} else
-						log.error(response.message());
-				}
-				catch (NullPointerException e) {
-					log.error(response.message());
-				}
-				catch (JsonParseException e) {
-					log.error(response.message());
-				}
+				if (response.errorBody() != null) {
+					ApiError apiError = new Gson().fromJson(response.errorBody().charStream(), ApiError.class);
+					throw new AuthenticationException(apiError.getMessage());
+				} else
+					throw new AuthenticationException(response.message());
 			}
 		}
 		catch (Throwable throwable) {
-			log.error("Error authenticating: " + throwable.getMessage());
+			throw new AuthenticationException(throwable.getMessage());
 		}
 	}
 	
@@ -157,13 +170,13 @@ public class MyCareHubUtil {
 			return;
 		}
 		
-		Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(patientRegistrationRequests);
-		
 		try {
+			Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(getApiToken(),
+			    patientRegistrationRequests);
 			Response<PatientRegistrationResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
-				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS,
+				    newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -202,8 +215,8 @@ public class MyCareHubUtil {
 			Date newSyncTime = new Date();
 			Response<NewClientsIdentifiersResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS, newSyncTime);
-				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS,
+				    newSyncTime);
 				
 				cccList = response.body().getPatientsIdentifiers();
 			} else {
@@ -239,13 +252,8 @@ public class MyCareHubUtil {
 		try {
 			Response<AppointmentResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
-				setting.setLastSyncTime(newSyncTime);
-				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -278,12 +286,9 @@ public class MyCareHubUtil {
 		try {
 			Response<AppointmentResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_POST);
-				setting.setLastSyncTime(newSyncTime);
 				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -318,12 +323,10 @@ public class MyCareHubUtil {
 			if (response.isSuccessful()) {
 				AppointmentService appointmentService = Context.getService(AppointmentService.class);
 				
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_GET);
-				setting.setLastSyncTime(newSyncTime);
-				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_GET, newSyncTime);
+				
+				//ToDo: move logic to service
 				JsonObject jsonResponse = response.body().getAsJsonObject();
 				JsonArray jsonArray = jsonResponse.getAsJsonArray("appointments");
 				List<AppointmentRequests> appointmentRequests = new ArrayList<AppointmentRequests>();
@@ -401,12 +404,9 @@ public class MyCareHubUtil {
 		try {
 			Response<RedFlagResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_POST);
-				setting.setLastSyncTime(newSyncTime);
 				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -439,14 +439,12 @@ public class MyCareHubUtil {
 		try {
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
+				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
+				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_GET, newSyncTime);
+				
+				//ToDo: Move logic to service
 				RedFlagService redFlagService = Context.getService(RedFlagService.class);
 				
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_GET);
-				setting.setLastSyncTime(newSyncTime);
-				
-				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
 				JsonObject jsonResponse = response.body().getAsJsonObject();
 				JsonArray jsonArray = jsonResponse.getAsJsonArray("redFlags");
 				List<RedFlags> redFlags = new ArrayList<RedFlags>();
@@ -519,10 +517,8 @@ public class MyCareHubUtil {
 		try {
 			Response<MedicalRecordResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(KENYAEMR_MEDICAL_RECORDS);
-				setting.setLastSyncTime(newSyncTime);
-				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,
+				    newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -555,10 +551,8 @@ public class MyCareHubUtil {
 		try {
 			Response<MedicalRecordResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(KENYAEMR_MEDICAL_RECORDS);
-				setting.setLastSyncTime(newSyncTime);
-				Context.getService(MyCareHubSettingsService.class).saveMyCareHubSettings(setting);
+				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,
+				    newSyncTime);
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -591,15 +585,11 @@ public class MyCareHubUtil {
 		try {
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
-				HealthDiaryService healthDiaryService = Context.getService(HealthDiaryService.class);
-				
-				MyCareHubSetting setting = new MyCareHubSetting();
-				setting.setSettingType(PATIENT_HEALTH_DIARY_GET);
-				setting.setLastSyncTime(newSyncTime);
-				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
-				settingsService.saveMyCareHubSettings(setting);
+				settingsService.createMyCareHubSetting(PATIENT_HEALTH_DIARY_GET, newSyncTime);
 				
+				//ToDo: Move logic to service
+				HealthDiaryService healthDiaryService = Context.getService(HealthDiaryService.class);
 				JsonObject jsonResponse = response.body().getAsJsonObject();
 				JsonArray jsonArray = jsonResponse.getAsJsonArray("healthDiaries");
 				List<HealthDiary> healthDiaries = new ArrayList<HealthDiary>();
