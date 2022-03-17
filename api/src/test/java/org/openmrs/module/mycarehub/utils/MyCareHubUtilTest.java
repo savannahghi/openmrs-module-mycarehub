@@ -191,7 +191,6 @@ public class MyCareHubUtilTest {
 		MyCareHubUtil.uploadPatientAppointments(containerObject, newSyncDate);
 		
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);
-		
 	}
 	
 }

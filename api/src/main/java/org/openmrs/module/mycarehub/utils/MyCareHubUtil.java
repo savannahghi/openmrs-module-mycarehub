@@ -16,11 +16,11 @@ import org.openmrs.module.mycarehub.api.rest.mapper.ApiError;
 import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
@@ -226,7 +226,6 @@ public class MyCareHubUtil {
 			    new NewClientsIdentifiersRequest(facility, sf.format(lastSycTime)));
 			
 			Response<NewClientsIdentifiersResponse> response = call.execute();
-			System.out.println("The response is: " + response.isSuccessful());
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS,
 				    newSyncTime);
@@ -439,7 +438,7 @@ public class MyCareHubUtil {
 		return jsonArray;
 	}
 	
-	public static void uploadPatientMedicalRecord(MedicalRecordRequest request, Date newSyncTime) {
+	public static void uploadPatientMedicalRecords(MedicalRecordsRequest request, Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -447,40 +446,7 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecord(getApiToken(), request);
-			Response<MedicalRecordResponse> response = call.execute();
-			if (response.isSuccessful()) {
-				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,
-				    newSyncTime);
-			} else {
-				try {
-					if (response.errorBody() != null) {
-						log.error(response.errorBody().charStream());
-					} else
-						log.error(response.message());
-				}
-				catch (NullPointerException e) {
-					log.error(response.message());
-				}
-				catch (JsonParseException e) {
-					log.error(response.message());
-				}
-			}
-		}
-		catch (Throwable throwable) {
-			log.error("Error uploading medical record: " + throwable.getMessage());
-		}
-	}
-	
-	public static void uploadPatientMedicalRecords(List<MedicalRecordRequest> requestList, Date newSyncTime) {
-		RestApiService restApiService = ApiClient.getRestService();
-		if (restApiService == null) {
-			log.error(TAG, new Throwable("Cant create REST API service"));
-			return;
-		}
-		
-		try {
-			Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecords(getApiToken(), requestList);
+			Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecords(getApiToken(), request);
 			Response<MedicalRecordResponse> response = call.execute();
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,

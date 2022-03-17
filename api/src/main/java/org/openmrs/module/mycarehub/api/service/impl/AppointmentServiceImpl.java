@@ -179,7 +179,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				
 				containerObject.add("appointment-request", appointmentsObject);
 				
-				MyCareHubUtil.uploadPatientAppointments(containerObject, newSyncDate);
+				MyCareHubUtil.uploadPatientAppointmentRequests(containerObject, newSyncDate);
 				
 			} else {
 				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);

@@ -4,11 +4,11 @@ import com.google.gson.JsonObject;
 import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
@@ -60,12 +60,8 @@ public interface RestApiService {
 	Call<JsonObject> fetchPatientRedFlags(@Header("Authorization") String authorization, @Body JsonObject request);
 	
 	@POST("obs")
-	Call<MedicalRecordResponse> uploadMedicalRecord(@Header("Authorization") String authorization,
-	        @Body MedicalRecordRequest request);
-	
-	@POST("obs")
 	Call<MedicalRecordResponse> uploadMedicalRecords(@Header("Authorization") String authorization,
-	        @Body List<MedicalRecordRequest> request);
+	        @Body MedicalRecordsRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@GET("appointment-service-request")

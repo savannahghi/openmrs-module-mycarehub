@@ -9,7 +9,8 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubMedication;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTest;
@@ -61,7 +62,16 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	@Override
 	public void syncPatientData() {
 		uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate();
-		fetchRegisteredClientIdentifiersSinceLastSyncDate();
+		
+		List<Patient> newMyCareHubClients = fetchRegisteredClientIdentifiersSinceLastSyncDate();
+		//set last sync time to 3 years back, to get historical records for the period
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -3);
+		Date lastSyncTime = cal.getTime();
+		Date newSyncTime = new Date();
+		
+		uploadPatientsMedicalRecordsSinceDate(newMyCareHubClients, lastSyncTime, newSyncTime);
+		
 		uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate();
 	}
 	
@@ -157,7 +167,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		return patientRegistrationRequests;
 	}
 	
-	private void fetchRegisteredClientIdentifiersSinceLastSyncDate() {
+	private List<Patient> fetchRegisteredClientIdentifiersSinceLastSyncDate() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(MYCAREHUB_CLIENT_REGISTRATIONS);
 		Date lastSyncTime = new Date(0);
@@ -176,13 +186,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			}
 		}
 		
-		//set last sync time to 3 years back, to get historical records for the period
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.YEAR, 3);
-		lastSyncTime = cal.getTime();
-		Date newSyncTime = new Date();
-		
-		uploadPatientsMedicalRecordsSinceDate(patients, lastSyncTime, newSyncTime);
+		return patients;
 	}
 	
 	private void uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate() {
@@ -200,12 +204,15 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	}
 	
 	private void uploadPatientsMedicalRecordsSinceDate(List<Patient> patients, Date lastSyncTime, Date newSyncTime) {
-		List<MedicalRecordRequest> medicalRecordRequestList = new ArrayList<MedicalRecordRequest>();
+		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
+		PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
+		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
+		
 		for (Patient patient : patients) {
-			MedicalRecordRequest medicalRecordRequest = new MedicalRecordRequest();
+			MedicalRecord medicalRecord = new MedicalRecord();
 			
 			List<MyCareHubVitalSign> vitalSigns = new ArrayList<MyCareHubVitalSign>();
-			medicalRecordRequest.setVitalSigns(vitalSigns);
+			medicalRecord.setVitalSigns(vitalSigns);
 			List<Obs> observations = myCareHubPatientDao.getUpdatedVitalSignsSinceDate(patient, lastSyncTime);
 			for (final Obs obs : observations) {
 				switch (obs.getConcept().getConceptId()) {
@@ -303,7 +310,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			}
 			
 			List<MyCareHubTestOrder> myCareHubTestOrders = new ArrayList<MyCareHubTestOrder>();
-			medicalRecordRequest.setTestOrders(myCareHubTestOrders);
+			medicalRecord.setTestOrders(myCareHubTestOrders);
 			List<Obs> testOrderObs = myCareHubPatientDao.getUpdatedTestOrdersSinceDate(patient, lastSyncTime);
 			for (final Obs order : testOrderObs) {
 				myCareHubTestOrders.add(new MyCareHubTestOrder() {
@@ -316,7 +323,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			}
 			
 			List<MyCareHubTest> myCareHubTests = new ArrayList<MyCareHubTest>();
-			medicalRecordRequest.setTests(myCareHubTests);
+			medicalRecord.setTests(myCareHubTests);
 			List<Obs> tests = myCareHubPatientDao.getUpdatedTestsSinceDate(patient, lastSyncTime);
 			for (final Obs test : tests) {
 				myCareHubTests.add(new MyCareHubTest() {
@@ -330,7 +337,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			}
 			
 			List<MyCareHubMedication> myCareHubMedications = new ArrayList<MyCareHubMedication>();
-			medicalRecordRequest.setMedications(myCareHubMedications);
+			medicalRecord.setMedications(myCareHubMedications);
 			List<Obs> medications = myCareHubPatientDao.getUpdatedMedicationsSinceDate(patient, lastSyncTime);
 			for (final Obs medication : medications) {
 				myCareHubMedications.add(new MyCareHubMedication() {
@@ -344,12 +351,16 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			}
 			
 			List<MyCareHubAllergy> allergies = myCareHubPatientDao.getUpdatedAllergiesSinceDate(patient, lastSyncTime);
-			medicalRecordRequest.setAllergies(allergies);
+			medicalRecord.setAllergies(allergies);
 			
-			medicalRecordRequestList.add(medicalRecordRequest);
+			medicalRecord.setCccNumber(patient.getPatientIdentifier(cccIdentifierType).getIdentifier());
+			medicalRecords.add(medicalRecord);
 		}
-		if (medicalRecordRequestList.size() > 0) {
-			MyCareHubUtil.uploadPatientMedicalRecords(medicalRecordRequestList, newSyncTime);
+		if (medicalRecords.size() > 0) {
+			MedicalRecordsRequest medicalRecordsRequest = new MedicalRecordsRequest();
+			medicalRecordsRequest.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
+			medicalRecordsRequest.setMedicalRecords(medicalRecords);
+			MyCareHubUtil.uploadPatientMedicalRecords(medicalRecordsRequest, newSyncTime);
 		} else {
 			Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, newSyncTime);
 		}
