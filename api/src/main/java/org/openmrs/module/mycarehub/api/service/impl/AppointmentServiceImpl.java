@@ -33,8 +33,15 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentO
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_TIME_SLOT_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_TYPE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_UUID_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_BY_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_DATE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_REQUEST_CONTAINER;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_REQUEST_STATUS_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_RESOLVED_BY_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_RESOLVED_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.CCC_NUMBER;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.FACILITY_MFL_CODE;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.MYCAREHUB_ID_KEY;
 
 public class AppointmentServiceImpl extends BaseOpenmrsService implements AppointmentService {
 	
@@ -117,8 +124,8 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 					    dateFormat.format(appointment.getTimeSlot().getStartDate()));
 					appointmentObject.addProperty(
 					    APPOINTMENT_TIME_SLOT_KEY,
-					    timeFormat.format(timeFormat.format(appointment.getTimeSlot().getStartDate()) + " "
-					            + timeFormat.format(appointment.getTimeSlot().getEndDate())));
+					    timeFormat.format(appointment.getTimeSlot().getStartDate()) + " "
+					            + timeFormat.format(appointment.getTimeSlot().getEndDate()));
 					appointmentObject.addProperty(APPOINTMENT_TYPE_KEY, appointment.getAppointmentType().getName());
 					appointmentObject.addProperty(APPOINTMENT_STATUS_KEY, appointment.getStatus().getName());
 					appointmentObject.addProperty(CCC_NUMBER,
@@ -150,34 +157,30 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			
 			JsonObject containerObject = new JsonObject();
 			JsonArray appointmentsObject = new JsonArray();
-			JsonObject appointmentObject = new JsonObject();
-			PatientIdentifierType cccPatientIdentifierType = MyCareHubUtil.getcccPatientIdentifierType();
 			if (appointmentRequests.size() > 0) {
 				for (AppointmentRequests appointmentRequest : appointmentRequests) {
-					java.util.Date date = new java.util.Date();
-					
-					appointmentObject = new JsonObject();
-					appointmentObject.addProperty("ID", appointmentRequest.getMycarehubId());
-					appointmentObject.addProperty("status", appointmentRequest.getStatus());
+					JsonObject appointmentObject = new JsonObject();
+					appointmentObject.addProperty(MYCAREHUB_ID_KEY, appointmentRequest.getMycarehubId());
+					appointmentObject.addProperty(APPOINTMENT_REQUEST_STATUS_KEY, appointmentRequest.getStatus());
 					if (appointmentRequest.getProgressDate() != null) {
-						appointmentObject.addProperty("InProgressAt",
+						appointmentObject.addProperty(APPOINTMENT_PROGRESS_DATE_KEY,
 						    dateTimeFormat.format(appointmentRequest.getProgressDate()));
 					} else {
-						appointmentObject.addProperty("InProgressAt", "null");
+						appointmentObject.addProperty(APPOINTMENT_PROGRESS_DATE_KEY, "null");
 					}
-					appointmentObject.addProperty("InProgressBy", appointmentRequest.getProgressBy());
+					appointmentObject.addProperty(APPOINTMENT_PROGRESS_BY_KEY, appointmentRequest.getProgressBy());
 					if (appointmentRequest.getDateResolved() != null) {
-						appointmentObject.addProperty("ResolvedAt",
+						appointmentObject.addProperty(APPOINTMENT_RESOLVED_DATE_KEY,
 						    dateTimeFormat.format(appointmentRequest.getDateResolved()));
 					} else {
-						appointmentObject.addProperty("ResolvedAt", "null");
+						appointmentObject.addProperty(APPOINTMENT_RESOLVED_DATE_KEY, "null");
 					}
-					appointmentObject.addProperty("ResolvedBy", appointmentRequest.getResolvedBy());
+					appointmentObject.addProperty(APPOINTMENT_RESOLVED_BY_KEY, appointmentRequest.getResolvedBy());
 					
 					appointmentsObject.add(appointmentObject);
 				}
 				
-				containerObject.add("appointment-request", appointmentsObject);
+				containerObject.add(APPOINTMENT_REQUEST_CONTAINER, appointmentsObject);
 				
 				MyCareHubUtil.uploadPatientAppointmentRequests(containerObject, newSyncDate);
 				
