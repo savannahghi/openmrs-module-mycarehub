@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class PatientRegistrationRequest {
+public class MedicalRecordsRequest {
 	
 	@SerializedName("MFLCODE")
 	private String facility;
 	
-	@SerializedName("patients")
-	private List<PatientRegistration> patients;
+	@SerializedName("records")
+	private List<MedicalRecord> medicalRecords;
 	
 	public void setFacility(String facility) {
 		this.facility = facility;
@@ -20,11 +20,11 @@ public class PatientRegistrationRequest {
 		return facility;
 	}
 	
-	public void setPatientRegistrations(List<PatientRegistration> patients) {
-		this.patients = patients;
+	public void setMedicalRecords(List<MedicalRecord> medicalRecords) {
+		this.medicalRecords = medicalRecords;
 	}
 	
-	public List<PatientRegistration> getPatients() {
-		return patients;
+	public List<MedicalRecord> getMedicalRecords() {
+		return medicalRecords;
 	}
 }

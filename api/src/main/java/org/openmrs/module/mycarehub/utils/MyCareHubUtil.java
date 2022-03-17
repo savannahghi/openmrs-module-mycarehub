@@ -8,18 +8,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.rest.ApiClient;
 import org.openmrs.module.mycarehub.api.rest.RestApiService;
-import org.openmrs.module.mycarehub.api.rest.mapper.*;
-import org.openmrs.module.mycarehub.api.service.AppointmentService;
-import org.openmrs.module.mycarehub.api.service.HealthDiaryService;
+import org.openmrs.module.mycarehub.api.rest.mapper.ApiError;
+import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.exception.AuthenticationException;
-import org.openmrs.module.mycarehub.model.AppointmentRequests;
-import org.openmrs.module.mycarehub.model.HealthDiary;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -29,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
@@ -76,6 +81,10 @@ public class MyCareHubUtil {
 	
 	private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
+	private static final String syncTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	
+	private static final SimpleDateFormat syncTimeFormat = new SimpleDateFormat(syncTimePattern);
+	
 	public static String getApiUrl() {
 		AdministrationService as = Context.getAdministrationService();
 		return as.getGlobalProperty(GP_MYCAREHUB_API_URL, EMPTY);
@@ -96,7 +105,7 @@ public class MyCareHubUtil {
 		String expiryTime = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, EMPTY);
 		String token = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
 		// Check if we have an expiry time.
-		if (!expiryTime.isEmpty() && !token.isEmpty()) {
+		if (expiryTime != null && !expiryTime.isEmpty() && token != null && !token.isEmpty()) {
 			//check if its past now or within 5 secs of expiring due to latency in making calls
 			try {
 				Date dtExpiryTime = dateTimeFormat.parse(expiryTime);
@@ -155,7 +164,7 @@ public class MyCareHubUtil {
 			}
 		}
 		catch (Throwable throwable) {
-			throw new AuthenticationException(throwable.getMessage());
+			throw new AuthenticationException(throwable);
 		}
 	}
 	
@@ -164,7 +173,7 @@ public class MyCareHubUtil {
 		return as.getGlobalProperty(GP_DEFAULT_LOCATION_MFL_CODE, EMPTY);
 	}
 	
-	public static void uploadPatientRegistrationRecords(List<PatientRegistrationRequest> patientRegistrationRequests,
+	public static void uploadPatientRegistrationRecords(PatientRegistrationRequest patientRegistrationRequest,
 	        Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
@@ -174,7 +183,7 @@ public class MyCareHubUtil {
 		
 		try {
 			Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(getApiToken(),
-			    patientRegistrationRequests);
+			    patientRegistrationRequest);
 			Response<PatientRegistrationResponse> response = call.execute();
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS,
@@ -199,7 +208,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static List<String> getNewMyCareHubClientCccIdentifiers(Date lastSynyTime) {
+	public static List<String> getNewMyCareHubClientCccIdentifiers(Date lastSycTime, Date newSyncTime) {
 		List<String> cccList = new ArrayList<String>();
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
@@ -209,12 +218,12 @@ public class MyCareHubUtil {
 		
 		try {
 			String facility = getDefaultLocationMflCode();
+			
 			String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 			SimpleDateFormat sf = new SimpleDateFormat(pattern);
 			
-			Date newSyncTime = new Date();
 			Call<NewClientsIdentifiersResponse> call = restApiService.getNewClientsIdentifiers(getApiToken(),
-			    new NewClientsIdentifiersRequest(facility, sf.format(lastSynyTime)));
+			    new NewClientsIdentifiersRequest(facility, sf.format(lastSycTime)));
 			
 			Response<NewClientsIdentifiersResponse> response = call.execute();
 			if (response.isSuccessful()) {
@@ -238,7 +247,7 @@ public class MyCareHubUtil {
 			}
 		}
 		catch (Throwable throwable) {
-			log.error("Error uploading patient registration record: " + throwable.getMessage());
+			log.error("Error uploading patient registration record: ", throwable);
 		}
 		return cccList;
 	}
@@ -310,7 +319,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static JsonArray fetchPatientAppointments(JsonObject jsonObject, Date newSyncTime) {
+	public static JsonArray fetchPatientAppointments(Date lastSyncTime, Date newSyncTime) {
 		JsonArray jsonArray = new JsonArray();
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
@@ -319,6 +328,10 @@ public class MyCareHubUtil {
 		}
 		
 		try {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("MFLCODE", MyCareHubUtil.getDefaultLocationMflCode());
+			jsonObject.addProperty("lastSyncTime", syncTimeFormat.format(lastSyncTime));
+			
 			Call<JsonObject> call = restApiService.fetchPatientAppointmentRequests(getApiToken(), jsonObject);
 			Response<JsonObject> response = call.execute();
 			
@@ -383,7 +396,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static JsonArray getPatientRedFlagRequests(JsonObject jsonObject, Date newSyncTime) {
+	public static JsonArray getPatientRedFlagRequests(Date lastSyncTime, Date newSyncTime) {
 		JsonArray jsonArray = new JsonArray();
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
@@ -392,6 +405,10 @@ public class MyCareHubUtil {
 		}
 		
 		try {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
+			jsonObject.addProperty("lastSyncTime", syncTimeFormat.format(lastSyncTime));
+			
 			Call<JsonObject> call = restApiService.fetchPatientRedFlags(getApiToken(), jsonObject);
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
@@ -421,7 +438,7 @@ public class MyCareHubUtil {
 		return jsonArray;
 	}
 	
-	public static void uploadPatientMedicalRecord(MedicalRecordRequest request, Date newSyncTime) {
+	public static void uploadPatientMedicalRecords(MedicalRecordsRequest request, Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
 			log.error(TAG, new Throwable("Cant create REST API service"));
@@ -429,7 +446,7 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecord(getApiToken(), request);
+			Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecords(getApiToken(), request);
 			Response<MedicalRecordResponse> response = call.execute();
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,
@@ -454,40 +471,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static void uploadPatientMedicalRecords(List<MedicalRecordRequest> requestList, Date newSyncTime) {
-		RestApiService restApiService = ApiClient.getRestService();
-		if (restApiService == null) {
-			log.error(TAG, new Throwable("Cant create REST API service"));
-			return;
-		}
-		
-		try {
-			Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecords(getApiToken(), requestList);
-			Response<MedicalRecordResponse> response = call.execute();
-			if (response.isSuccessful()) {
-				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,
-				    newSyncTime);
-			} else {
-				try {
-					if (response.errorBody() != null) {
-						log.error(response.errorBody().charStream());
-					} else
-						log.error(response.message());
-				}
-				catch (NullPointerException e) {
-					log.error(response.message());
-				}
-				catch (JsonParseException e) {
-					log.error(response.message());
-				}
-			}
-		}
-		catch (Throwable throwable) {
-			log.error("Error uploading medical record: " + throwable.getMessage());
-		}
-	}
-	
-	public static JsonArray getPatientHealthDiaries(JsonObject jsonObject, Date newSyncTime) {
+	public static JsonArray getPatientHealthDiaries(Date lastSyncTime, Date newSyncTime) {
 		JsonArray jsonArray = new JsonArray();
 		
 		RestApiService restApiService = ApiClient.getRestService();
@@ -497,6 +481,10 @@ public class MyCareHubUtil {
 		}
 		
 		try {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
+			jsonObject.addProperty("lastSyncTime", syncTimeFormat.format(lastSyncTime));
+			
 			Call<JsonObject> call = restApiService.fetchPatientHealthDiaries(getApiToken(), jsonObject);
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
