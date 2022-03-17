@@ -119,6 +119,8 @@ public class Constants {
 			public static final String CCC_NUMBER = "ccc_number";
 			
 			public static final String FACILITY_MFL_CODE = "MFLCODE";
+			
+			public static final String MYCAREHUB_ID_KEY = "ID";
 		}
 		
 		public static final class NextOfKinPatientRegistrationKeys {
@@ -143,6 +145,59 @@ public class Constants {
 			public static final String APPOINTMENT_STATUS_KEY = "appointment_type";
 			
 			public static final String APPOINTMENTS_CONTAINER_KEY = "appointments";
+		}
+		
+		public static final class AppointmentRequestObjectKeys {
+			
+			public static final String APPOINTMENT_REQUEST_STATUS_KEY = "status";
+			
+			public static final String APPOINTMENT_PROGRESS_DATE_KEY = "InProgressAt";
+			
+			public static final String APPOINTMENT_PROGRESS_BY_KEY = "InProgressBy";
+			
+			public static final String APPOINTMENT_RESOLVED_DATE_KEY = "ResolvedAt";
+			
+			public static final String APPOINTMENT_RESOLVED_BY_KEY = "ResolvedBy";
+			
+			public static final String APPOINTMENT_REQUEST_CONTAINER = "appointment-request";
+		}
+		
+		public static final class REdFlagsObjectKeys {
+			
+			public static final String RED_FLAG_REQUEST_TYPE_KEY = "RequestType";
+			
+			public static final String RED_FLAG_STATUS_KEY = "status";
+			
+			public static final String RED_FLAG_PROGRESS_DATE_KEY = "InProgressAt";
+			
+			public static final String RED_FLAG_PROGRESS_BY_KEY = "InProgressBy";
+			
+			public static final String RED_FLAG_RESOLVED_DATE_KEY = "ResolvedAt";
+			
+			public static final String RED_FLAG_RESOLVED_BY_KEY = "ResolvedBy";
+			
+			public static final String RED_FLAG_CONTAINER = "redFlags";
+		}
+		
+		public static final class MedicalRecordKeys {
+			
+			public static final String TEMPERATURE_CONCEPT_KEY = "temperature";
+			
+			public static final String WEIGHT_CONCEPT_KEY = "weight";
+			
+			public static final String HEIGHT_CONCEPT_KEY = "height";
+			
+			public static final String BMI_CONCEPT_KEY = "bmi";
+			
+			public static final String SPO2_CONCEPT_KEY = "spo2";
+			
+			public static final String PULSE_CONCEPT_KEY = "pulse";
+			
+			public static final String CD4_CONCEPT_KEY = "cd4";
+			
+			public static final String VIRAL_LOAD_CONCEPT_KEY = "viral_load";
+			
+			public static final String RESPIRATORY_RATE_CONCEPT_KEY = "respiratory_rate";
 		}
 	}
 }

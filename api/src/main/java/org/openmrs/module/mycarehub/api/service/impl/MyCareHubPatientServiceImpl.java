@@ -43,6 +43,15 @@ import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_MEDICAL_RECORDS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.BMI_CONCEPT_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.CD4_CONCEPT_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.HEIGHT_CONCEPT_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.PULSE_CONCEPT_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.RESPIRATORY_RATE_CONCEPT_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.SPO2_CONCEPT_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.TEMPERATURE_CONCEPT_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.VIRAL_LOAD_CONCEPT_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.WEIGHT_CONCEPT_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_CONTACTS_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_NAME_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_RELATIONSHIP_KEY;
@@ -220,7 +229,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept("temperature");
+								setConcept(TEMPERATURE_CONCEPT_KEY);
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -230,7 +239,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept("weight");
+								setConcept(WEIGHT_CONCEPT_KEY);
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -240,7 +249,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept("height");
+								setConcept(HEIGHT_CONCEPT_KEY);
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -250,7 +259,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept("bmi");
+								setConcept(BMI_CONCEPT_KEY);
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -260,7 +269,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept("spo2");
+								setConcept(SPO2_CONCEPT_KEY);
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -270,7 +279,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept("pulse");
+								setConcept(PULSE_CONCEPT_KEY);
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -280,7 +289,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept("cd4");
+								setConcept(CD4_CONCEPT_KEY);
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -290,7 +299,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept("viral_load");
+								setConcept(VIRAL_LOAD_CONCEPT_KEY);
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -300,7 +309,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept("respiratory_rate");
+								setConcept(RESPIRATORY_RATE_CONCEPT_KEY);
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
