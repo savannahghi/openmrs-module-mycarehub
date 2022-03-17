@@ -131,11 +131,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 		if (setting != null) {
 			Date newSyncDate = new Date();
 			
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
-			jsonObject.addProperty("lastSyncTime", dateTimeFormat.format(setting.getLastSyncTime()));
-			
-			JsonArray jsonArray = getPatientRedFlagRequests(jsonObject, newSyncDate);
+			JsonArray jsonArray = getPatientRedFlagRequests(setting.getLastSyncTime(), newSyncDate);
 			
 			List<RedFlags> redFlags = new ArrayList<RedFlags>();
 			for (int i = 0; i < jsonArray.size(); i++) {

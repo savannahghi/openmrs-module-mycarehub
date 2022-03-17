@@ -4,7 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MedicalRecordRequest {
+public class MedicalRecord {
+
+	@SerializedName("ccc_number")
+	private String cccNumber;
 	
 	@SerializedName("vitalSigns")
 	private List<MyCareHubVitalSign> vitalSigns;
@@ -20,6 +23,14 @@ public class MedicalRecordRequest {
 	
 	@SerializedName("allergies")
 	private List<MyCareHubAllergy> allergies;
+	
+	public void setCccNumber(String cccNumber) {
+		this.cccNumber = cccNumber;
+	}
+	
+	public String getCccNumber() {
+		return cccNumber;
+	}
 	
 	public void setVitalSigns(List<MyCareHubVitalSign> vitalSigns) {
 		this.vitalSigns = vitalSigns;

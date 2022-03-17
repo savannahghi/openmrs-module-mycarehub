@@ -9,12 +9,14 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubMedication;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTest;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTestOrder;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubVitalSign;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.service.MyCareHubPatientService;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
@@ -23,6 +25,7 @@ import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -40,13 +43,13 @@ import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_MEDICAL_RECORDS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_CONTACTS_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_NAME_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_RELATIONSHIP_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_CONTACT;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.uploadPatientMedicalRecords;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.uploadPatientRegistrationRecords;
 
 public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements MyCareHubPatientService {
 	
@@ -59,7 +62,16 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	@Override
 	public void syncPatientData() {
 		uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate();
-		fetchRegisteredClientIdentifiersSinceLastSyncDate();
+		
+		List<Patient> newMyCareHubClients = fetchRegisteredClientIdentifiersSinceLastSyncDate();
+		//set last sync time to 3 years back, to get historical records for the period
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -3);
+		Date lastSyncTime = cal.getTime();
+		Date newSyncTime = new Date();
+		
+		uploadPatientsMedicalRecordsSinceDate(newMyCareHubClients, lastSyncTime, newSyncTime);
+		
 		uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate();
 	}
 	
@@ -67,86 +79,95 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(KENYAEMR_PATIENT_REGISTRATIONS);
 		
+		Date newSyncTime = new Date();
+		
 		if (setting != null) {
-			List<PatientRegistrationRequest> patientRegistrationRequests = new ArrayList<PatientRegistrationRequest>();
-			Date newSyncTime = new Date();
-			List<Patient> patients = myCareHubPatientDao.getCccPatientsCreatedOrUpdatedSinceDate(setting.getLastSyncTime());
-			
-			for (Patient patient : patients) {
-				PatientRegistrationRequest registrationRequest = new PatientRegistrationRequest();
-				registrationRequest.setName(patient.getFamilyName() + patient.getGivenName());
-				registrationRequest.setClientType("KenyaEMR");
-				registrationRequest.setCounseled("false");
-				registrationRequest.setGender(patient.getGender());
+			List<PatientRegistration> patientRegistrations = getNewOrUpdatedPatientRegistrationsSinceLastSyncDate(setting
+			        .getLastSyncTime());
+			if (patientRegistrations.size() > 0) {
+				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+				patientRegistrationRequest.setPatientRegistrations(patientRegistrations);
+				patientRegistrationRequest.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
 				
-				registrationRequest.setFacility(getDefaultLocationMflCode());
-				
-				PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
-				    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-				registrationRequest.setCccNumber(patient.getPatientIdentifier(cccIdentifierType).getIdentifier());
-				
-				String pattern = "yyyy-MM-dd";
-				SimpleDateFormat sf = new SimpleDateFormat(pattern);
-				registrationRequest.setDateOfBirth(sf.format(patient.getBirthdate()));
-				registrationRequest.setBirthdateEstimated(patient.getBirthdateEstimated());
-				
-				registrationRequest.setEnrollmentDate(sf.format(patient.getDateCreated()));
-				
-				PersonAttributeType phoneNumberAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
-				    TELEPHONE_CONTACT);
-				if (phoneNumberAttributeType != null) {
-					PersonAttribute phoneNumberAttribute = patient.getAttribute(phoneNumberAttributeType);
-					if (phoneNumberAttribute != null) {
-						registrationRequest.setPhoneNumber(phoneNumberAttribute.getValue());
-					}
-				}
-				
-				JsonObject nextOfKinJsonObject = new JsonObject();
-				
-				PersonAttributeType nextOfKinNameAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
-				    NEXT_OF_KIN_NAME);
-				if (nextOfKinNameAttributeType != null) {
-					PersonAttribute nextOfKinNamePersonAttribute = patient.getAttribute(nextOfKinNameAttributeType);
-					if (nextOfKinNamePersonAttribute != null) {
-						nextOfKinJsonObject.addProperty("next_of_kin_name", nextOfKinNamePersonAttribute.getValue());
-					}
-				}
-				
-				PersonAttributeType nextOfKinContactAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
-				    NEXT_OF_KIN_CONTACT);
-				if (nextOfKinContactAttributeType != null) {
-					PersonAttribute nextOfKinContactPersonAttribute = patient.getAttribute(nextOfKinContactAttributeType);
-					if (nextOfKinContactPersonAttribute != null) {
-						nextOfKinJsonObject.addProperty("contacts_of_next_of_kin",
-						    nextOfKinContactPersonAttribute.getValue());
-					}
-				}
-				
-				PersonAttributeType nextOfKinRelationshipAttributeType = Context.getPersonService()
-				        .getPersonAttributeTypeByUuid(NEXT_OF_KIN_RELATIONSHIP);
-				if (nextOfKinRelationshipAttributeType != null) {
-					PersonAttribute nextOfKinRelationshipPersonAttribute = patient
-					        .getAttribute(nextOfKinRelationshipAttributeType);
-					if (nextOfKinRelationshipPersonAttribute != null) {
-						nextOfKinJsonObject.addProperty("relationship_to_next_of_kin",
-						    nextOfKinRelationshipPersonAttribute.getValue());
-					}
-				}
-				
-				registrationRequest.setNextOfKin(nextOfKinJsonObject.toString());
-				patientRegistrationRequests.add(registrationRequest);
-			}
-			if (patientRegistrationRequests.size() > 0) {
-				uploadPatientRegistrationRecords(patientRegistrationRequests, newSyncTime);
+				MyCareHubUtil.uploadPatientRegistrationRecords(patientRegistrationRequest, newSyncTime);
 			} else {
 				settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
 			}
 		} else {
-			settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, new Date());
+			settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
 		}
 	}
 	
-	private void fetchRegisteredClientIdentifiersSinceLastSyncDate() {
+	public List<PatientRegistration> getNewOrUpdatedPatientRegistrationsSinceLastSyncDate(Date lastSyncDate) {
+		
+		List<PatientRegistration> patientRegistrationRequests = new ArrayList<PatientRegistration>();
+		List<Patient> patients = myCareHubPatientDao.getCccPatientsCreatedOrUpdatedSinceDate(lastSyncDate);
+		
+		for (Patient patient : patients) {
+			PatientRegistration registrationRequest = new PatientRegistration();
+			registrationRequest.setName(patient.getFamilyName() + patient.getGivenName());
+			registrationRequest.setClientType("KenyaEMR");
+			registrationRequest.setCounseled("false");
+			registrationRequest.setGender(patient.getGender());
+			
+			PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
+			    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
+			registrationRequest.setCccNumber(patient.getPatientIdentifier(cccIdentifierType).getIdentifier());
+			
+			String pattern = "yyyy-MM-dd";
+			SimpleDateFormat sf = new SimpleDateFormat(pattern);
+			registrationRequest.setDateOfBirth(sf.format(patient.getBirthdate()));
+			registrationRequest.setBirthdateEstimated(patient.getBirthdateEstimated());
+			
+			registrationRequest.setEnrollmentDate(sf.format(patient.getDateCreated()));
+			
+			PersonAttributeType phoneNumberAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
+			    TELEPHONE_CONTACT);
+			if (phoneNumberAttributeType != null) {
+				PersonAttribute phoneNumberAttribute = patient.getAttribute(phoneNumberAttributeType);
+				if (phoneNumberAttribute != null) {
+					registrationRequest.setPhoneNumber(phoneNumberAttribute.getValue());
+				}
+			}
+			
+			JsonObject nextOfKinJsonObject = new JsonObject();
+			
+			PersonAttributeType nextOfKinNameAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
+			    NEXT_OF_KIN_NAME);
+			if (nextOfKinNameAttributeType != null) {
+				PersonAttribute nextOfKinNamePersonAttribute = patient.getAttribute(nextOfKinNameAttributeType);
+				if (nextOfKinNamePersonAttribute != null) {
+					nextOfKinJsonObject.addProperty(NEXT_OF_KIN_NAME_KEY, nextOfKinNamePersonAttribute.getValue());
+				}
+			}
+			
+			PersonAttributeType nextOfKinContactAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
+			    NEXT_OF_KIN_CONTACT);
+			if (nextOfKinContactAttributeType != null) {
+				PersonAttribute nextOfKinContactPersonAttribute = patient.getAttribute(nextOfKinContactAttributeType);
+				if (nextOfKinContactPersonAttribute != null) {
+					nextOfKinJsonObject.addProperty(NEXT_OF_KIN_CONTACTS_KEY, nextOfKinContactPersonAttribute.getValue());
+				}
+			}
+			
+			PersonAttributeType nextOfKinRelationshipAttributeType = Context.getPersonService()
+			        .getPersonAttributeTypeByUuid(NEXT_OF_KIN_RELATIONSHIP);
+			if (nextOfKinRelationshipAttributeType != null) {
+				PersonAttribute nextOfKinRelationshipPersonAttribute = patient
+				        .getAttribute(nextOfKinRelationshipAttributeType);
+				if (nextOfKinRelationshipPersonAttribute != null) {
+					nextOfKinJsonObject.addProperty(NEXT_OF_KIN_RELATIONSHIP_KEY,
+					    nextOfKinRelationshipPersonAttribute.getValue());
+				}
+			}
+			
+			registrationRequest.setNextOfKin(nextOfKinJsonObject.toString());
+			patientRegistrationRequests.add(registrationRequest);
+		}
+		return patientRegistrationRequests;
+	}
+	
+	private List<Patient> fetchRegisteredClientIdentifiersSinceLastSyncDate() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(MYCAREHUB_CLIENT_REGISTRATIONS);
 		Date lastSyncTime = new Date(0);
@@ -154,7 +175,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			lastSyncTime = setting.getLastSyncTime();
 		}
 		
-		List<String> patientCccs = MyCareHubUtil.getNewMyCareHubClientCccIdentifiers(lastSyncTime);
+		List<String> patientCccs = MyCareHubUtil.getNewMyCareHubClientCccIdentifiers(lastSyncTime, new Date());
 		
 		List<Patient> patients = new ArrayList<Patient>();
 		
@@ -164,10 +185,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				patients.addAll(patientsWithCcc);
 			}
 		}
-		Date veryOldLastSyncTime = new Date(0);//to allow retrieval of all historical records
-		Date newSyncTime = new Date();
 		
-		uploadPatientsMedicalRecordsSinceDate(patients, veryOldLastSyncTime, newSyncTime);
+		return patients;
 	}
 	
 	private void uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate() {
@@ -185,12 +204,15 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	}
 	
 	private void uploadPatientsMedicalRecordsSinceDate(List<Patient> patients, Date lastSyncTime, Date newSyncTime) {
-		List<MedicalRecordRequest> medicalRecordRequestList = new ArrayList<MedicalRecordRequest>();
+		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
+		PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
+		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
+		
 		for (Patient patient : patients) {
-			MedicalRecordRequest medicalRecordRequest = new MedicalRecordRequest();
+			MedicalRecord medicalRecord = new MedicalRecord();
 			
 			List<MyCareHubVitalSign> vitalSigns = new ArrayList<MyCareHubVitalSign>();
-			medicalRecordRequest.setVitalSigns(vitalSigns);
+			medicalRecord.setVitalSigns(vitalSigns);
 			List<Obs> observations = myCareHubPatientDao.getUpdatedVitalSignsSinceDate(patient, lastSyncTime);
 			for (final Obs obs : observations) {
 				switch (obs.getConcept().getConceptId()) {
@@ -288,7 +310,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			}
 			
 			List<MyCareHubTestOrder> myCareHubTestOrders = new ArrayList<MyCareHubTestOrder>();
-			medicalRecordRequest.setTestOrders(myCareHubTestOrders);
+			medicalRecord.setTestOrders(myCareHubTestOrders);
 			List<Obs> testOrderObs = myCareHubPatientDao.getUpdatedTestOrdersSinceDate(patient, lastSyncTime);
 			for (final Obs order : testOrderObs) {
 				myCareHubTestOrders.add(new MyCareHubTestOrder() {
@@ -301,7 +323,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			}
 			
 			List<MyCareHubTest> myCareHubTests = new ArrayList<MyCareHubTest>();
-			medicalRecordRequest.setTests(myCareHubTests);
+			medicalRecord.setTests(myCareHubTests);
 			List<Obs> tests = myCareHubPatientDao.getUpdatedTestsSinceDate(patient, lastSyncTime);
 			for (final Obs test : tests) {
 				myCareHubTests.add(new MyCareHubTest() {
@@ -315,7 +337,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			}
 			
 			List<MyCareHubMedication> myCareHubMedications = new ArrayList<MyCareHubMedication>();
-			medicalRecordRequest.setMedications(myCareHubMedications);
+			medicalRecord.setMedications(myCareHubMedications);
 			List<Obs> medications = myCareHubPatientDao.getUpdatedMedicationsSinceDate(patient, lastSyncTime);
 			for (final Obs medication : medications) {
 				myCareHubMedications.add(new MyCareHubMedication() {
@@ -329,12 +351,16 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			}
 			
 			List<MyCareHubAllergy> allergies = myCareHubPatientDao.getUpdatedAllergiesSinceDate(patient, lastSyncTime);
-			medicalRecordRequest.setAllergies(allergies);
+			medicalRecord.setAllergies(allergies);
 			
-			medicalRecordRequestList.add(medicalRecordRequest);
+			medicalRecord.setCccNumber(patient.getPatientIdentifier(cccIdentifierType).getIdentifier());
+			medicalRecords.add(medicalRecord);
 		}
-		if (medicalRecordRequestList.size() > 0) {
-			uploadPatientMedicalRecords(medicalRecordRequestList, newSyncTime);
+		if (medicalRecords.size() > 0) {
+			MedicalRecordsRequest medicalRecordsRequest = new MedicalRecordsRequest();
+			medicalRecordsRequest.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
+			medicalRecordsRequest.setMedicalRecords(medicalRecords);
+			MyCareHubUtil.uploadPatientMedicalRecords(medicalRecordsRequest, newSyncTime);
 		} else {
 			Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, newSyncTime);
 		}

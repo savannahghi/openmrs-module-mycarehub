@@ -111,4 +111,38 @@ public class Constants {
 			public static final int ALLERGY_DATE = 160753;
 		}
 	}
+	
+	public static class RestKeys {
+		
+		public static class GeneralKeys {
+			
+			public static final String CCC_NUMBER = "ccc_number";
+			
+			public static final String FACILITY_MFL_CODE = "MFLCODE";
+		}
+		
+		public static final class NextOfKinPatientRegistrationKeys {
+			
+			public static final String NEXT_OF_KIN_NAME_KEY = "next_of_kin_name";
+			
+			public static final String NEXT_OF_KIN_CONTACTS_KEY = "contacts_of_next_of_kin";
+			
+			public static final String NEXT_OF_KIN_RELATIONSHIP_KEY = "relationship_to_next_of_kin";
+		}
+		
+		public static final class AppointmentObjectKeys {
+			
+			public static final String APPOINTMENT_UUID_KEY = "appointment_uuid";
+			
+			public static final String APPOINTMENT_DATE_KEY = "appointment_date";
+			
+			public static final String APPOINTMENT_TIME_SLOT_KEY = "time_slot";
+			
+			public static final String APPOINTMENT_TYPE_KEY = "appointment_type";
+			
+			public static final String APPOINTMENT_STATUS_KEY = "appointment_type";
+			
+			public static final String APPOINTMENTS_CONTAINER_KEY = "appointments";
+		}
+	}
 }
