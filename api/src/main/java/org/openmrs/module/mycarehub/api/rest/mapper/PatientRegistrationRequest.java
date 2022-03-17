@@ -6,9 +6,10 @@ import java.util.List;
 
 public class PatientRegistrationRequest {
 	
-	@SerializedName("facility")
+	@SerializedName("MFLCODE")
 	private String facility;
 	
+	@SerializedName("patients")
 	private List<PatientRegistration> patients;
 	
 	public void setFacility(String facility) {

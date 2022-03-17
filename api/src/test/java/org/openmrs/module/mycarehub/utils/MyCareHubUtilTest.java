@@ -1,5 +1,6 @@
 package org.openmrs.module.mycarehub.utils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,14 +29,23 @@ import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFA
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_PASSWORD;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_CONTACTS_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_NAME_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_RELATIONSHIP_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_HEALTH_DIARY_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENTS_CONTAINER_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_DATE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_STATUS_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_TIME_SLOT_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_TYPE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_UUID_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.CCC_NUMBER;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.FACILITY_MFL_CODE;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_CONTACTS_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_NAME_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_RELATIONSHIP_KEY;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -152,4 +162,36 @@ public class MyCareHubUtilTest {
 		
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
 	}
+	
+	@Test
+	public void uploadPatientAppointments_shouldCreateCorrectSyncTimeSetting() {
+		JsonObject containerObject = new JsonObject();
+		JsonArray appointmentsArray = new JsonArray();
+		JsonObject appointmentObject = new JsonObject();
+		
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		
+		appointmentObject.addProperty(APPOINTMENT_UUID_KEY, "f67a4ad9-4ac4-4183-9852-1dd75b04aff5");
+		
+		Date appointmentStartDate = new Date();
+		Date appointmentEndDate = new Date(appointmentStartDate.getTime() + 20 * 60 * 1000);
+		appointmentObject.addProperty(APPOINTMENT_DATE_KEY, dateFormat.format(appointmentStartDate));
+		appointmentObject.addProperty(APPOINTMENT_TIME_SLOT_KEY,
+		    timeFormat.format(timeFormat.format(appointmentStartDate) + " " + timeFormat.format(appointmentEndDate)));
+		appointmentObject.addProperty(APPOINTMENT_TYPE_KEY, "TypeName");
+		appointmentObject.addProperty(APPOINTMENT_STATUS_KEY, "StatusName");
+		appointmentObject.addProperty(CCC_NUMBER, "12345");
+		appointmentsArray.add(appointmentObject);
+		
+		containerObject.addProperty(FACILITY_MFL_CODE, MyCareHubUtil.getDefaultLocationMflCode());
+		containerObject.add(APPOINTMENTS_CONTAINER_KEY, appointmentsArray);
+		
+		Date newSyncDate = new Date();
+		MyCareHubUtil.uploadPatientAppointments(containerObject, newSyncDate);
+		
+		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);
+		
+	}
+	
 }
