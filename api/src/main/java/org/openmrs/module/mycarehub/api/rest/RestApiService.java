@@ -8,6 +8,7 @@ import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
@@ -29,7 +30,7 @@ public interface RestApiService {
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("client_registration")
 	Call<PatientRegistrationResponse> uploadPatientRegistrations(@Header("Authorization") String authorization,
-	        @Body List<PatientRegistrationRequest> request);
+	        @Body PatientRegistrationRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@GET("clients")

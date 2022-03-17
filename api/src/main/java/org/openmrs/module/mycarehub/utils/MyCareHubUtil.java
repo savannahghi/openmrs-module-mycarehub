@@ -20,6 +20,7 @@ import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
@@ -79,6 +80,10 @@ public class MyCareHubUtil {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
 	private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	private static final String syncTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	
+	private static final SimpleDateFormat syncTimeFormat = new SimpleDateFormat(syncTimePattern);
 	
 	public static String getApiUrl() {
 		AdministrationService as = Context.getAdministrationService();
@@ -168,7 +173,7 @@ public class MyCareHubUtil {
 		return as.getGlobalProperty(GP_DEFAULT_LOCATION_MFL_CODE, EMPTY);
 	}
 	
-	public static void uploadPatientRegistrationRecords(List<PatientRegistrationRequest> patientRegistrationRequests,
+	public static void uploadPatientRegistrationRecords(PatientRegistrationRequest patientRegistrationRequest,
 	        Date newSyncTime) {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
@@ -178,7 +183,7 @@ public class MyCareHubUtil {
 		
 		try {
 			Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(getApiToken(),
-			    patientRegistrationRequests);
+			    patientRegistrationRequest);
 			Response<PatientRegistrationResponse> response = call.execute();
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS,
@@ -315,7 +320,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static JsonArray fetchPatientAppointments(JsonObject jsonObject, Date newSyncTime) {
+	public static JsonArray fetchPatientAppointments(Date lastSyncTime, Date newSyncTime) {
 		JsonArray jsonArray = new JsonArray();
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
@@ -324,6 +329,10 @@ public class MyCareHubUtil {
 		}
 		
 		try {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("MFLCODE", MyCareHubUtil.getDefaultLocationMflCode());
+			jsonObject.addProperty("lastSyncTime", syncTimeFormat.format(lastSyncTime));
+			
 			Call<JsonObject> call = restApiService.fetchPatientAppointmentRequests(getApiToken(), jsonObject);
 			Response<JsonObject> response = call.execute();
 			
@@ -388,7 +397,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static JsonArray getPatientRedFlagRequests(JsonObject jsonObject, Date newSyncTime) {
+	public static JsonArray getPatientRedFlagRequests(Date lastSyncTime, Date newSyncTime) {
 		JsonArray jsonArray = new JsonArray();
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {
@@ -397,6 +406,10 @@ public class MyCareHubUtil {
 		}
 		
 		try {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
+			jsonObject.addProperty("lastSyncTime", syncTimeFormat.format(lastSyncTime));
+			
 			Call<JsonObject> call = restApiService.fetchPatientRedFlags(getApiToken(), jsonObject);
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {
@@ -492,7 +505,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static JsonArray getPatientHealthDiaries(JsonObject jsonObject, Date newSyncTime) {
+	public static JsonArray getPatientHealthDiaries(Date lastSyncTime, Date newSyncTime) {
 		JsonArray jsonArray = new JsonArray();
 		
 		RestApiService restApiService = ApiClient.getRestService();
@@ -502,6 +515,10 @@ public class MyCareHubUtil {
 		}
 		
 		try {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
+			jsonObject.addProperty("lastSyncTime", syncTimeFormat.format(lastSyncTime));
+			
 			Call<JsonObject> call = restApiService.fetchPatientHealthDiaries(getApiToken(), jsonObject);
 			Response<JsonObject> response = call.execute();
 			if (response.isSuccessful()) {

@@ -15,6 +15,7 @@ import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubMedication;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTest;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTestOrder;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubVitalSign;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.service.MyCareHubPatientService;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
@@ -29,6 +30,9 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_CONTACTS_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_NAME_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_RELATIONSHIP_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.CD4_COUNT;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.HEIGHT;
@@ -45,9 +49,6 @@ import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.uploadPatientMedicalRecords;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.uploadPatientRegistrationRecords;
 
 public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements MyCareHubPatientService {
 	
@@ -68,83 +69,92 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(KENYAEMR_PATIENT_REGISTRATIONS);
 		
+		Date newSyncTime = new Date();
+		
 		if (setting != null) {
-			List<PatientRegistrationRequest> patientRegistrationRequests = new ArrayList<PatientRegistrationRequest>();
-			Date newSyncTime = new Date();
-			List<Patient> patients = myCareHubPatientDao.getCccPatientsCreatedOrUpdatedSinceDate(setting.getLastSyncTime());
-			
-			for (Patient patient : patients) {
-				PatientRegistrationRequest registrationRequest = new PatientRegistrationRequest();
-				registrationRequest.setName(patient.getFamilyName() + patient.getGivenName());
-				registrationRequest.setClientType("KenyaEMR");
-				registrationRequest.setCounseled("false");
-				registrationRequest.setGender(patient.getGender());
+			List<PatientRegistration> patientRegistrations = getNewOrUpdatedPatientRegistrationsSinceLastSyncDate(setting
+			        .getLastSyncTime());
+			if (patientRegistrations.size() > 0) {
+				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+				patientRegistrationRequest.setPatientRegistrations(patientRegistrations);
+				patientRegistrationRequest.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
 				
-				registrationRequest.setFacility(getDefaultLocationMflCode());
-				
-				PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
-				    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-				registrationRequest.setCccNumber(patient.getPatientIdentifier(cccIdentifierType).getIdentifier());
-				
-				String pattern = "yyyy-MM-dd";
-				SimpleDateFormat sf = new SimpleDateFormat(pattern);
-				registrationRequest.setDateOfBirth(sf.format(patient.getBirthdate()));
-				registrationRequest.setBirthdateEstimated(patient.getBirthdateEstimated());
-				
-				registrationRequest.setEnrollmentDate(sf.format(patient.getDateCreated()));
-				
-				PersonAttributeType phoneNumberAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
-				    TELEPHONE_CONTACT);
-				if (phoneNumberAttributeType != null) {
-					PersonAttribute phoneNumberAttribute = patient.getAttribute(phoneNumberAttributeType);
-					if (phoneNumberAttribute != null) {
-						registrationRequest.setPhoneNumber(phoneNumberAttribute.getValue());
-					}
-				}
-				
-				JsonObject nextOfKinJsonObject = new JsonObject();
-				
-				PersonAttributeType nextOfKinNameAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
-				    NEXT_OF_KIN_NAME);
-				if (nextOfKinNameAttributeType != null) {
-					PersonAttribute nextOfKinNamePersonAttribute = patient.getAttribute(nextOfKinNameAttributeType);
-					if (nextOfKinNamePersonAttribute != null) {
-						nextOfKinJsonObject.addProperty("next_of_kin_name", nextOfKinNamePersonAttribute.getValue());
-					}
-				}
-				
-				PersonAttributeType nextOfKinContactAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
-				    NEXT_OF_KIN_CONTACT);
-				if (nextOfKinContactAttributeType != null) {
-					PersonAttribute nextOfKinContactPersonAttribute = patient.getAttribute(nextOfKinContactAttributeType);
-					if (nextOfKinContactPersonAttribute != null) {
-						nextOfKinJsonObject.addProperty("contacts_of_next_of_kin",
-						    nextOfKinContactPersonAttribute.getValue());
-					}
-				}
-				
-				PersonAttributeType nextOfKinRelationshipAttributeType = Context.getPersonService()
-				        .getPersonAttributeTypeByUuid(NEXT_OF_KIN_RELATIONSHIP);
-				if (nextOfKinRelationshipAttributeType != null) {
-					PersonAttribute nextOfKinRelationshipPersonAttribute = patient
-					        .getAttribute(nextOfKinRelationshipAttributeType);
-					if (nextOfKinRelationshipPersonAttribute != null) {
-						nextOfKinJsonObject.addProperty("relationship_to_next_of_kin",
-						    nextOfKinRelationshipPersonAttribute.getValue());
-					}
-				}
-				
-				registrationRequest.setNextOfKin(nextOfKinJsonObject.toString());
-				patientRegistrationRequests.add(registrationRequest);
-			}
-			if (patientRegistrationRequests.size() > 0) {
-				uploadPatientRegistrationRecords(patientRegistrationRequests, newSyncTime);
+				MyCareHubUtil.uploadPatientRegistrationRecords(patientRegistrationRequest, newSyncTime);
 			} else {
 				settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
 			}
 		} else {
-			settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, new Date());
+			settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
 		}
+	}
+	
+	public List<PatientRegistration> getNewOrUpdatedPatientRegistrationsSinceLastSyncDate(Date lastSyncDate) {
+		
+		List<PatientRegistration> patientRegistrationRequests = new ArrayList<PatientRegistration>();
+		List<Patient> patients = myCareHubPatientDao.getCccPatientsCreatedOrUpdatedSinceDate(lastSyncDate);
+		
+		for (Patient patient : patients) {
+			PatientRegistration registrationRequest = new PatientRegistration();
+			registrationRequest.setName(patient.getFamilyName() + patient.getGivenName());
+			registrationRequest.setClientType("KenyaEMR");
+			registrationRequest.setCounseled("false");
+			registrationRequest.setGender(patient.getGender());
+			
+			PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
+			    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
+			registrationRequest.setCccNumber(patient.getPatientIdentifier(cccIdentifierType).getIdentifier());
+			
+			String pattern = "yyyy-MM-dd";
+			SimpleDateFormat sf = new SimpleDateFormat(pattern);
+			registrationRequest.setDateOfBirth(sf.format(patient.getBirthdate()));
+			registrationRequest.setBirthdateEstimated(patient.getBirthdateEstimated());
+			
+			registrationRequest.setEnrollmentDate(sf.format(patient.getDateCreated()));
+			
+			PersonAttributeType phoneNumberAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
+			    TELEPHONE_CONTACT);
+			if (phoneNumberAttributeType != null) {
+				PersonAttribute phoneNumberAttribute = patient.getAttribute(phoneNumberAttributeType);
+				if (phoneNumberAttribute != null) {
+					registrationRequest.setPhoneNumber(phoneNumberAttribute.getValue());
+				}
+			}
+			
+			JsonObject nextOfKinJsonObject = new JsonObject();
+			
+			PersonAttributeType nextOfKinNameAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
+			    NEXT_OF_KIN_NAME);
+			if (nextOfKinNameAttributeType != null) {
+				PersonAttribute nextOfKinNamePersonAttribute = patient.getAttribute(nextOfKinNameAttributeType);
+				if (nextOfKinNamePersonAttribute != null) {
+					nextOfKinJsonObject.addProperty(NEXT_OF_KIN_NAME_KEY, nextOfKinNamePersonAttribute.getValue());
+				}
+			}
+			
+			PersonAttributeType nextOfKinContactAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(
+			    NEXT_OF_KIN_CONTACT);
+			if (nextOfKinContactAttributeType != null) {
+				PersonAttribute nextOfKinContactPersonAttribute = patient.getAttribute(nextOfKinContactAttributeType);
+				if (nextOfKinContactPersonAttribute != null) {
+					nextOfKinJsonObject.addProperty(NEXT_OF_KIN_CONTACTS_KEY, nextOfKinContactPersonAttribute.getValue());
+				}
+			}
+			
+			PersonAttributeType nextOfKinRelationshipAttributeType = Context.getPersonService()
+			        .getPersonAttributeTypeByUuid(NEXT_OF_KIN_RELATIONSHIP);
+			if (nextOfKinRelationshipAttributeType != null) {
+				PersonAttribute nextOfKinRelationshipPersonAttribute = patient
+				        .getAttribute(nextOfKinRelationshipAttributeType);
+				if (nextOfKinRelationshipPersonAttribute != null) {
+					nextOfKinJsonObject.addProperty(NEXT_OF_KIN_RELATIONSHIP_KEY,
+					    nextOfKinRelationshipPersonAttribute.getValue());
+				}
+			}
+			
+			registrationRequest.setNextOfKin(nextOfKinJsonObject.toString());
+			patientRegistrationRequests.add(registrationRequest);
+		}
+		return patientRegistrationRequests;
 	}
 	
 	private void fetchRegisteredClientIdentifiersSinceLastSyncDate() {
@@ -165,7 +175,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				patients.addAll(patientsWithCcc);
 			}
 		}
-
+		
 		//set last sync time to 3 years back, to get historical records for the period
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.YEAR, 3);
@@ -339,7 +349,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			medicalRecordRequestList.add(medicalRecordRequest);
 		}
 		if (medicalRecordRequestList.size() > 0) {
-			uploadPatientMedicalRecords(medicalRecordRequestList, newSyncTime);
+			MyCareHubUtil.uploadPatientMedicalRecords(medicalRecordRequestList, newSyncTime);
 		} else {
 			Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, newSyncTime);
 		}

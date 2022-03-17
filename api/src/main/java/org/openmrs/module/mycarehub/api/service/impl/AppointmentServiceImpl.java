@@ -197,7 +197,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
 			jsonObject.addProperty("lastSyncTime", dateTimeFormat.format(setting.getLastSyncTime()));
 			
-			JsonArray jsonArray = fetchPatientAppointments(jsonObject, newSyncDate);
+			JsonArray jsonArray = fetchPatientAppointments(setting.getLastSyncTime(), newSyncDate);
 			
 			List<AppointmentRequests> appointmentRequests = new ArrayList<AppointmentRequests>();
 			for (int i = 0; i < jsonArray.size(); i++) {

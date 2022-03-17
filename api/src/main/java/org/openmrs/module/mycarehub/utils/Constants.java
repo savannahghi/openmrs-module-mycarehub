@@ -110,5 +110,14 @@ public class Constants {
 			
 			public static final int ALLERGY_DATE = 160753;
 		}
+		
+		public static final class NextOfKinPatientRegistrationKeys {
+			
+			public static final String NEXT_OF_KIN_NAME_KEY = "next_of_kin_name";
+			
+			public static final String NEXT_OF_KIN_CONTACTS_KEY = "contacts_of_next_of_kin";
+			
+			public static final String NEXT_OF_KIN_RELATIONSHIP_KEY = "relationship_to_next_of_kin";
+		}
 	}
 }

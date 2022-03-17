@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_HEALTH_DIARY_GET;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPatientHealthDiaries;
 
 public class HealthDiaryServiceImpl extends BaseOpenmrsService implements HealthDiaryService {
@@ -61,11 +60,7 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
 		if (setting != null) {
 			Date newSyncDate = new Date();
 			
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
-			jsonObject.addProperty("lastSyncTime", dateTimeFormat.format(setting.getLastSyncTime()));
-			
-			JsonArray jsonArray = getPatientHealthDiaries(jsonObject, newSyncDate);
+			JsonArray jsonArray = getPatientHealthDiaries(setting.getLastSyncTime(), newSyncDate);
 			List<HealthDiary> healthDiaries = new ArrayList<HealthDiary>();
 			for (int i = 0; i < jsonArray.size(); i++) {
 				JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
