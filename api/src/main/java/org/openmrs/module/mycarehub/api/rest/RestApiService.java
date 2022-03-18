@@ -28,42 +28,42 @@ public interface RestApiService {
 	Call<LoginResponse> login(@Body LoginRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@POST("client_registration")
+	@POST("kenya-emr/client_registration")
 	Call<PatientRegistrationResponse> uploadPatientRegistrations(@Header("Authorization") String authorization,
 	        @Body PatientRegistrationRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@GET("clients")
+	@GET("kenya-emr/clients")
 	Call<NewClientsIdentifiersResponse> getNewClientsIdentifiers(@Header("Authorization") String authorization,
 	        @Body NewClientsIdentifiersRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@POST("appointment")
+	@POST("kenya-emr/appointment")
 	Call<AppointmentResponse> uploadPatientAppointments(@Header("Authorization") String authorization,
 	        @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@POST("appointment-service-request")
+	@POST("kenya-emr/appointment-service-request")
 	Call<AppointmentResponse> uploadPatientAppointmentRequests(@Header("Authorization") String authorization,
 	        @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@GET("appointment-service-request")
+	@GET("kenya-emr/appointment-service-request")
 	Call<JsonObject> fetchPatientAppointmentRequests(@Header("Authorization") String authorization, @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@POST("red-flag-service-request")
+	@POST("kenya-emr/red-flag-service-request")
 	Call<RedFlagResponse> postPatientRedFlags(@Header("Authorization") String authorization, @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@GET("red-flag-service-request")
+	@GET("kenya-emr/red-flag-service-request")
 	Call<JsonObject> fetchPatientRedFlags(@Header("Authorization") String authorization, @Body JsonObject request);
 	
-	@POST("obs")
+	@POST("kenya-emr/obs")
 	Call<MedicalRecordResponse> uploadMedicalRecords(@Header("Authorization") String authorization,
 	        @Body MedicalRecordsRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@GET("appointment-service-request")
+	@GET("kenya-emr/appointment-service-request")
 	Call<JsonObject> fetchPatientHealthDiaries(@Header("Authorization") String authorization, @Body JsonObject request);
 }

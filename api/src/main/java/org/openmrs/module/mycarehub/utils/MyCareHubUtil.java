@@ -16,7 +16,6 @@ import org.openmrs.module.mycarehub.api.rest.mapper.ApiError;
 import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
@@ -113,7 +112,6 @@ public class MyCareHubUtil {
 				Calendar calExpiryTime = Calendar.getInstance();
 				calExpiryTime.setTime(dtExpiryTime);
 				calExpiryTime.add(Calendar.SECOND, -5);
-				
 				if (calNow.before(calExpiryTime))
 					return token;
 			}
@@ -134,20 +132,21 @@ public class MyCareHubUtil {
 		return token;
 	}
 	
-	public static void authenticateMyCareHub() throws AuthenticationException {
+	public static LoginResponse authenticateMyCareHub() throws AuthenticationException {
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null)
 			throw new AuthenticationException("Cant create myCareHub REST API service");
 		
 		Call<LoginResponse> call = restApiService.login(new LoginRequest(EMPTY, getApiUsername(), getApiPassword()));
+		LoginResponse loginResponse = null;
 		try {
 			Response<LoginResponse> response = call.execute();
 			if (response.isSuccessful()) {
 				log.info("Successful authentication");
-				LoginResponse loginResponse = response.body();
+				loginResponse = response.body();
 				if (loginResponse != null) {
 					Calendar cal = Calendar.getInstance();
-					cal.add(Calendar.SECOND, 3600);
+					cal.add(Calendar.SECOND, loginResponse.getExpiryTime().intValue());
 					Date dt = cal.getTime();
 					
 					AdministrationService as = Context.getAdministrationService();
@@ -166,6 +165,7 @@ public class MyCareHubUtil {
 		catch (Throwable throwable) {
 			throw new AuthenticationException(throwable);
 		}
+		return loginResponse;
 	}
 	
 	public static String getDefaultLocationMflCode() {
@@ -222,7 +222,8 @@ public class MyCareHubUtil {
 			String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 			SimpleDateFormat sf = new SimpleDateFormat(pattern);
 			
-			Call<NewClientsIdentifiersResponse> call = restApiService.getNewClientsIdentifiers(getApiToken(),
+			String accessToken = getApiToken();
+			Call<NewClientsIdentifiersResponse> call = restApiService.getNewClientsIdentifiers(accessToken,
 			    new NewClientsIdentifiersRequest(facility, sf.format(lastSycTime)));
 			
 			Response<NewClientsIdentifiersResponse> response = call.execute();
