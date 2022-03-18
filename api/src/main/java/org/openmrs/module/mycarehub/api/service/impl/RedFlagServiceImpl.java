@@ -22,6 +22,14 @@ import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.MYCAREHUB_ID_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_CONTAINER;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_PROGRESS_BY_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_PROGRESS_DATE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_REQUEST_TYPE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_BY_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_DATE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_STATUS_KEY;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPatientRedFlagRequests;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.postPatientRedFlags;
@@ -93,26 +101,28 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 			if (redFlags.size() > 0) {
 				for (RedFlags redFlag : redFlags) {
 					JsonObject redFlagObject = new JsonObject();
-					redFlagObject.addProperty("ID", redFlag.getMycarehubId());
-					redFlagObject.addProperty("status", redFlag.getStatus());
-					redFlagObject.addProperty("RequestType", redFlag.getRequestType());
+					redFlagObject.addProperty(MYCAREHUB_ID_KEY, redFlag.getMycarehubId());
+					redFlagObject.addProperty(RED_FLAG_STATUS_KEY, redFlag.getStatus());
+					redFlagObject.addProperty(RED_FLAG_REQUEST_TYPE_KEY, redFlag.getRequestType());
 					if (redFlag.getProgressDate() != null) {
-						redFlagObject.addProperty("InProgressAt", dateTimeFormat.format(redFlag.getProgressDate()));
+						redFlagObject.addProperty(RED_FLAG_PROGRESS_DATE_KEY,
+						    dateTimeFormat.format(redFlag.getProgressDate()));
 					} else {
-						redFlagObject.addProperty("InProgressAt", "null");
+						redFlagObject.addProperty(RED_FLAG_PROGRESS_DATE_KEY, "null");
 					}
-					redFlagObject.addProperty("InProgressBy", redFlag.getProgressBy());
+					redFlagObject.addProperty(RED_FLAG_PROGRESS_BY_KEY, redFlag.getProgressBy());
 					if (redFlag.getDateResolved() != null) {
-						redFlagObject.addProperty("ResolvedAt", dateTimeFormat.format(redFlag.getDateResolved()));
+						redFlagObject.addProperty(RED_FLAG_RESOLVED_DATE_KEY,
+						    dateTimeFormat.format(redFlag.getDateResolved()));
 					} else {
-						redFlagObject.addProperty("ResolvedAt", "null");
+						redFlagObject.addProperty(RED_FLAG_RESOLVED_DATE_KEY, "null");
 					}
-					redFlagObject.addProperty("ResolvedBy", redFlag.getResolvedBy());
+					redFlagObject.addProperty(RED_FLAG_RESOLVED_BY_KEY, redFlag.getResolvedBy());
 					
 					redFlagArray.add(redFlagObject);
 				}
 				
-				containerObject.add("redFlags", redFlagArray);
+				containerObject.add(RED_FLAG_CONTAINER, redFlagArray);
 				
 				postPatientRedFlags(containerObject, newSyncDate);
 				

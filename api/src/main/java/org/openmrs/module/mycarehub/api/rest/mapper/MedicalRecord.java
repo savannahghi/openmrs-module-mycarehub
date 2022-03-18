@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class MedicalRecord {
-
+	
 	@SerializedName("ccc_number")
 	private String cccNumber;
 	
