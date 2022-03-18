@@ -2,12 +2,15 @@ package org.openmrs.module.mycarehub.utils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.rest.RestApiService;
+import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
@@ -18,6 +21,7 @@ import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubVitalSign;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
+import org.openmrs.module.mycarehub.exception.AuthenticationException;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -36,6 +40,8 @@ import static org.openmrs.module.mycarehub.utils.Constants.GP_DEFAULT_LOCATION_M
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_PASSWORD;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_USERNAME;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_PASSWORD;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_MEDICAL_RECORDS;
@@ -88,13 +94,15 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PowerMockIgnore("javax.net.ssl.*")
 public class MyCareHubUtilTest {
 	
-	private final static String testServerUrl = "https://mycarehub-testing.savannahghi.org/kenya-emr/";
+	private final static String testServerUrl = "https://mycarehub-testing.savannahghi.org/";
 	
 	private final static String username = "kenya-emr@savannahinformatics.com";
 	
 	private final static String password = "#kenya-EMR#";
 	
 	private final static String mflCode = "1234";
+	
+	private static final Log log = LogFactory.getLog(MyCareHubUtilTest.class);
 	
 	private RestApiService restApiService;
 	
@@ -122,6 +130,26 @@ public class MyCareHubUtilTest {
 		when(administrationService.getGlobalProperty(GP_MYCAREHUB_API_PASSWORD, GP_MYCAREHUB_API_DEFAULT_PASSWORD))
 		        .thenReturn(password);
 		when(administrationService.getGlobalProperty(GP_DEFAULT_LOCATION_MFL_CODE, EMPTY)).thenReturn(mflCode);
+		
+		String accessToken = "";
+		try {
+			LoginResponse response = MyCareHubUtil.authenticateMyCareHub();
+			if (response != null) {
+				accessToken = response.getAccessToken();
+				when(administrationService.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY)).thenReturn(accessToken);
+				
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.SECOND, response.getExpiryTime().intValue());
+				Date dt = cal.getTime();
+				SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				
+				when(administrationService.getGlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, EMPTY)).thenReturn(
+				    dateTimeFormat.format(dt));
+			}
+		}
+		catch (AuthenticationException e) {
+			log.error("Error authenticating", e);
+		}
 	}
 	
 	@Test
