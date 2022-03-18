@@ -1,10 +1,10 @@
 package org.openmrs.module.mycarehub.api.rest;
 
 import com.google.gson.JsonObject;
+import okhttp3.ResponseBody;
 import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
@@ -18,8 +18,9 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-
-import java.util.List;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 public interface RestApiService {
 	
@@ -33,9 +34,14 @@ public interface RestApiService {
 	        @Body PatientRegistrationRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@GET("kenya-emr/clients")
+	@GET("kenya-emr/patients")
 	Call<NewClientsIdentifiersResponse> getNewClientsIdentifiers(@Header("Authorization") String authorization,
 	        @Body NewClientsIdentifiersRequest request);
+	
+	@Headers({ "Accept: application/json", "Content-Type: application/json" })
+	@GET
+	Call<NewClientsIdentifiersResponse> getNewClientsIdentifiers(@Header("Authorization") String authorization,
+	        @Url String url);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("kenya-emr/appointment")
@@ -48,22 +54,22 @@ public interface RestApiService {
 	        @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@GET("kenya-emr/appointment-service-request")
-	Call<JsonObject> fetchPatientAppointmentRequests(@Header("Authorization") String authorization, @Body JsonObject request);
+	@GET
+	Call<ResponseBody> fetchPatientAppointmentRequests(@Header("Authorization") String authorization, @Url String url);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("kenya-emr/red-flag-service-request")
 	Call<RedFlagResponse> postPatientRedFlags(@Header("Authorization") String authorization, @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@GET("kenya-emr/red-flag-service-request")
-	Call<JsonObject> fetchPatientRedFlags(@Header("Authorization") String authorization, @Body JsonObject request);
+	@GET
+	Call<ResponseBody> fetchPatientRedFlags(@Header("Authorization") String authorization, @Url String url);
 	
 	@POST("kenya-emr/obs")
 	Call<MedicalRecordResponse> uploadMedicalRecords(@Header("Authorization") String authorization,
 	        @Body MedicalRecordsRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@GET("kenya-emr/appointment-service-request")
-	Call<JsonObject> fetchPatientHealthDiaries(@Header("Authorization") String authorization, @Body JsonObject request);
+	@GET
+	Call<ResponseBody> fetchPatientHealthDiaries(@Header("Authorization") String authorization, @Url String url);
 }

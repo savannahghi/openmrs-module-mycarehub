@@ -83,6 +83,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObje
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_PROGRESS_BY_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_PROGRESS_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_REQUEST_TYPE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_BY_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_STATUS_KEY;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -100,7 +101,7 @@ public class MyCareHubUtilTest {
 	
 	private final static String password = "#kenya-EMR#";
 	
-	private final static String mflCode = "1234";
+	private final static String mflCode = "232343434";
 	
 	private static final Log log = LogFactory.getLog(MyCareHubUtilTest.class);
 	
@@ -294,14 +295,14 @@ public class MyCareHubUtilTest {
 		redFlagObject.addProperty(RED_FLAG_PROGRESS_DATE_KEY, dateTimeFormat.format(new Date()));
 		redFlagObject.addProperty(RED_FLAG_PROGRESS_BY_KEY, "User's Name");
 		redFlagObject.addProperty(RED_FLAG_RESOLVED_DATE_KEY, "null");
-		redFlagObject.addProperty(RED_FLAG_RESOLVED_DATE_KEY, "");
+		redFlagObject.addProperty(RED_FLAG_RESOLVED_BY_KEY, "");
 		
 		JsonArray redFlagArray = new JsonArray();
 		redFlagArray.add(redFlagObject);
 		
 		JsonObject containerObject = new JsonObject();
 		containerObject.add(RED_FLAG_CONTAINER, redFlagArray);
-		
+
 		Date newSyncDate = new Date();
 		MyCareHubUtil.postPatientRedFlags(containerObject, newSyncDate);
 		

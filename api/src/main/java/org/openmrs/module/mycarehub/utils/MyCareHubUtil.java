@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import okhttp3.ResponseBody;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -26,6 +28,7 @@ import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.exception.AuthenticationException;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 import java.text.ParseException;
@@ -80,7 +83,7 @@ public class MyCareHubUtil {
 	
 	private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	private static final String syncTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	private static final String syncTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	
 	private static final SimpleDateFormat syncTimeFormat = new SimpleDateFormat(syncTimePattern);
 	
@@ -182,7 +185,7 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(getApiToken(),
+			Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(getBearer(getApiToken()),
 			    patientRegistrationRequest);
 			Response<PatientRegistrationResponse> response = call.execute();
 			if (response.isSuccessful()) {
@@ -217,16 +220,16 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			String facility = getDefaultLocationMflCode();
-			
 			String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 			SimpleDateFormat sf = new SimpleDateFormat(pattern);
 			
+			String url = getApiUrl() + "kenya-emr/patients?MFLCODE=" + getDefaultLocationMflCode() + "&lastSyncTime="
+			        + syncTimeFormat.format(lastSycTime) + "Z";
 			String accessToken = getApiToken();
-			Call<NewClientsIdentifiersResponse> call = restApiService.getNewClientsIdentifiers(accessToken,
-			    new NewClientsIdentifiersRequest(facility, sf.format(lastSycTime)));
+			Call<NewClientsIdentifiersResponse> call = restApiService.getNewClientsIdentifiers(getBearer(accessToken), url);
 			
 			Response<NewClientsIdentifiersResponse> response = call.execute();
+			
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS,
 				    newSyncTime);
@@ -261,7 +264,8 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<AppointmentResponse> call = restApiService.uploadPatientAppointments(getApiToken(), appointmentRequests);
+			Call<AppointmentResponse> call = restApiService.uploadPatientAppointments(getBearer(getApiToken()),
+			    appointmentRequests);
 			Response<AppointmentResponse> response = call.execute();
 			if (response.isSuccessful()) {
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
@@ -294,7 +298,8 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<AppointmentResponse> call = restApiService.uploadPatientAppointments(getApiToken(), appointmentRequests);
+			Call<AppointmentResponse> call = restApiService.uploadPatientAppointments(getBearer(getApiToken()),
+			    appointmentRequests);
 			Response<AppointmentResponse> response = call.execute();
 			if (response.isSuccessful()) {
 				
@@ -329,19 +334,20 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("MFLCODE", MyCareHubUtil.getDefaultLocationMflCode());
-			jsonObject.addProperty("lastSyncTime", syncTimeFormat.format(lastSyncTime));
+			String url = getApiUrl() + "kenya-emr/appointment-service-request?MFLCODE=" + getDefaultLocationMflCode()
+			        + "&lastSyncTime=" + syncTimeFormat.format(lastSyncTime) + "Z";
 			
-			Call<JsonObject> call = restApiService.fetchPatientAppointmentRequests(getApiToken(), jsonObject);
-			Response<JsonObject> response = call.execute();
+			Call<ResponseBody> call = restApiService.fetchPatientAppointmentRequests(getBearer(getApiToken()), url);
+			Response<ResponseBody> response = call.execute();
 			
 			if (response.isSuccessful()) {
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_GET, newSyncTime);
 				
-				JsonObject jsonResponse = response.body().getAsJsonObject();
-				jsonArray = jsonResponse.getAsJsonArray("appointments");
+				if (response.body() != null) {
+					JsonObject jsonResponse = new JsonParser().parse(response.body().string()).getAsJsonObject();
+					jsonArray = jsonResponse.getAsJsonArray("appointments");
+				}
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -371,10 +377,10 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<RedFlagResponse> call = restApiService.postPatientRedFlags(getApiToken(), redflags);
+			Call<RedFlagResponse> call = restApiService.postPatientRedFlags(getBearer(getApiToken()), redflags);
 			Response<RedFlagResponse> response = call.execute();
 			if (response.isSuccessful()) {
-				
+
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncTime);
 			} else {
@@ -406,18 +412,19 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
-			jsonObject.addProperty("lastSyncTime", syncTimeFormat.format(lastSyncTime));
+			String url = getApiUrl() + "kenya-emr/service_request?MFLCODE=" + getDefaultLocationMflCode() + "&lastSyncTime="
+			        + syncTimeFormat.format(lastSyncTime) + "Z";
 			
-			Call<JsonObject> call = restApiService.fetchPatientRedFlags(getApiToken(), jsonObject);
-			Response<JsonObject> response = call.execute();
+			Call<ResponseBody> call = restApiService.fetchPatientRedFlags(getBearer(getApiToken()), url);
+			Response<ResponseBody> response = call.execute();
 			if (response.isSuccessful()) {
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_GET, newSyncTime);
 				
-				JsonObject jsonResponse = response.body().getAsJsonObject();
-				jsonArray = jsonResponse.getAsJsonArray("redFlags");
+				if (response.body() != null) {
+					JsonObject jsonResponse = new JsonParser().parse(response.body().string()).getAsJsonObject();
+					jsonArray = jsonResponse.getAsJsonArray("redFlags");
+				}
 			} else {
 				try {
 					if (response.errorBody() != null) {
@@ -447,7 +454,7 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecords(getApiToken(), request);
+			Call<MedicalRecordResponse> call = restApiService.uploadMedicalRecords(getBearer(getApiToken()), request);
 			Response<MedicalRecordResponse> response = call.execute();
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,
@@ -482,25 +489,28 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("MFLCODE", getDefaultLocationMflCode());
-			jsonObject.addProperty("lastSyncTime", syncTimeFormat.format(lastSyncTime));
+			String url = getApiUrl() + "kenya-emr/health_diary?MFLCODE=" + getDefaultLocationMflCode() + "&lastSyncTime="
+			        + syncTimeFormat.format(lastSyncTime) + "Z";
 			
-			Call<JsonObject> call = restApiService.fetchPatientHealthDiaries(getApiToken(), jsonObject);
-			Response<JsonObject> response = call.execute();
+			Call<ResponseBody> call = restApiService.fetchPatientHealthDiaries(getBearer(getApiToken()), url);
+			
+			Response<ResponseBody> response = call.execute();
 			if (response.isSuccessful()) {
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_HEALTH_DIARY_GET, newSyncTime);
 				
-				JsonObject jsonResponse = response.body().getAsJsonObject();
-				jsonArray = jsonResponse.getAsJsonArray("healthDiaries");
+				if (response.body() != null) {
+					JsonObject jsonResponse = new JsonParser().parse(response.body().string()).getAsJsonObject();
+					jsonArray = jsonResponse.getAsJsonArray("healthDiaries");
+				}
 				
 			} else {
 				try {
 					if (response.errorBody() != null) {
 						log.error(response.errorBody().charStream());
-					} else
+					} else {
 						log.error(response.message());
+					}
 				}
 				catch (NullPointerException e) {
 					log.error(response.message());
@@ -564,5 +574,9 @@ public class MyCareHubUtil {
 		personAttributeTypeUuids.add(NEXT_OF_KIN_CONTACT);
 		personAttributeTypeUuids.add(NEXT_OF_KIN_RELATIONSHIP);
 		return personAttributeTypeUuids;
+	}
+	
+	public static String getBearer(String token) {
+		return "Bearer ".concat(token);
 	}
 }
