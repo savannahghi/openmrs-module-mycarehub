@@ -15,7 +15,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.rest.ApiClient;
 import org.openmrs.module.mycarehub.api.rest.RestApiService;
 import org.openmrs.module.mycarehub.api.rest.mapper.ApiError;
-import org.openmrs.module.mycarehub.api.rest.mapper.AppointmentResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
@@ -24,7 +23,6 @@ import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.RedFlagResponse;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.exception.AuthenticationException;
 import retrofit2.Call;
@@ -195,8 +193,9 @@ public class MyCareHubUtil {
 				try {
 					if (response.errorBody() != null) {
 						log.error(response.errorBody().charStream());
-					} else
+					} else {
 						log.error(response.message());
+					}
 				}
 				catch (NullPointerException e) {
 					log.error(response.message());
@@ -264,9 +263,9 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<AppointmentResponse> call = restApiService.uploadPatientAppointments(getBearer(getApiToken()),
-			    appointmentRequests);
-			Response<AppointmentResponse> response = call.execute();
+			Call<ResponseBody> call = restApiService
+			        .uploadPatientAppointments(getBearer(getApiToken()), appointmentRequests);
+			Response<ResponseBody> response = call.execute();
 			if (response.isSuccessful()) {
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncTime);
@@ -298,9 +297,9 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<AppointmentResponse> call = restApiService.uploadPatientAppointments(getBearer(getApiToken()),
+			Call<ResponseBody> call = restApiService.uploadPatientAppointmentRequests(getBearer(getApiToken()),
 			    appointmentRequests);
-			Response<AppointmentResponse> response = call.execute();
+			Response<ResponseBody> response = call.execute();
 			if (response.isSuccessful()) {
 				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
@@ -377,10 +376,10 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<RedFlagResponse> call = restApiService.postPatientRedFlags(getBearer(getApiToken()), redflags);
-			Response<RedFlagResponse> response = call.execute();
+			Call<ResponseBody> call = restApiService.postPatientRedFlags(getBearer(getApiToken()), redflags);
+			Response<ResponseBody> response = call.execute();
 			if (response.isSuccessful()) {
-
+				
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncTime);
 			} else {

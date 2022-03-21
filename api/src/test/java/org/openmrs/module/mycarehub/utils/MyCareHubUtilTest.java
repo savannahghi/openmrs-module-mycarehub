@@ -155,7 +155,9 @@ public class MyCareHubUtilTest {
 	
 	@Test
 	public void getNewMyCareHubClientCccIdentifiers_shouldCreateCorrectSyncTimeSetting() {
-		Date lastSyncTime = new Date(10000);
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -2);
+		Date lastSyncTime = cal.getTime();
 		Date newSyncTime = new Date();
 		
 		MyCareHubUtil.getNewMyCareHubClientCccIdentifiers(lastSyncTime, newSyncTime);
@@ -196,21 +198,22 @@ public class MyCareHubUtilTest {
 		
 		PatientRegistration patientRegistration = new PatientRegistration();
 		patientRegistration.setName("Dummy Patient");
-		patientRegistration.setCccNumber("123456");
-		patientRegistration.setClientType("KenyaEMR");
-		patientRegistration.setCounseled("False");
+		patientRegistration.setCccNumber("12345634562345347");
+		patientRegistration.setClientType("PMTCT");
+		patientRegistration.setCounseled(true);
 		patientRegistration.setPhoneNumber("0788888888");
-		patientRegistration.setGender("M");
+		patientRegistration.setGender("male");
+		patientRegistration.setMFLCODE(Integer.valueOf(MyCareHubUtil.getDefaultLocationMflCode()));
 		
 		patientRegistration.setDateOfBirth(sf.format(new Date(0)));
 		patientRegistration.setBirthdateEstimated(false);
 		patientRegistration.setEnrollmentDate(sf.format(new Date()));
 		
 		JsonObject nextOfKin = new JsonObject();
-		nextOfKin.addProperty(NEXT_OF_KIN_NAME_KEY, "Kin Name");
-		nextOfKin.addProperty(NEXT_OF_KIN_CONTACTS_KEY, "0789999999");
-		nextOfKin.addProperty(NEXT_OF_KIN_RELATIONSHIP_KEY, "Father");
-		patientRegistration.setNextOfKin(nextOfKin.toString());
+		nextOfKin.addProperty(NEXT_OF_KIN_NAME_KEY, "Kin Names");
+		nextOfKin.addProperty(NEXT_OF_KIN_CONTACTS_KEY, "0789999989");
+		nextOfKin.addProperty(NEXT_OF_KIN_RELATIONSHIP_KEY, "Mother");
+		patientRegistration.setNextOfKin(nextOfKin);
 		
 		List<PatientRegistration> patientRegistrations = new ArrayList<PatientRegistration>();
 		patientRegistrations.add(patientRegistration);
@@ -230,7 +233,7 @@ public class MyCareHubUtilTest {
 		JsonObject appointmentObject = new JsonObject();
 		
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		appointmentObject.addProperty(APPOINTMENT_UUID_KEY, "f67a4ad9-4ac4-4183-9852-1dd75b04aff5");
 		
@@ -245,7 +248,7 @@ public class MyCareHubUtilTest {
 		    timeFormat.format(appointmentStartDate) + " " + timeFormat.format(appointmentEndDate));
 		appointmentObject.addProperty(APPOINTMENT_TYPE_KEY, "TypeName");
 		appointmentObject.addProperty(APPOINTMENT_STATUS_KEY, "StatusName");
-		appointmentObject.addProperty(CCC_NUMBER, "12345");
+		appointmentObject.addProperty(CCC_NUMBER, "12345634562345347");
 		
 		JsonArray appointmentsArray = new JsonArray();
 		appointmentsArray.add(appointmentObject);
@@ -253,7 +256,7 @@ public class MyCareHubUtilTest {
 		JsonObject containerObject = new JsonObject();
 		containerObject.addProperty(FACILITY_MFL_CODE, MyCareHubUtil.getDefaultLocationMflCode());
 		containerObject.add(APPOINTMENTS_CONTAINER_KEY, appointmentsArray);
-		
+
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointments(containerObject, newSyncDate);
 		
@@ -302,7 +305,7 @@ public class MyCareHubUtilTest {
 		
 		JsonObject containerObject = new JsonObject();
 		containerObject.add(RED_FLAG_CONTAINER, redFlagArray);
-
+		
 		Date newSyncDate = new Date();
 		MyCareHubUtil.postPatientRedFlags(containerObject, newSyncDate);
 		

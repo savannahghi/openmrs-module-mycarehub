@@ -116,8 +116,13 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			PatientRegistration registrationRequest = new PatientRegistration();
 			registrationRequest.setName(patient.getFamilyName() + patient.getGivenName());
 			registrationRequest.setClientType("KenyaEMR");
-			registrationRequest.setCounseled("false");
-			registrationRequest.setGender(patient.getGender());
+			registrationRequest.setCounseled(false);
+			registrationRequest.setMFLCODE(Integer.valueOf(MyCareHubUtil.getDefaultLocationMflCode()));
+			if ("M".equals(patient.getGender())) {
+				registrationRequest.setGender("male");
+			} else {
+				registrationRequest.setGender("female");
+			}
 			
 			PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
 			    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
@@ -170,7 +175,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				}
 			}
 			
-			registrationRequest.setNextOfKin(nextOfKinJsonObject.toString());
+			registrationRequest.setNextOfKin(nextOfKinJsonObject);
 			patientRegistrationRequests.add(registrationRequest);
 		}
 		return patientRegistrationRequests;

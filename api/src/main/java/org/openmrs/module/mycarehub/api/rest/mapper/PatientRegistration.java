@@ -4,7 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class PatientRegistration {
 	
-	@SerializedName("ccc_number")
+	@SerializedName("MFLCODE")
+	private Integer MFLCODE;
+	
+	@SerializedName("cccNumber")
 	private String cccNumber;
 	
 	@SerializedName("name")
@@ -13,13 +16,13 @@ public class PatientRegistration {
 	@SerializedName("dateOfBirth")
 	private String dateOfBirth;
 	
-	@SerializedName("client_type")
+	@SerializedName("clientType")
 	private String clientType;
 	
-	@SerializedName("phone_number")
+	@SerializedName("phoneNumber")
 	private String phoneNumber;
 	
-	@SerializedName("enrollment_date")
+	@SerializedName("enrollmentDate")
 	private String enrollmentDate;
 	
 	@SerializedName("birthdateEstimated")
@@ -28,11 +31,11 @@ public class PatientRegistration {
 	@SerializedName("gender")
 	private String gender;
 	
-	@SerializedName("counseled")
-	private String counseled;
+	@SerializedName("counselled")
+	private boolean counseled;
 	
-	@SerializedName("next_of_kin")
-	private String nextOfKin;
+	@SerializedName("nextOfKin")
+	private Object nextOfKin;
 	
 	public void setCccNumber(String cccNumber) {
 		this.cccNumber = cccNumber;
@@ -98,19 +101,27 @@ public class PatientRegistration {
 		return gender;
 	}
 	
-	public void setCounseled(String counseled) {
+	public void setCounseled(boolean counseled) {
 		this.counseled = counseled;
 	}
 	
-	public String getCounseled() {
+	public boolean getCounseled() {
 		return counseled;
 	}
 	
-	public void setNextOfKin(String nextOfKin) {
+	public void setNextOfKin(Object nextOfKin) {
 		this.nextOfKin = nextOfKin;
 	}
 	
-	public String getNextOfKin() {
+	public Object getNextOfKin() {
 		return nextOfKin;
+	}
+	
+	public Integer getMFLCODE() {
+		return MFLCODE;
+	}
+	
+	public void setMFLCODE(Integer MFLCODE) {
+		this.MFLCODE = MFLCODE;
 	}
 }

@@ -142,7 +142,7 @@ public class Constants {
 			
 			public static final String APPOINTMENT_TYPE_KEY = "appointment_type";
 			
-			public static final String APPOINTMENT_STATUS_KEY = "appointment_type";
+			public static final String APPOINTMENT_STATUS_KEY = "appointment_status";
 			
 			public static final String APPOINTMENTS_CONTAINER_KEY = "appointments";
 		}

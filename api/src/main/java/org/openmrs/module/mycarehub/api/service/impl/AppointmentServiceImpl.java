@@ -116,7 +116,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			if (appointments.size() > 0) {
 				for (Appointment appointment : appointments) {
 					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-					SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 					
 					JsonObject appointmentObject = new JsonObject();
 					appointmentObject.addProperty(APPOINTMENT_UUID_KEY, appointment.getUuid());
