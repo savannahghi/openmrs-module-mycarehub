@@ -324,7 +324,7 @@ public class MyCareHubUtil {
 		}
 	}
 	
-	public static JsonArray fetchPatientAppointments(Date lastSyncTime, Date newSyncTime) {
+	public static JsonArray fetchPatientAppointmentRequests(Date lastSyncTime, Date newSyncTime) {
 		JsonArray jsonArray = new JsonArray();
 		RestApiService restApiService = ApiClient.getRestService();
 		if (restApiService == null) {

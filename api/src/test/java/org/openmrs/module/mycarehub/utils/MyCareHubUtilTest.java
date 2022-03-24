@@ -165,11 +165,11 @@ public class MyCareHubUtilTest {
 	}
 	
 	@Test
-	public void fetchPatientAppointments_shouldCreateCorrectSyncTimeSetting() {
+	public void fetchPatientAppointmentsRequests_shouldCreateCorrectSyncTimeSetting() {
 		Date lastSyncTime = new Date(0);
 		Date newSyncTime = new Date();
 		
-		MyCareHubUtil.fetchPatientAppointments(lastSyncTime, newSyncTime);
+		MyCareHubUtil.fetchPatientAppointmentRequests(lastSyncTime, newSyncTime);
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_GET, newSyncTime);
 	}
 	
@@ -244,11 +244,11 @@ public class MyCareHubUtilTest {
 		Date appointmentEndDate = cal.getTime();
 		
 		appointmentObject.addProperty(APPOINTMENT_DATE_KEY, dateFormat.format(appointmentStartDate));
-		appointmentObject.addProperty(APPOINTMENT_TIME_SLOT_KEY,
-		    timeFormat.format(appointmentStartDate) + " " + timeFormat.format(appointmentEndDate));
+		appointmentObject.addProperty(APPOINTMENT_TIME_SLOT_KEY, timeFormat.format(appointmentStartDate) + " - "
+		        + timeFormat.format(appointmentEndDate));
 		appointmentObject.addProperty(APPOINTMENT_TYPE_KEY, "TypeName");
 		appointmentObject.addProperty(APPOINTMENT_STATUS_KEY, "StatusName");
-		appointmentObject.addProperty(CCC_NUMBER, "12345634562345347");
+		appointmentObject.addProperty(CCC_NUMBER, "12345555");
 		
 		JsonArray appointmentsArray = new JsonArray();
 		appointmentsArray.add(appointmentObject);

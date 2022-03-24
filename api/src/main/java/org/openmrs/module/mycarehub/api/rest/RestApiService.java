@@ -40,7 +40,7 @@ public interface RestApiService {
 	        @Url String url);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
-	@POST("kenya-emr/appointment")
+	@POST("kenya-emr/appointments")
 	Call<ResponseBody> uploadPatientAppointments(@Header("Authorization") String authorization, @Body JsonObject request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
@@ -60,7 +60,7 @@ public interface RestApiService {
 	@GET
 	Call<ResponseBody> fetchPatientRedFlags(@Header("Authorization") String authorization, @Url String url);
 	
-	@POST("kenya-emr/obs")
+	@POST("kenya-emr/observations")
 	Call<MedicalRecordResponse> uploadMedicalRecords(@Header("Authorization") String authorization,
 	        @Body MedicalRecordsRequest request);
 	
