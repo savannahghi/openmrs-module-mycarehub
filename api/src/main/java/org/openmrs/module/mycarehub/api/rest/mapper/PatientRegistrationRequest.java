@@ -27,4 +27,9 @@ public class PatientRegistrationRequest {
 	public List<PatientRegistration> getPatients() {
 		return patients;
 	}
+	
+	@Override
+	public String toString() {
+		return "MyCareHubSetting{" + "MFLCODE='" + facility + "', " + "patients='" + getPatients() + "'" + '}';
+	}
 }

@@ -142,7 +142,7 @@ public class Constants {
 			
 			public static final String APPOINTMENT_TYPE_KEY = "appointment_type";
 			
-			public static final String APPOINTMENT_STATUS_KEY = "appointment_type";
+			public static final String APPOINTMENT_STATUS_KEY = "status";
 			
 			public static final String APPOINTMENTS_CONTAINER_KEY = "appointments";
 		}
@@ -176,7 +176,7 @@ public class Constants {
 			
 			public static final String RED_FLAG_RESOLVED_BY_KEY = "ResolvedBy";
 			
-			public static final String RED_FLAG_CONTAINER = "redFlags";
+			public static final String RED_FLAG_CONTAINER = "serviceRequests";
 		}
 		
 		public static final class MedicalRecordKeys {

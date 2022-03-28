@@ -116,7 +116,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			if (appointments.size() > 0) {
 				for (Appointment appointment : appointments) {
 					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-					SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 					
 					JsonObject appointmentObject = new JsonObject();
 					appointmentObject.addProperty(APPOINTMENT_UUID_KEY, appointment.getUuid());
@@ -124,7 +124,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 					    dateFormat.format(appointment.getTimeSlot().getStartDate()));
 					appointmentObject.addProperty(
 					    APPOINTMENT_TIME_SLOT_KEY,
-					    timeFormat.format(appointment.getTimeSlot().getStartDate()) + " "
+					    timeFormat.format(appointment.getTimeSlot().getStartDate()) + " - "
 					            + timeFormat.format(appointment.getTimeSlot().getEndDate()));
 					appointmentObject.addProperty(APPOINTMENT_TYPE_KEY, appointment.getAppointmentType().getName());
 					appointmentObject.addProperty(APPOINTMENT_STATUS_KEY, appointment.getStatus().getName());
@@ -203,7 +203,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			jsonObject.addProperty("MFLCODE", MyCareHubUtil.getDefaultLocationMflCode());
 			jsonObject.addProperty("lastSyncTime", dateTimeFormat.format(setting.getLastSyncTime()));
 			
-			JsonArray jsonArray = MyCareHubUtil.fetchPatientAppointments(setting.getLastSyncTime(), newSyncDate);
+			JsonArray jsonArray = MyCareHubUtil.fetchPatientAppointmentRequests(setting.getLastSyncTime(), newSyncDate);
 			
 			List<AppointmentRequests> appointmentRequests = new ArrayList<AppointmentRequests>();
 			for (int i = 0; i < jsonArray.size(); i++) {
