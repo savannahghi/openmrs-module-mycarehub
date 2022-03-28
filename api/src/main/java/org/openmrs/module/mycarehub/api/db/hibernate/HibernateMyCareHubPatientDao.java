@@ -119,15 +119,20 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		
 		SQLQuery allergenQuery = getSession()
 		        .createSQLQuery(
-		            "SELECT allergyName,reaction,severity,allergyDateTime FROM ( "
+		            "SELECT allergyName,allergyConceptId,reaction,severity,allergyDateTime FROM ( "
 		                    + "SELECT "
 		                    + "(SELECT concept_name.name FROM concept_name JOIN obs ON obs.value_coded = concept_name.concept_id "
 		                    + "WHERE obs.concept_id= :allergenConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1) AS allergyName,"
+		                    + "(SELECT value_coded FROM obs "
+		                    + "WHERE obs.concept_id= :allergenConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND LIMIT 1) AS allergyConceptId,"
 		                    + "(SELECT concept_name.name FROM concept_name JOIN obs ON obs.value_coded = concept_name.concept_id "
 		                    + "WHERE obs.concept_id= :reactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1) AS reaction,"
+		                    + "(SELECT obs.value_coded FROM obs "
+		                    + "WHERE obs.concept_id= :reactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND LIMIT 1) AS reactionConceptId,"
 		                    + "(SELECT value_text FROM obs WHERE obs.concept_id=:otherReactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS otherReaction "
 		                    + "(SELECT concept_name.name FROM concept_name JOIN obs ON obs.value_coded = concept_name.concept_id "
 		                    + "WHERE obs.concept_id=:severityConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1 ) AS severity,"
+		                    + "(SELECT obs.value_coded FROM obs WHERE obs.concept_id=:severityConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1 ) AS severityConceptId,"
 		                    + "(SELECT value_datetime FROM obs WHERE obs.concept_id=:allergyDateConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS allergyDateTime "
 		                    + "FROM ("
 		                    + "SELECT obs_group_id FROM obs WHERE concept_id = :allergenConcept AND date_created >= :formattedLastSyncDate AND voided = 0 AND person_id = :patientId"

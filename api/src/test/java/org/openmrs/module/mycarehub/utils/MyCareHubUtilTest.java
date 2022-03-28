@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,6 +43,15 @@ import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKE
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.CD4_COUNT;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.HEIGHT;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.PULSE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.RESPIRATORY_RATE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.SPO2;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.TEMPERATURE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.VIRAL_LOAD;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.WEIGHT;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_MEDICAL_RECORDS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
@@ -256,7 +264,7 @@ public class MyCareHubUtilTest {
 		JsonObject containerObject = new JsonObject();
 		containerObject.addProperty(FACILITY_MFL_CODE, MyCareHubUtil.getDefaultLocationMflCode());
 		containerObject.add(APPOINTMENTS_CONTAINER_KEY, appointmentsArray);
-
+		
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointments(containerObject, newSyncDate);
 		
@@ -321,7 +329,8 @@ public class MyCareHubUtilTest {
 		vitalSigns.add(new MyCareHubVitalSign() {
 			
 			{
-				setConcept(TEMPERATURE_CONCEPT_KEY);
+				setConceptName(TEMPERATURE_CONCEPT_KEY);
+				setConceptId(TEMPERATURE);
 				setObsDatetime(new Date());
 				setValue("39.1");
 			}
@@ -329,7 +338,8 @@ public class MyCareHubUtilTest {
 		vitalSigns.add(new MyCareHubVitalSign() {
 			
 			{
-				setConcept(WEIGHT_CONCEPT_KEY);
+				setConceptName(WEIGHT_CONCEPT_KEY);
+				setConceptId(WEIGHT);
 				setObsDatetime(new Date());
 				setValue("80");
 			}
@@ -337,7 +347,8 @@ public class MyCareHubUtilTest {
 		vitalSigns.add(new MyCareHubVitalSign() {
 			
 			{
-				setConcept(HEIGHT_CONCEPT_KEY);
+				setConceptName(HEIGHT_CONCEPT_KEY);
+				setConceptId(HEIGHT);
 				setObsDatetime(new Date());
 				setValue("171");
 			}
@@ -345,7 +356,8 @@ public class MyCareHubUtilTest {
 		vitalSigns.add(new MyCareHubVitalSign() {
 			
 			{
-				setConcept(BMI_CONCEPT_KEY);
+				setConceptName(BMI_CONCEPT_KEY);
+				setConceptId(BMI);
 				setObsDatetime(new Date());
 				setValue("25.2");
 			}
@@ -354,7 +366,8 @@ public class MyCareHubUtilTest {
 		vitalSigns.add(new MyCareHubVitalSign() {
 			
 			{
-				setConcept(SPO2_CONCEPT_KEY);
+				setConceptName(SPO2_CONCEPT_KEY);
+				setConceptId(SPO2);
 				setObsDatetime(new Date());
 				setValue("96");
 			}
@@ -362,7 +375,8 @@ public class MyCareHubUtilTest {
 		vitalSigns.add(new MyCareHubVitalSign() {
 			
 			{
-				setConcept(PULSE_CONCEPT_KEY);
+				setConceptName(PULSE_CONCEPT_KEY);
+				setConceptId(PULSE);
 				setObsDatetime(new Date());
 				setValue("80");
 			}
@@ -370,7 +384,8 @@ public class MyCareHubUtilTest {
 		vitalSigns.add(new MyCareHubVitalSign() {
 			
 			{
-				setConcept(CD4_CONCEPT_KEY);
+				setConceptName(CD4_CONCEPT_KEY);
+				setConceptId(CD4_COUNT);
 				setObsDatetime(new Date());
 				setValue("500.0");
 			}
@@ -378,7 +393,8 @@ public class MyCareHubUtilTest {
 		vitalSigns.add(new MyCareHubVitalSign() {
 			
 			{
-				setConcept(VIRAL_LOAD_CONCEPT_KEY);
+				setConceptName(VIRAL_LOAD_CONCEPT_KEY);
+				setConceptId(VIRAL_LOAD);
 				setObsDatetime(new Date());
 				setValue("1000");
 			}
@@ -386,7 +402,8 @@ public class MyCareHubUtilTest {
 		vitalSigns.add(new MyCareHubVitalSign() {
 			
 			{
-				setConcept(RESPIRATORY_RATE_CONCEPT_KEY);
+				setConceptName(RESPIRATORY_RATE_CONCEPT_KEY);
+				setConceptId(RESPIRATORY_RATE);
 				setObsDatetime(new Date());
 				setValue("26");
 			}
@@ -399,6 +416,7 @@ public class MyCareHubUtilTest {
 			{
 				setOrderDateTime(new Date());
 				setOrderedTestName("Complete Blood Count");
+				setConceptId(1019);
 			}
 		});
 		medicalRecord.setTestOrders(myCareHubTestOrders);
@@ -408,8 +426,20 @@ public class MyCareHubUtilTest {
 			
 			{
 				setTestName("HEMOGLOBIN");
+				setTestConceptId(21);
 				setTestDateTime(new Date());
 				setResult("15.1");
+				//This test has no test result concept ID
+			}
+		});
+		myCareHubTests.add(new MyCareHubTest() {
+			
+			{
+				setTestName("URINE PREGNANCY TEST");
+				setTestConceptId(45);
+				setTestDateTime(new Date());
+				setResult("POSITIVE");
+				setResultConceptId(703);
 			}
 		});
 		medicalRecord.setTests(myCareHubTests);
@@ -418,9 +448,11 @@ public class MyCareHubUtilTest {
 		myCareHubMedications.add(new MyCareHubMedication() {
 			
 			{
-				setMedicationName("Current medication");
+				setMedicationName("CURRENT DRUGS USED");
+				setMedicationConceptId(1193);
 				setMedicationDateTime(new Date());
 				setValue("DIDANOSINE");
+				setDrugConceptId(796);
 			}
 		});
 		medicalRecord.setMedications(myCareHubMedications);
@@ -430,9 +462,12 @@ public class MyCareHubUtilTest {
 			
 			{
 				setAllergyName("Caffeine");
+				setAllergyConceptId(72609);
 				setReaction("Arrhythmia");
+				setReactionConceptId(120148);
 				setOtherReaction("Free text description of other reaction");
 				setSeverity("Severe");
+				setSeverityConceptId(160756);
 				setAllergyDateTime(new Date());
 			}
 		});
