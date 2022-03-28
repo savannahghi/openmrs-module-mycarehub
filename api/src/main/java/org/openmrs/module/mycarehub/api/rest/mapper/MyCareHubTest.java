@@ -9,11 +9,17 @@ public class MyCareHubTest {
 	@SerializedName("test")
 	private String testName;
 	
+	@SerializedName("testConceptId")
+	private String testConceptId;
+	
 	@SerializedName("testDateTime")
 	private Date testDateTime;
 	
 	@SerializedName("result")
 	private String result;
+	
+	@SerializedName("resultConceptId")
+	private String resultConceptId;
 	
 	public void setTestName(String testName) {
 		this.testName = testName;
@@ -21,6 +27,18 @@ public class MyCareHubTest {
 	
 	public String getTestName() {
 		return testName;
+	}
+	
+	public void setTestConceptId(Integer testConceptId) {
+		setTestConceptId(String.valueOf(testConceptId));
+	}
+	
+	public void setTestConceptId(String testConceptId) {
+		this.testConceptId = testConceptId;
+	}
+	
+	public String getTestConceptId() {
+		return testConceptId;
 	}
 	
 	public void setTestDateTime(Date testDateTime) {
@@ -37,5 +55,17 @@ public class MyCareHubTest {
 	
 	public String getResult() {
 		return result;
+	}
+	
+	public void setResultConceptId(Integer resultConceptId) {
+		setResultConceptId(String.valueOf(resultConceptId));
+	}
+	
+	public void setResultConceptId(String resultConceptId) {
+		this.resultConceptId = resultConceptId;
+	}
+	
+	public String getResultConceptId() {
+		return resultConceptId;
 	}
 }

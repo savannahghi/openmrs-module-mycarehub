@@ -12,6 +12,9 @@ public class MyCareHubTestOrder {
 	@SerializedName("orderedTestName")
 	private String orderedTestName;
 	
+	@SerializedName("conceptId")
+	private String conceptId;
+	
 	public void setOrderDateTime(Date orderDateTime) {
 		this.orderDateTime = orderDateTime;
 	}
@@ -26,5 +29,17 @@ public class MyCareHubTestOrder {
 	
 	public String getOrderedTestName() {
 		return orderedTestName;
+	}
+	
+	public void setConceptId(String conceptId) {
+		this.conceptId = conceptId;
+	}
+	
+	public void setConceptId(Integer conceptId) {
+		setConceptId(String.valueOf(conceptId));
+	}
+	
+	public String getConceptId() {
+		return conceptId;
 	}
 }

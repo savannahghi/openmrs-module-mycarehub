@@ -9,11 +9,17 @@ public class MyCareHubMedication {
 	@SerializedName("medication")
 	private String medicationName;
 	
+	@SerializedName("medicationConceptId")
+	private String medicationConceptId;
+	
 	@SerializedName("medicationDateTime")
 	private Date medicationDateTime;
 	
 	@SerializedName("value")
 	private String value;
+	
+	@SerializedName("drugConceptId")
+	private String drugConceptId;
 	
 	public void setMedicationName(String medicationName) {
 		this.medicationName = medicationName;
@@ -21,6 +27,18 @@ public class MyCareHubMedication {
 	
 	public String getMedicationName() {
 		return medicationName;
+	}
+	
+	public void setMedicationConceptId(Integer medicationConceptId) {
+		setMedicationConceptId(String.valueOf(medicationConceptId));
+	}
+	
+	public void setMedicationConceptId(String medicationConceptId) {
+		this.medicationConceptId = medicationConceptId;
+	}
+	
+	public String getMedicationConceptId() {
+		return medicationConceptId;
 	}
 	
 	public void setMedicationDateTime(Date medicationDateTime) {
@@ -37,5 +55,17 @@ public class MyCareHubMedication {
 	
 	public String getValue() {
 		return value;
+	}
+	
+	public void setDrugConceptId(Integer drugConceptId) {
+		setDrugConceptId(String.valueOf(drugConceptId));
+	}
+	
+	public void setDrugConceptId(String drugConceptId) {
+		this.drugConceptId = drugConceptId;
+	}
+	
+	public String getDrugConceptId() {
+		return drugConceptId;
 	}
 }

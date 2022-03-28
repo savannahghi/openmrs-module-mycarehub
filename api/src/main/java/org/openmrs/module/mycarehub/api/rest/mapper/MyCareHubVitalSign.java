@@ -6,8 +6,11 @@ import java.util.Date;
 
 public class MyCareHubVitalSign {
 	
-	@SerializedName("concept")
-	private String concept;
+	@SerializedName("name")
+	private String conceptName;
+	
+	@SerializedName("conceptId")
+	private String conceptId;
 	
 	@SerializedName("obsDatetime")
 	private Date obsDatetime;
@@ -15,12 +18,24 @@ public class MyCareHubVitalSign {
 	@SerializedName("value")
 	private String value;
 	
-	public void setConcept(String concept) {
-		this.concept = concept;
+	public void setConceptName(String conceptName) {
+		this.conceptName = conceptName;
 	}
 	
-	public String getConcept() {
-		return concept;
+	public String getConceptName() {
+		return conceptName;
+	}
+	
+	public void setConceptId(Integer conceptId) {
+		this.conceptId = String.valueOf(conceptId);
+	}
+	
+	public void setConceptId(String conceptId) {
+		this.conceptId = conceptId;
+	}
+	
+	public String getConceptId() {
+		return conceptId;
 	}
 	
 	public void setObsDatetime(Date obsDatetime) {

@@ -234,7 +234,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept(TEMPERATURE_CONCEPT_KEY);
+								setConceptName(TEMPERATURE_CONCEPT_KEY);
+								setConceptId(obs.getConcept().getConceptId());
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -244,7 +245,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept(WEIGHT_CONCEPT_KEY);
+								setConceptName(WEIGHT_CONCEPT_KEY);
+								setConceptId(obs.getConcept().getConceptId());
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -254,7 +256,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept(HEIGHT_CONCEPT_KEY);
+								setConceptName(HEIGHT_CONCEPT_KEY);
+								setConceptId(obs.getConcept().getConceptId());
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -264,7 +267,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept(BMI_CONCEPT_KEY);
+								setConceptName(BMI_CONCEPT_KEY);
+								setConceptId(obs.getConcept().getConceptId());
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -274,7 +278,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept(SPO2_CONCEPT_KEY);
+								setConceptName(SPO2_CONCEPT_KEY);
+								setConceptId(obs.getConcept().getConceptId());
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -284,7 +289,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept(PULSE_CONCEPT_KEY);
+								setConceptName(PULSE_CONCEPT_KEY);
+								setConceptId(obs.getConcept().getConceptId());
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -294,7 +300,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept(CD4_CONCEPT_KEY);
+								setConceptName(CD4_CONCEPT_KEY);
+								setConceptId(obs.getConcept().getConceptId());
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -304,7 +311,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept(VIRAL_LOAD_CONCEPT_KEY);
+								setConceptName(VIRAL_LOAD_CONCEPT_KEY);
+								setConceptId(obs.getConcept().getConceptId());
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -314,7 +322,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						vitalSigns.add(new MyCareHubVitalSign() {
 							
 							{
-								setConcept(RESPIRATORY_RATE_CONCEPT_KEY);
+								setConceptName(RESPIRATORY_RATE_CONCEPT_KEY);
+								setConceptId(obs.getConcept().getConceptId());
 								setObsDatetime(obs.getObsDatetime());
 								setValue(obs.getValueAsString(Locale.ENGLISH));
 							}
@@ -332,6 +341,9 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 					{
 						setOrderDateTime(order.getObsDatetime());
 						setOrderedTestName(order.getValueAsString(Locale.ENGLISH));
+						if (order.getValueCoded() != null) {
+							setConceptId(order.getValueCoded().getConceptId());
+						}
 					}
 				});
 			}
@@ -344,8 +356,12 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 					
 					{
 						setTestName(test.getConcept().getName().getName());
+						setTestConceptId(test.getConcept().getConceptId());
 						setTestDateTime(test.getObsDatetime());
 						setResult(test.getValueAsString(Locale.ENGLISH));
+						if (test.getValueCoded() != null) {
+							setResultConceptId(test.getValueCoded().getConceptId());
+						}
 					}
 				});
 			}
@@ -358,8 +374,12 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 					
 					{
 						setMedicationName(medication.getConcept().getName().getName());
+						setMedicationConceptId(medication.getConcept().getConceptId());
 						setMedicationDateTime(medication.getObsDatetime());
 						setValue(medication.getValueAsString(Locale.ENGLISH));
+						if (medication.getValueCoded() != null) {
+							setDrugConceptId(medication.getValueCoded().getConceptId());
+						}
 					}
 				});
 			}
