@@ -2,6 +2,8 @@ package org.openmrs.module.mycarehub.api.rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -23,8 +25,13 @@ public class ApiClient {
 			String apiUrl = MyCareHubUtil.getApiUrl();
 			
 			if (new UrlValidator().isValid(apiUrl)) {
-				retrofit = new Retrofit.Builder().baseUrl(apiUrl).addConverterFactory(GsonConverterFactory.create(gson))
-				        .build();
+				HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+				loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+				
+				OkHttpClient client = new OkHttpClient.Builder().addInterceptor(loggingInterceptor).build();
+				
+				retrofit = new Retrofit.Builder().baseUrl(apiUrl).client(client)
+				        .addConverterFactory(GsonConverterFactory.create(gson)).build();
 			} else
 				log.error("You have a Malformed URL");
 		}
