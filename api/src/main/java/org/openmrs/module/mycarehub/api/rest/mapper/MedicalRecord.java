@@ -9,6 +9,9 @@ public class MedicalRecord {
 	@SerializedName("ccc_number")
 	private String cccNumber;
 	
+	@SerializedName("registration")
+	private PatientRegistration registration;
+	
 	@SerializedName("vitalSigns")
 	private List<MyCareHubVitalSign> vitalSigns;
 	
@@ -30,6 +33,14 @@ public class MedicalRecord {
 	
 	public String getCccNumber() {
 		return cccNumber;
+	}
+	
+	public void setRegistration(PatientRegistration registration) {
+		this.registration = registration;
+	}
+	
+	public PatientRegistration getRegistration() {
+		return registration;
 	}
 	
 	public void setVitalSigns(List<MyCareHubVitalSign> vitalSigns) {

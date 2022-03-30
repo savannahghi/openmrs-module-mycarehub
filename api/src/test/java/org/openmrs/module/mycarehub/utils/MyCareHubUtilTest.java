@@ -204,6 +204,21 @@ public class MyCareHubUtilTest {
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat sf = new SimpleDateFormat(pattern);
 		
+		List<PatientRegistration> patientRegistrations = new ArrayList<PatientRegistration>();
+		PatientRegistration patientRegistration = createDummyPatientRegistration();
+		patientRegistrations.add(patientRegistration);
+		
+		PatientRegistrationRequest request = new PatientRegistrationRequest();
+		request.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
+		request.setPatientRegistrations(patientRegistrations);
+		
+		Date newSyncTime = new Date();
+		MyCareHubUtil.uploadPatientRegistrationRecords(request, newSyncTime);
+		
+		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
+	}
+	
+	private PatientRegistration createDummyPatientRegistration() {
 		PatientRegistration patientRegistration = new PatientRegistration();
 		patientRegistration.setName("Dummy Patient");
 		patientRegistration.setCccNumber("12345634562345347");
@@ -223,17 +238,7 @@ public class MyCareHubUtilTest {
 		nextOfKin.addProperty(NEXT_OF_KIN_RELATIONSHIP_KEY, "Mother");
 		patientRegistration.setNextOfKin(nextOfKin);
 		
-		List<PatientRegistration> patientRegistrations = new ArrayList<PatientRegistration>();
-		patientRegistrations.add(patientRegistration);
-		
-		PatientRegistrationRequest request = new PatientRegistrationRequest();
-		request.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
-		request.setPatientRegistrations(patientRegistrations);
-		
-		Date newSyncTime = new Date();
-		MyCareHubUtil.uploadPatientRegistrationRecords(request, newSyncTime);
-		
-		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
+		return patientRegistration;
 	}
 	
 	@Test
@@ -324,6 +329,9 @@ public class MyCareHubUtilTest {
 	public void uploadPatientMedicalRecords_shouldCreateCorrectSyncTimeSetting() {
 		MedicalRecord medicalRecord = new MedicalRecord();
 		medicalRecord.setCccNumber("12345");
+		
+		PatientRegistration patientRegistration = createDummyPatientRegistration();
+		medicalRecord.setRegistration(patientRegistration);
 		
 		List<MyCareHubVitalSign> vitalSigns = new ArrayList<MyCareHubVitalSign>();
 		vitalSigns.add(new MyCareHubVitalSign() {
