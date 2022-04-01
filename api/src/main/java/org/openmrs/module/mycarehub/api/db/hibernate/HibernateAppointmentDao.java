@@ -1,17 +1,22 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.Obs;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.mycarehub.api.db.AppointmentDao;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
+import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+
+import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
+import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_REASON_CONCEPT_ID;
 
 public class HibernateAppointmentDao implements AppointmentDao {
 	
@@ -22,11 +27,13 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	}
 	
 	@Override
-	public List<Appointment> getAppointmentsByLastSyncDate(Date lastSyncDate) {
+	public List<Obs> getAppointmentsByLastSyncDate(Date lastSyncDate) {
 		if (lastSyncDate != null) {
-			Criteria criteria = session().createCriteria(Appointment.class);
-			criteria.add(Restrictions.or(Restrictions.ge("dateCreated", lastSyncDate),
-			    Restrictions.ge("dateChanged", lastSyncDate)));
+			Obs obs;
+			Criteria criteria = session().createCriteria(Obs.class);
+			criteria.add(Restrictions.or(Restrictions.eq("conceptID", APPOINTMENT_DATE_CONCEPT_ID),
+			    Restrictions.eq("conceptID", APPOINTMENT_REASON_CONCEPT_ID)));
+			criteria.add(Restrictions.eq("dateCreated", lastSyncDate));
 			criteria.add(Restrictions.eq("voided", false));
 			return criteria.list();
 		}
@@ -95,6 +102,17 @@ public class HibernateAppointmentDao implements AppointmentDao {
 		}
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
 		return (List<AppointmentRequests>) criteria.list();
+	}
+	
+	@Override
+	public Obs getObsByEncounterAndConcept(Integer encounterId, Integer conceptId) {
+		Obs obs;
+		Criteria criteria = session().createCriteria(Obs.class);
+		criteria.add(Restrictions.eq("encounterId", encounterId));
+		criteria.add(Restrictions.eq("conceptId", conceptId));
+		criteria.addOrder(Order.desc("obsId"));
+		criteria.setMaxResults(1);
+		return (Obs) criteria.uniqueResult();
 	}
 	
 	private DbSession session() {

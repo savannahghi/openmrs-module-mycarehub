@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Obs;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -16,6 +17,8 @@ import org.openmrs.module.mycarehub.model.AppointmentRequests;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 
+import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
+import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_REASON_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
 
@@ -29,10 +32,8 @@ import java.util.UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENTS_CONTAINER_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_STATUS_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_TIME_SLOT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_TYPE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_UUID_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_ID_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_REASON_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_BY_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_REQUEST_CONTAINER;
@@ -58,7 +59,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	}
 	
 	@Override
-	public List<Appointment> getAppointmentsByLastSyncDate(Date lastSyncDate) {
+	public List<Obs> getAppointmentsByLastSyncDate(Date lastSyncDate) {
 		return dao.getAppointmentsByLastSyncDate(lastSyncDate);
 	}
 	
@@ -107,30 +108,44 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS);
 		if (setting != null) {
-			List<Appointment> appointments = dao.getAppointmentsByLastSyncDate(setting.getLastSyncTime());
+			List<Obs> appointments = dao.getAppointmentsByLastSyncDate(setting.getLastSyncTime());
 			Date newSyncDate = new Date();
 			
 			JsonObject containerObject = new JsonObject();
 			JsonArray appointmentsArray = new JsonArray();
 			PatientIdentifierType cccPatientIdentifierType = MyCareHubUtil.getcccPatientIdentifierType();
+			List<Integer> encounterIds = new ArrayList<Integer>();
 			if (appointments.size() > 0) {
-				for (Appointment appointment : appointments) {
-					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					
-					JsonObject appointmentObject = new JsonObject();
-					appointmentObject.addProperty(APPOINTMENT_UUID_KEY, appointment.getUuid());
-					appointmentObject.addProperty(APPOINTMENT_DATE_KEY,
-					    dateFormat.format(appointment.getTimeSlot().getStartDate()));
-					appointmentObject.addProperty(
-					    APPOINTMENT_TIME_SLOT_KEY,
-					    timeFormat.format(appointment.getTimeSlot().getStartDate()) + " - "
-					            + timeFormat.format(appointment.getTimeSlot().getEndDate()));
-					appointmentObject.addProperty(APPOINTMENT_TYPE_KEY, appointment.getAppointmentType().getName());
-					appointmentObject.addProperty(APPOINTMENT_STATUS_KEY, appointment.getStatus().getName());
-					appointmentObject.addProperty(CCC_NUMBER,
-					    appointment.getPatient().getPatientIdentifier(cccPatientIdentifierType).getIdentifier());
-					appointmentsArray.add(appointmentObject);
+				for (Obs appointment : appointments) {
+					Integer encounterId = appointment.getEncounter().getEncounterId();
+					if (!encounterIds.contains(encounterId)) {
+						JsonObject appointmentObject = new JsonObject();
+						SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+						if (appointment.getConcept().getId() == APPOINTMENT_DATE_CONCEPT_ID) {
+							Obs obs = dao.getObsByEncounterAndConcept(encounterId, APPOINTMENT_REASON_CONCEPT_ID);
+							appointmentObject.addProperty(APPOINTMENT_DATE_KEY,
+							    dateFormat.format(appointment.getValueDate()));
+							if (obs != null) {
+								appointmentObject.addProperty(APPOINTMENT_REASON_KEY, obs.getValueCodedName().getName());
+							} else {
+								appointmentObject.addProperty(APPOINTMENT_REASON_KEY, "");
+							}
+						} else {
+							Obs obs = dao.getObsByEncounterAndConcept(encounterId, APPOINTMENT_DATE_CONCEPT_ID);
+							if (obs != null && obs.getValueDatetime() != null) {
+								appointmentObject.addProperty(APPOINTMENT_DATE_KEY,
+								    dateFormat.format(obs.getValueDatetime()));
+							} else {
+								appointmentObject.addProperty(APPOINTMENT_DATE_KEY, "");
+							}
+							appointmentObject.addProperty(APPOINTMENT_REASON_KEY, obs.getValueCodedName().getName());
+						}
+						appointmentObject.addProperty(APPOINTMENT_ID_KEY, appointment.getEncounter().getEncounterId());
+						appointmentObject.addProperty(CCC_NUMBER,
+						    appointment.getPatient().getPatientIdentifier(cccPatientIdentifierType).getIdentifier());
+						appointmentsArray.add(appointmentObject);
+					}
 				}
 				
 				containerObject.addProperty(FACILITY_MFL_CODE, MyCareHubUtil.getDefaultLocationMflCode());
@@ -221,13 +236,9 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 						appointmentRequest.setVoided(false);
 					}
 					
-					appointmentRequest.setAppointmentUUID(jsonObject1.get("appointmentUuid").toString());
+					appointmentRequest.setAppointmentUUID(jsonObject1.get("AppointmentID").toString());
 					appointmentRequest.setMycarehubId(jsonObject1.get("ID").toString());
-					appointmentRequest.setAppointmentType(jsonObject1.get("AppointmentType").toString());
 					appointmentRequest.setAppointmentReason(jsonObject1.get("AppointmentReason").toString());
-					appointmentRequest.setProvider(jsonObject1.get("AppointmentReason").toString());
-					appointmentRequest.setAppointmentReason(jsonObject1.get("Provider").toString());
-					appointmentRequest.setRequestedTimeSlot(jsonObject1.get("SuggestedTime").toString());
 					try {
 						appointmentRequest
 						        .setRequestedDate(dateFormat.parse(jsonObject1.get("SuggestedDate").getAsString()));

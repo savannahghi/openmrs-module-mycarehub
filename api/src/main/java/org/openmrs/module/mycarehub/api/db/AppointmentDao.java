@@ -1,6 +1,6 @@
 package org.openmrs.module.mycarehub.api.db;
 
-import org.openmrs.module.appointmentscheduling.Appointment;
+import org.openmrs.Obs;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
 
 import java.util.Date;
@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AppointmentDao {
 	
-	List<Appointment> getAppointmentsByLastSyncDate(Date lastSyncDate);
+	List<Obs> getAppointmentsByLastSyncDate(Date lastSyncDate);
 	
 	List<AppointmentRequests> getAllAppointmentRequests();
 	
@@ -25,4 +25,6 @@ public interface AppointmentDao {
 	Number countAppointments();
 	
 	List<AppointmentRequests> getPagedAppointments(Integer pageNumber, Integer pageSize);
+	
+	Obs getObsByEncounterAndConcept(Integer encounterId, Integer conceptId);
 }

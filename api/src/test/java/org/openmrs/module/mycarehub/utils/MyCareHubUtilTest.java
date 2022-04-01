@@ -62,10 +62,8 @@ import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENTS_CONTAINER_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_STATUS_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_TIME_SLOT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_TYPE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_UUID_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_ID_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_REASON_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_BY_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_REQUEST_CONTAINER;
@@ -248,19 +246,12 @@ public class MyCareHubUtilTest {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
-		appointmentObject.addProperty(APPOINTMENT_UUID_KEY, "f67a4ad9-4ac4-4183-9852-1dd75b04aff5");
+		appointmentObject.addProperty(APPOINTMENT_ID_KEY, "58655");
 		
-		Date appointmentStartDate = new Date();
+		Date appointmentDate = new Date();
 		
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, 30);
-		Date appointmentEndDate = cal.getTime();
-		
-		appointmentObject.addProperty(APPOINTMENT_DATE_KEY, dateFormat.format(appointmentStartDate));
-		appointmentObject.addProperty(APPOINTMENT_TIME_SLOT_KEY, timeFormat.format(appointmentStartDate) + " - "
-		        + timeFormat.format(appointmentEndDate));
-		appointmentObject.addProperty(APPOINTMENT_TYPE_KEY, "TypeName");
-		appointmentObject.addProperty(APPOINTMENT_STATUS_KEY, "StatusName");
+		appointmentObject.addProperty(APPOINTMENT_DATE_KEY, dateFormat.format(appointmentDate));
+		appointmentObject.addProperty(APPOINTMENT_REASON_KEY, "Appointment Reason");
 		appointmentObject.addProperty(CCC_NUMBER, "12345555");
 		
 		JsonArray appointmentsArray = new JsonArray();
@@ -273,6 +264,7 @@ public class MyCareHubUtilTest {
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointments(containerObject, newSyncDate);
 		
+		System.out.println("PPPPPPPPPPPPPPPPPPPPPPPP " + containerObject);
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);
 	}
 	
