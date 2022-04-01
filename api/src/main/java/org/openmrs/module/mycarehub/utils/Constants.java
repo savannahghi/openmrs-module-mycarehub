@@ -24,7 +24,7 @@ public class Constants {
 	public final static String GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME = "mycarehub.api.token.expiry";
 	
 	/** MFL code for the default location on the KenyaEmr instance. **/
-	public final static String GP_DEFAULT_LOCATION_MFL_CODE = "kenyaemr.defaultLocation";
+	public final static String GP_DEFAULT_LOCATION_MFL_CODE = "facility.mflcode";
 	
 	public final static String CCC_NUMBER_IDENTIFIER_TYPE_UUID = "05ee9cf4-7242-4a17-b4d4-00f707265c8a";
 	

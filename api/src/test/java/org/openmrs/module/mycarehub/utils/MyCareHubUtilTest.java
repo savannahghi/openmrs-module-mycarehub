@@ -294,6 +294,7 @@ public class MyCareHubUtilTest {
 		JsonObject containerObject = new JsonObject();
 		containerObject.add(APPOINTMENT_REQUEST_CONTAINER, appointmentsObject);
 		
+		System.out.println("PPPPPPPPPPPPPPPPPpp " + containerObject.toString());
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointmentRequests(containerObject, newSyncDate);
 		
@@ -328,7 +329,7 @@ public class MyCareHubUtilTest {
 	@Test
 	public void uploadPatientMedicalRecords_shouldCreateCorrectSyncTimeSetting() {
 		MedicalRecord medicalRecord = new MedicalRecord();
-		medicalRecord.setCccNumber("12345");
+		medicalRecord.setCccNumber("0729204651");
 		
 		PatientRegistration patientRegistration = createDummyPatientRegistration();
 		medicalRecord.setRegistration(patientRegistration);

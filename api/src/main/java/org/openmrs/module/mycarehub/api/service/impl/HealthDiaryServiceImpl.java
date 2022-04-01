@@ -62,40 +62,44 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
 			
 			JsonArray jsonArray = getPatientHealthDiaries(setting.getLastSyncTime(), newSyncDate);
 			List<HealthDiary> healthDiaries = new ArrayList<HealthDiary>();
-			for (int i = 0; i < jsonArray.size(); i++) {
-				JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
-				HealthDiary healthDiary = new HealthDiary();
-				
-				healthDiary.setCccNumber(jsonObject1.get("CCCNumber").toString());
-				healthDiary.setMood(jsonObject1.get("mood").toString());
-				healthDiary.setNote(jsonObject1.get("note").toString());
-				healthDiary.setEntryType(jsonObject1.get("entryType").toString());
-				if (jsonObject1.get("createdAt").toString() != null) {
-					try {
-						healthDiary.setDateRecorded(dateFormat.parse(jsonObject1.get("createdAt").toString()));
+			if (jsonArray != null) {
+				for (int i = 0; i < jsonArray.size(); i++) {
+					JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
+					HealthDiary healthDiary = new HealthDiary();
+					
+					healthDiary.setCccNumber(jsonObject1.get("CCCNumber").toString());
+					healthDiary.setMood(jsonObject1.get("mood").toString());
+					healthDiary.setNote(jsonObject1.get("note").toString());
+					healthDiary.setEntryType(jsonObject1.get("entryType").toString());
+					if (jsonObject1.get("createdAt").toString() != null) {
+						try {
+							healthDiary.setDateRecorded(dateFormat.parse(jsonObject1.get("createdAt").toString()));
+						}
+						catch (ParseException e) {
+							log.error("Cannot parse createdAt date", e);
+						}
 					}
-					catch (ParseException e) {
-						log.error("Cannot parse createdAt date", e);
+					
+					if (jsonObject1.get("sharedAt").toString() != null) {
+						try {
+							healthDiary.setSharedOn(dateFormat.parse(jsonObject1.get("sharedAt").toString()));
+						}
+						catch (ParseException e) {
+							log.error("Cannot parse sharedAt date", e);
+						}
 					}
+					
+					healthDiary.setDateCreated(new Date());
+					healthDiary.setCreator(new User(1));
+					healthDiary.setVoided(false);
+					healthDiary.setUuid(UUID.randomUUID().toString());
+					
+					healthDiaries.add(healthDiary);
 				}
-				
-				if (jsonObject1.get("sharedAt").toString() != null) {
-					try {
-						healthDiary.setSharedOn(dateFormat.parse(jsonObject1.get("sharedAt").toString()));
-					}
-					catch (ParseException e) {
-						log.error("Cannot parse sharedAt date", e);
-					}
-				}
-				
-				healthDiary.setDateCreated(new Date());
-				healthDiary.setCreator(new User(1));
-				healthDiary.setVoided(false);
-				healthDiary.setUuid(UUID.randomUUID().toString());
-				
-				healthDiaries.add(healthDiary);
 			}
-			saveHealthDiaries(healthDiaries);
+			if (healthDiaries.size() > 0) {
+				saveHealthDiaries(healthDiaries);
+			}
 		} else {
 			settingsService.createMyCareHubSetting(PATIENT_HEALTH_DIARY_GET, new Date());
 		}

@@ -206,62 +206,67 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			JsonArray jsonArray = MyCareHubUtil.fetchPatientAppointmentRequests(setting.getLastSyncTime(), newSyncDate);
 			
 			List<AppointmentRequests> appointmentRequests = new ArrayList<AppointmentRequests>();
-			for (int i = 0; i < jsonArray.size(); i++) {
-				JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
-				AppointmentRequests appointmentRequest = new AppointmentRequests();
-				String mycarehubId = jsonObject1.get("ID").toString();
-				AppointmentRequests existingRequests = getAppointmentRequestByMycarehubId(mycarehubId);
-				if (existingRequests != null && existingRequests.getMycarehubId() != null) {
-					appointmentRequest = existingRequests;
-				} else {
-					appointmentRequest.setCreator(new User(1));
-					appointmentRequest.setDateCreated(new Date());
-					appointmentRequest.setUuid(UUID.randomUUID().toString());
-					appointmentRequest.setVoided(false);
-				}
-				
-				appointmentRequest.setAppointmentUUID(jsonObject1.get("appointmentUuid").toString());
-				appointmentRequest.setMycarehubId(jsonObject1.get("ID").toString());
-				appointmentRequest.setAppointmentType(jsonObject1.get("AppointmentType").toString());
-				appointmentRequest.setAppointmentReason(jsonObject1.get("AppointmentReason").toString());
-				appointmentRequest.setProvider(jsonObject1.get("AppointmentReason").toString());
-				appointmentRequest.setAppointmentReason(jsonObject1.get("Provider").toString());
-				appointmentRequest.setRequestedTimeSlot(jsonObject1.get("SuggestedTime").toString());
-				try {
-					appointmentRequest.setRequestedDate(dateFormat.parse(jsonObject1.get("SuggestedDate").getAsString()));
-				}
-				catch (ParseException e) {
-					log.error("Cannot parse SuggestedDate date", e);
-				}
-				appointmentRequest.setStatus(jsonObject1.get("Status").toString());
-				if (jsonObject1.get("InProgressAt").toString() != null) {
+			if (jsonArray != null) {
+				for (int i = 0; i < jsonArray.size(); i++) {
+					JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
+					AppointmentRequests appointmentRequest = new AppointmentRequests();
+					String mycarehubId = jsonObject1.get("ID").toString();
+					AppointmentRequests existingRequests = getAppointmentRequestByMycarehubId(mycarehubId);
+					if (existingRequests != null && existingRequests.getMycarehubId() != null) {
+						appointmentRequest = existingRequests;
+					} else {
+						appointmentRequest.setCreator(new User(1));
+						appointmentRequest.setDateCreated(new Date());
+						appointmentRequest.setUuid(UUID.randomUUID().toString());
+						appointmentRequest.setVoided(false);
+					}
+					
+					appointmentRequest.setAppointmentUUID(jsonObject1.get("appointmentUuid").toString());
+					appointmentRequest.setMycarehubId(jsonObject1.get("ID").toString());
+					appointmentRequest.setAppointmentType(jsonObject1.get("AppointmentType").toString());
+					appointmentRequest.setAppointmentReason(jsonObject1.get("AppointmentReason").toString());
+					appointmentRequest.setProvider(jsonObject1.get("AppointmentReason").toString());
+					appointmentRequest.setAppointmentReason(jsonObject1.get("Provider").toString());
+					appointmentRequest.setRequestedTimeSlot(jsonObject1.get("SuggestedTime").toString());
 					try {
-						appointmentRequest.setProgressDate(dateFormat.parse(jsonObject1.get("InProgressAt").toString()));
+						appointmentRequest
+						        .setRequestedDate(dateFormat.parse(jsonObject1.get("SuggestedDate").getAsString()));
 					}
 					catch (ParseException e) {
-						log.error("Cannot parse InProgressAt date", e);
+						log.error("Cannot parse SuggestedDate date", e);
 					}
+					appointmentRequest.setStatus(jsonObject1.get("Status").toString());
+					if (jsonObject1.get("InProgressAt").toString() != null) {
+						try {
+							appointmentRequest.setProgressDate(dateFormat.parse(jsonObject1.get("InProgressAt").toString()));
+						}
+						catch (ParseException e) {
+							log.error("Cannot parse InProgressAt date", e);
+						}
+					}
+					appointmentRequest.setProgressBy(jsonObject1.get("InProgressBy").toString());
+					if (jsonObject1.get("ResolvedAt").toString() != null) {
+						try {
+							appointmentRequest.setProgressDate(dateFormat.parse(jsonObject1.get("ResolvedAt").toString()));
+						}
+						catch (ParseException e) {
+							log.error("Cannot parse ResolvedAt date", e);
+						}
+					}
+					
+					appointmentRequest.setResolvedBy(jsonObject1.get("ResolvedBy").toString());
+					appointmentRequest.setClientName(jsonObject1.get("ClientName").toString());
+					appointmentRequest.setClientContact(jsonObject1.get("ClientContact").toString());
+					appointmentRequest.setCccNumber(jsonObject1.get("CCCNumber").toString());
+					appointmentRequest.setMflCode(jsonObject1.get("MFLCODE").toString());
+					
+					appointmentRequests.add(appointmentRequest);
+					
 				}
-				appointmentRequest.setProgressBy(jsonObject1.get("InProgressBy").toString());
-				if (jsonObject1.get("ResolvedAt").toString() != null) {
-					try {
-						appointmentRequest.setProgressDate(dateFormat.parse(jsonObject1.get("ResolvedAt").toString()));
-					}
-					catch (ParseException e) {
-						log.error("Cannot parse ResolvedAt date", e);
-					}
-				}
-				
-				appointmentRequest.setResolvedBy(jsonObject1.get("ResolvedBy").toString());
-				appointmentRequest.setClientName(jsonObject1.get("ClientName").toString());
-				appointmentRequest.setClientContact(jsonObject1.get("ClientContact").toString());
-				appointmentRequest.setCccNumber(jsonObject1.get("CCCNumber").toString());
-				appointmentRequest.setMflCode(jsonObject1.get("MFLCODE").toString());
-				
-				appointmentRequests.add(appointmentRequest);
-				
 			}
-			saveAppointmentRequests(appointmentRequests);
+			if (appointmentRequests.size() > 0) {
+				saveAppointmentRequests(appointmentRequests);
+			}
 		} else {
 			settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_GET, new Date());
 		}
