@@ -10,11 +10,8 @@
 
         <property name="appointmentUUID" type="java.lang.String" not-null="true" column="appointment_uuid" length="255"/>
         <property name="mycarehubId" type="java.lang.String" not-null="true" column="mycarehub_id" length="255"/>
-        <property name="appointmentType" type="java.lang.String" column="appointment_type" length="255"/>
         <property name="appointmentReason" type="java.lang.String" column="appointment_reason" length="255"/>
-        <property name="provider" type="java.lang.String" column="provider" length="255"/>
         <property name="requestedDate" type="java.util.Date" not-null="true" column="requested_date" length="19"/>
-        <property name="requestedTimeSlot" type="java.lang.String" not-null="true" column="requested_time_slot" length="255"/>
         <property name="status" type="java.lang.String" not-null="true" column="status" length="255"/>
         <property name="progressDate" type="java.util.Date" column="progress_date" length="19" />
         <property name="progressBy" type="java.lang.String" column="progress_by" length="255"/>

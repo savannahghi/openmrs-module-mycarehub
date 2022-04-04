@@ -236,4 +236,20 @@
         </modifyColumn>
     </changeSet>
 
+    <changeSet id="mycarehub-202204041155" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="mycarehub_appointment_requests" columnName="appointment_type"/>
+                <columnExists tableName="mycarehub_appointment_requests" columnName="provider"/>
+                <columnExists tableName="mycarehub_appointment_requests" columnName="requested_time_slot"/>
+            </and>
+        </preConditions>
+        <comment>
+            Droping of table columns
+        </comment>
+        <dropColumn tableName="mycarehub_appointment_requests" columnName="appointment_type"/>
+        <dropColumn tableName="mycarehub_appointment_requests" columnName="provider"/>
+        <dropColumn tableName="mycarehub_appointment_requests" columnName="requested_time_slot"/>
+    </changeSet>
+
 </databaseChangeLog>
