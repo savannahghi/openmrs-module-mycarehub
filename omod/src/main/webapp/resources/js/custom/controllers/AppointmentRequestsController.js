@@ -15,7 +15,6 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
     $serviceRequests.getAppointmentRequests($scope.appointmentsCurrentPage, $scope.pageSize).
     then(function (response) {
         var serverData = response.data;
-        console.log(serverData);
         $scope.appointmentRequests = serverData.objects;
         $scope.appointmentPages = serverData.pages;
         $scope.appointmentsTotalItems = serverData.totalItems;

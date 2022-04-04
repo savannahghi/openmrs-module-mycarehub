@@ -106,6 +106,7 @@ public class HibernateAppointmentDao implements AppointmentDao {
 			criteria.setMaxResults(pageSize);
 		}
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
+		criteria.addOrder(Order.desc("dateCreated"));
 		return (List<AppointmentRequests>) criteria.list();
 	}
 	

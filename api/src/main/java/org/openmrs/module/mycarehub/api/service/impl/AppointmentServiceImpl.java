@@ -100,9 +100,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	
 	@Override
 	public List<AppointmentRequests> getPagedAppointments(Integer pageNumber, Integer pageSize) {
-		//		return dao.getPagedAppointments(pageNumber, pageSize);
 		List<AppointmentRequests> appointments = dao.getPagedAppointments(pageNumber, pageSize);
-		System.out.println("PPPPPPPPPPPPPPPPPPPpp " + appointments.size());
 		return appointments;
 	}
 	

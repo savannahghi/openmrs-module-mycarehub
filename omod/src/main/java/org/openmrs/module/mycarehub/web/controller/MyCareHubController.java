@@ -174,7 +174,7 @@ public class MyCareHubController {
 			map.put("uuid", appointmentRequest.getUuid());
 			map.put("appointmentUuid", appointmentRequest.getAppointmentUUID());
 			map.put("appointmentReason", appointmentRequest.getAppointmentReason());
-			map.put("requestedDate", Context.getDateTimeFormat().format(appointmentRequest.getRequestedDate()));
+			map.put("requestedDate", Context.getDateFormat().format(appointmentRequest.getRequestedDate()));
 			map.put("status", appointmentRequest.getStatus());
 			if (appointmentRequest.getProgressDate() != null) {
 				map.put("progressDate", appointmentRequest.getProgressDate().toString());
@@ -232,12 +232,12 @@ public class MyCareHubController {
 			map.put("note", healthDiary.getNote());
 			map.put("entryType", healthDiary.getEntryType());
 			if (healthDiary.getDateRecorded() != null) {
-				map.put("dateRecorded", healthDiary.getDateRecorded());
+				map.put("dateRecorded", Context.getDateTimeFormat().format(healthDiary.getDateRecorded()));
 			} else {
 				map.put("dateRecorded", "");
 			}
 			if (healthDiary.getSharedOn() != null) {
-				map.put("sharedOn", healthDiary.getSharedOn());
+				map.put("sharedOn", Context.getDateTimeFormat().format(healthDiary.getSharedOn()));
 			} else {
 				map.put("sharedOn", "");
 			}
