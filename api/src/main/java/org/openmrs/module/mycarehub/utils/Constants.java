@@ -1,5 +1,7 @@
 package org.openmrs.module.mycarehub.utils;
 
+import org.openmrs.logic.op.In;
+
 public class Constants {
 	
 	public final static String EMPTY = "";
@@ -24,9 +26,13 @@ public class Constants {
 	public final static String GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME = "mycarehub.api.token.expiry";
 	
 	/** MFL code for the default location on the KenyaEmr instance. **/
-	public final static String GP_DEFAULT_LOCATION_MFL_CODE = "kenyaemr.defaultLocation";
+	public final static String GP_DEFAULT_LOCATION_MFL_CODE = "facility.mflcode";
 	
 	public final static String CCC_NUMBER_IDENTIFIER_TYPE_UUID = "05ee9cf4-7242-4a17-b4d4-00f707265c8a";
+	
+	public final static Integer APPOINTMENT_DATE_CONCEPT_ID = 5096;
+	
+	public final static Integer APPOINTMENT_REASON_CONCEPT_ID = 160288;
 	
 	public static final class _PersonAttributeType {
 		
@@ -134,15 +140,11 @@ public class Constants {
 		
 		public static final class AppointmentObjectKeys {
 			
-			public static final String APPOINTMENT_UUID_KEY = "appointment_uuid";
+			public static final String APPOINTMENT_ID_KEY = "appointment_id";
 			
 			public static final String APPOINTMENT_DATE_KEY = "appointment_date";
 			
-			public static final String APPOINTMENT_TIME_SLOT_KEY = "time_slot";
-			
-			public static final String APPOINTMENT_TYPE_KEY = "appointment_type";
-			
-			public static final String APPOINTMENT_STATUS_KEY = "status";
+			public static final String APPOINTMENT_REASON_KEY = "appointment_reason";
 			
 			public static final String APPOINTMENTS_CONTAINER_KEY = "appointments";
 		}
