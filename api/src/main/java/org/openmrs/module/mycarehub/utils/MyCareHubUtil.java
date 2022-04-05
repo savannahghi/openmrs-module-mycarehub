@@ -183,9 +183,9 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			Call<PatientRegistrationResponse> call = restApiService.uploadPatientRegistrations(getBearer(getApiToken()),
+			Call<ResponseBody> call = restApiService.uploadPatientRegistrations(getBearer(getApiToken()),
 			    patientRegistrationRequest);
-			Response<PatientRegistrationResponse> response = call.execute();
+			Response<ResponseBody> response = call.execute();
 			if (response.isSuccessful()) {
 				Context.getService(MyCareHubSettingsService.class).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS,
 				    newSyncTime);

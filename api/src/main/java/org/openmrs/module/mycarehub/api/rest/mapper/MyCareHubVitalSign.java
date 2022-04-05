@@ -13,10 +13,17 @@ public class MyCareHubVitalSign {
 	private String conceptId;
 	
 	@SerializedName("obsDatetime")
-	private Date obsDatetime;
+	private String obsDatetime;
 	
 	@SerializedName("value")
 	private String value;
+	
+	public MyCareHubVitalSign(String conceptName, String conceptId, String obsDatetime, String value) {
+		this.conceptName = conceptName;
+		this.conceptId = conceptId;
+		this.obsDatetime = obsDatetime;
+		this.value = value;
+	}
 	
 	public void setConceptName(String conceptName) {
 		this.conceptName = conceptName;
@@ -38,11 +45,11 @@ public class MyCareHubVitalSign {
 		return conceptId;
 	}
 	
-	public void setObsDatetime(Date obsDatetime) {
+	public void setObsDatetime(String obsDatetime) {
 		this.obsDatetime = obsDatetime;
 	}
 	
-	public Date getObsDatetime() {
+	public String getObsDatetime() {
 		return obsDatetime;
 	}
 	

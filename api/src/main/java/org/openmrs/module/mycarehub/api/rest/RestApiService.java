@@ -26,7 +26,7 @@ public interface RestApiService {
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })
 	@POST("kenya-emr/register_patient")
-	Call<PatientRegistrationResponse> uploadPatientRegistrations(@Header("Authorization") String authorization,
+	Call<ResponseBody> uploadPatientRegistrations(@Header("Authorization") String authorization,
 	        @Body PatientRegistrationRequest request);
 	
 	@Headers({ "Accept: application/json", "Content-Type: application/json" })

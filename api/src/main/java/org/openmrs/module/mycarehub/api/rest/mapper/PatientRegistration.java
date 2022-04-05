@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class PatientRegistration {
 	
 	@SerializedName("MFLCODE")
-	private Integer MFLCODE;
+	private String MFLCODE;
 	
 	@SerializedName("cccNumber")
 	private String cccNumber;
@@ -117,11 +117,11 @@ public class PatientRegistration {
 		return nextOfKin;
 	}
 	
-	public Integer getMFLCODE() {
+	public String getMFLCODE() {
 		return MFLCODE;
 	}
 	
-	public void setMFLCODE(Integer MFLCODE) {
+	public void setMFLCODE(String MFLCODE) {
 		this.MFLCODE = MFLCODE;
 	}
 }
