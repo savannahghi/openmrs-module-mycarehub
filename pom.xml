@@ -32,6 +32,9 @@
 		<appointmentschedulingVersion>1.13.0</appointmentschedulingVersion>
 		<retrofitVersion>2.9.0</retrofitVersion>
 		<gsonVersion>2.9.0</gsonVersion>
+		<uiframeworkVersion>3.15.0</uiframeworkVersion>
+		<kenyauiVersion>2.0.4</kenyauiVersion>
+		<kenyacoreVersion>3.0.0</kenyacoreVersion>
     </properties>
 
 	<distributionManagement>
@@ -80,6 +83,27 @@
 				<version>${openMRSVersion}</version>
 				<type>test-jar</type>
 				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>uiframework-api</artifactId>
+				<version>${uiframeworkVersion}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>kenyaui-api</artifactId>
+				<version>${kenyauiVersion}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>kenyacore-api</artifactId>
+				<version>${kenyacoreVersion}</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
