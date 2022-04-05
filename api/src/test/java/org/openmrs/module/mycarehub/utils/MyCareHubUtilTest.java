@@ -264,7 +264,6 @@ public class MyCareHubUtilTest {
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointments(containerObject, newSyncDate);
 		
-		System.out.println("PPPPPPPPPPPPPPPPPPPPPPPP " + containerObject);
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);
 	}
 	
@@ -286,7 +285,6 @@ public class MyCareHubUtilTest {
 		JsonObject containerObject = new JsonObject();
 		containerObject.add(APPOINTMENT_REQUEST_CONTAINER, appointmentsObject);
 		
-		System.out.println("PPPPPPPPPPPPPPPPPpp " + containerObject.toString());
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointmentRequests(containerObject, newSyncDate);
 		

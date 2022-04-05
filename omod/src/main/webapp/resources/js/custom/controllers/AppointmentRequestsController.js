@@ -1,4 +1,4 @@
-function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $location, $translate) {
+function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $location, $translate, $window) {
 
      $scope.maxSize = 10;
      $scope.pageSize = 10;
@@ -33,12 +33,6 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
             $('#wait').hide();
         });
     };
-
-    $scope.$watch('appointmentsCurrentPage', function (newValue, oldValue) {
-        if (newValue != oldValue) {
-
-        }
-    }, true);
 
 //Health Diaries
     $serviceRequests.getHealthDiaries($scope.healthDiaryCurrentPage, $scope.pageSize).
@@ -180,7 +174,7 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
              });
       };
 
-      $scope.setAppointmentResolved = function (uuid) {
+      $scope.setAppointmentRejected = function (uuid) {
           $('#wait').show();
           $serviceRequests.setAppointmentResolved(uuid).
              then(function (response) {
@@ -196,5 +190,18 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
              },function (response) {
                  $('#wait').hide();
              });
+      };
+
+      $scope.setAppointmentApproved = function (appointmentRequest) {
+            $('#wait').show();
+            $serviceRequests.setAppointmentResolved(appointmentRequest.uuid).
+               then(function (response) {
+                 var currentURL = $location.absUrl();
+                 var baseURL = currentURL.substr(0, currentURL.indexOf('/module'));
+                 var url = baseURL+"/kenyaemr/editForm.page?appId=kenyaemr.medicalEncounter&encounterId="+appointmentRequest.appointmentUuid+"&returnUrl="+currentURL;
+                 $window.location.href = url;
+               },function (response) {
+                   $('#wait').hide();
+               });
       };
 }

@@ -2,6 +2,7 @@ package org.openmrs.module.mycarehub.api.db.hibernate;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.hibernate.DbSession;
@@ -58,6 +59,7 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 			criteria.setMaxResults(pageSize);
 		}
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
+		criteria.addOrder(Order.desc("dateCreated"));
 		return (List<RedFlags>) criteria.list();
 	}
 	

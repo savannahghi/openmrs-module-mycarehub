@@ -12,17 +12,11 @@ public class AppointmentRequests extends BaseOpenmrsData {
 	
 	private String mycarehubId;
 	
-	private String appointmentType;
-	
 	private String appointmentReason;
-	
-	private String provider;
 	
 	private String status;
 	
 	private Date requestedDate;
-	
-	private String requestedTimeSlot;
 	
 	private Date progressDate;
 	
@@ -69,14 +63,6 @@ public class AppointmentRequests extends BaseOpenmrsData {
 		this.requestedDate = requestedDate;
 	}
 	
-	public String getRequestedTimeSlot() {
-		return requestedTimeSlot;
-	}
-	
-	public void setRequestedTimeSlot(String requestedTimeSlot) {
-		this.requestedTimeSlot = requestedTimeSlot;
-	}
-	
 	public String getMycarehubId() {
 		return mycarehubId;
 	}
@@ -85,28 +71,12 @@ public class AppointmentRequests extends BaseOpenmrsData {
 		this.mycarehubId = mycarehubId;
 	}
 	
-	public String getAppointmentType() {
-		return appointmentType;
-	}
-	
-	public void setAppointmentType(String appointmentType) {
-		this.appointmentType = appointmentType;
-	}
-	
 	public String getAppointmentReason() {
 		return appointmentReason;
 	}
 	
 	public void setAppointmentReason(String appointmentReason) {
 		this.appointmentReason = appointmentReason;
-	}
-	
-	public String getProvider() {
-		return provider;
-	}
-	
-	public void setProvider(String provider) {
-		this.provider = provider;
 	}
 	
 	public String getStatus() {

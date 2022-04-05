@@ -1,6 +1,7 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.hibernate.DbSession;
@@ -41,6 +42,7 @@ public class HibernateHealthDiaryDao implements HealthDiaryDao {
 			criteria.setMaxResults(pageSize);
 		}
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
+		criteria.addOrder(Order.desc("dateRecorded"));
 		List<HealthDiary> healthDiaries = (List<HealthDiary>) criteria.list();
 		return healthDiaries;
 	}

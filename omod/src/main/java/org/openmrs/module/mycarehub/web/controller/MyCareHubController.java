@@ -160,9 +160,9 @@ public class MyCareHubController {
 		if (Context.isAuthenticated()) {
 			AppointmentService appointmentService = Context.getService(AppointmentService.class);
 			AppointmentRequests appointmentRequest = appointmentService.getAppointmentRequestByUuid(uuid);
-			appointmentRequest.setProgressDate(new Date());
+			appointmentRequest.setDateResolved(new Date());
 			appointmentRequest.setStatus("COMPLETED");
-			appointmentRequest.setProgressBy(Context.getAuthenticatedUser().getUsername());
+			appointmentRequest.setResolvedBy(Context.getAuthenticatedUser().getUsername());
 			appointmentService.saveAppointmentRequests(appointmentRequest);
 		}
 		return response;
@@ -173,11 +173,8 @@ public class MyCareHubController {
 		if (appointmentRequest != null) {
 			map.put("uuid", appointmentRequest.getUuid());
 			map.put("appointmentUuid", appointmentRequest.getAppointmentUUID());
-			map.put("appointmentType", appointmentRequest.getAppointmentType());
 			map.put("appointmentReason", appointmentRequest.getAppointmentReason());
-			map.put("provider", appointmentRequest.getProvider());
-			map.put("requestedDate", Context.getDateTimeFormat().format(appointmentRequest.getRequestedDate()));
-			map.put("requestedTimeSlot", appointmentRequest.getRequestedTimeSlot());
+			map.put("requestedDate", Context.getDateFormat().format(appointmentRequest.getRequestedDate()));
 			map.put("status", appointmentRequest.getStatus());
 			if (appointmentRequest.getProgressDate() != null) {
 				map.put("progressDate", appointmentRequest.getProgressDate().toString());
@@ -235,12 +232,12 @@ public class MyCareHubController {
 			map.put("note", healthDiary.getNote());
 			map.put("entryType", healthDiary.getEntryType());
 			if (healthDiary.getDateRecorded() != null) {
-				map.put("dateRecorded", healthDiary.getDateRecorded());
+				map.put("dateRecorded", Context.getDateTimeFormat().format(healthDiary.getDateRecorded()));
 			} else {
 				map.put("dateRecorded", "");
 			}
 			if (healthDiary.getSharedOn() != null) {
-				map.put("sharedOn", healthDiary.getSharedOn());
+				map.put("sharedOn", Context.getDateTimeFormat().format(healthDiary.getSharedOn()));
 			} else {
 				map.put("sharedOn", "");
 			}
