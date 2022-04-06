@@ -47,7 +47,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		Query query = sessionFactory
 		        .getCurrentSession()
 		        .createSQLQuery(
-		            "SELECT DISTINCT patient.patient_id FROM patient "
+		            "SELECT DISTINCT patient.patient_id as patientId FROM patient "
 		                    + "INNER JOIN person ON patient.patient_id = person.person_id "
 		                    + "INNER JOIN person_name ON person_name.person_id = patient.patient_id "
 		                    + "INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id "
@@ -72,7 +72,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	
 	public List<Patient> getCccPatientsByIdentifier(String cccNumber) {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(
-		    "SELECT patient_id FROM patient "
+		    "SELECT patient_id as patientId FROM patient "
 		            + "INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id "
 		            + "WHERE patient_identifier.identifier_type IN ("
 		            + "SELECT patient_identifier_type_id FROM patient_identifier_type "
@@ -86,7 +86,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	public List<Patient> getCccPatientsWithUpdatedMedicalRecordsSinceDate(Date lastSyncDate) {
 		
 		SQLQuery query = getSession().createSQLQuery(
-		    "SELECT patient.patient_id FROM patient "
+		    "SELECT patient.patient_id as patientId FROM patient "
 		            + "INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id "
 		            + "INNER JOIN obs ON obs.person_id = patient.patient_id "
 		            + "WHERE patient_identifier.identifier_type IN ( "

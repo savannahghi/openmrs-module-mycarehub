@@ -170,57 +170,57 @@ public class MyCareHubUtilTest {
 		cal.add(Calendar.MONTH, -2);
 		Date lastSyncTime = cal.getTime();
 		Date newSyncTime = new Date();
-		
+
 		MyCareHubUtil.getNewMyCareHubClientCccIdentifiers(lastSyncTime, newSyncTime);
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS, newSyncTime);
 	}
-	
+
 	@Test
 	public void fetchPatientAppointmentsRequests_shouldCreateCorrectSyncTimeSetting() {
 		Date lastSyncTime = new Date(0);
 		Date newSyncTime = new Date();
-		
+
 		MyCareHubUtil.fetchPatientAppointmentRequests(lastSyncTime, newSyncTime);
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_GET, newSyncTime);
 	}
-	
+
 	@Test
 	public void getPatientRedFlagRequests_shouldCreateCorrectSyncTimeSetting() {
 		Date lastSyncTime = new Date(0);
 		Date newSyncTime = new Date();
-		
+
 		MyCareHubUtil.getPatientRedFlagRequests(lastSyncTime, newSyncTime);
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_GET, newSyncTime);
 	}
-	
+
 	@Test
 	public void getPatientHealthDiaries_shouldCreateCorrectSyncTimeSetting() {
 		Date lastSyncTime = new Date(0);
 		Date newSyncTime = new Date();
-		
+
 		MyCareHubUtil.getPatientHealthDiaries(lastSyncTime, newSyncTime);
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_HEALTH_DIARY_GET, newSyncTime);
 	}
-	
+
 	@Test
 	public void uploadPatientRegistrationRecords_shouldCreateCorrectSyncTimeSetting() {
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat sf = new SimpleDateFormat(pattern);
-		
+
 		List<PatientRegistration> patientRegistrations = new ArrayList<PatientRegistration>();
 		PatientRegistration patientRegistration = createDummyPatientRegistration();
 		patientRegistrations.add(patientRegistration);
-		
+
 		PatientRegistrationRequest request = new PatientRegistrationRequest();
 		request.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
 		request.setPatientRegistrations(patientRegistrations);
-		
+
 		Date newSyncTime = new Date();
 		MyCareHubUtil.uploadPatientRegistrationRecords(request, newSyncTime);
-		
+
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
 	}
-	
+
 	private PatientRegistration createDummyPatientRegistration() {
 		Random random = new Random();
 		int number = random.nextInt(99999999);
@@ -232,11 +232,11 @@ public class MyCareHubUtilTest {
 		patientRegistration.setPhoneNumber("07" + random.nextInt(99999999));
 		patientRegistration.setGender("male");
 		patientRegistration.setMFLCODE(MyCareHubUtil.getDefaultLocationMflCode());
-		
+
 		patientRegistration.setDateOfBirth(sf.format(new Date(0)));
 		patientRegistration.setBirthdateEstimated(false);
 		patientRegistration.setEnrollmentDate(sf.format(new Date()));
-		
+
 		List<String> relationshipList = new ArrayList<String>();
 		relationshipList.add("Doctor");
 		relationshipList.add("Sibling");
@@ -248,103 +248,103 @@ public class MyCareHubUtilTest {
 		relationshipList.add("Nephew");
 		Random randomizer = new Random();
 		String relationship = relationshipList.get(randomizer.nextInt(relationshipList.size()));
-		
+
 		JsonObject nextOfKin = new JsonObject();
 		nextOfKin.addProperty(NEXT_OF_KIN_NAME_KEY, "Dummy Relative");
 		nextOfKin.addProperty(NEXT_OF_KIN_CONTACTS_KEY, "07" + random.nextInt(99999999));
 		nextOfKin.addProperty(NEXT_OF_KIN_RELATIONSHIP_KEY, relationship);
 		patientRegistration.setNextOfKin(nextOfKin);
-		
+
 		return patientRegistration;
 	}
-	
+
 	@Test
 	public void uploadPatientAppointments_shouldCreateCorrectSyncTimeSetting() {
 		JsonObject appointmentObject = new JsonObject();
-		
+
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		
+
 		appointmentObject.addProperty(APPOINTMENT_ID_KEY, "58655");
-		
+
 		Date appointmentDate = new Date();
-		
+
 		appointmentObject.addProperty(APPOINTMENT_DATE_KEY, dateFormat.format(appointmentDate));
 		appointmentObject.addProperty(APPOINTMENT_REASON_KEY, "Appointment Reason");
 		appointmentObject.addProperty(CCC_NUMBER, "12345555");
-		
+
 		JsonArray appointmentsArray = new JsonArray();
 		appointmentsArray.add(appointmentObject);
-		
+
 		JsonObject containerObject = new JsonObject();
 		containerObject.addProperty(FACILITY_MFL_CODE, MyCareHubUtil.getDefaultLocationMflCode());
 		containerObject.add(APPOINTMENTS_CONTAINER_KEY, appointmentsArray);
-		
+
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointments(containerObject, newSyncDate);
-		
+
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);
 	}
-	
+
 	@Test
 	public void uploadPatientAppointmentRequests_shouldCreateCorrectSyncTimeSetting() {
 		JsonObject appointmentObject = new JsonObject();
 		appointmentObject.addProperty(MYCAREHUB_ID_KEY, "47e887f5-0cb9-428d-b699-41ef0572e296");
 		appointmentObject.addProperty(APPOINTMENT_REQUEST_STATUS_KEY, "IN_PROGRESS");
-		
+
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		appointmentObject.addProperty(APPOINTMENT_PROGRESS_DATE_KEY, dateTimeFormat.format(new Date()));
 		appointmentObject.addProperty(APPOINTMENT_PROGRESS_BY_KEY, "User's Name");
 		appointmentObject.addProperty(APPOINTMENT_RESOLVED_DATE_KEY, "null");
 		appointmentObject.addProperty(APPOINTMENT_RESOLVED_BY_KEY, "");
-		
+
 		JsonArray appointmentsObject = new JsonArray();
 		appointmentsObject.add(appointmentObject);
-		
+
 		JsonObject containerObject = new JsonObject();
 		containerObject.add(APPOINTMENT_REQUEST_CONTAINER, appointmentsObject);
-		
+
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointmentRequests(containerObject, newSyncDate);
-		
+
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);
 	}
-	
+
 	@Test
 	public void postPatientRedFlags_shouldCreateCorrectSyncTimeSetting() {
 		JsonObject redFlagObject = new JsonObject();
 		redFlagObject.addProperty(MYCAREHUB_ID_KEY, "47e887f5-0cb9-428d-b699-41ef0572e296");
 		redFlagObject.addProperty(RED_FLAG_STATUS_KEY, "IN_PROGRESS");
 		redFlagObject.addProperty(RED_FLAG_REQUEST_TYPE_KEY, "RED_FLAG");
-		
+
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		redFlagObject.addProperty(RED_FLAG_PROGRESS_DATE_KEY, dateTimeFormat.format(new Date()));
 		redFlagObject.addProperty(RED_FLAG_PROGRESS_BY_KEY, "User's Name");
 		redFlagObject.addProperty(RED_FLAG_RESOLVED_DATE_KEY, "null");
 		redFlagObject.addProperty(RED_FLAG_RESOLVED_BY_KEY, "");
-		
+
 		JsonArray redFlagArray = new JsonArray();
 		redFlagArray.add(redFlagObject);
-		
+
 		JsonObject containerObject = new JsonObject();
 		containerObject.add(RED_FLAG_CONTAINER, redFlagArray);
-		
+
 		Date newSyncDate = new Date();
 		MyCareHubUtil.postPatientRedFlags(containerObject, newSyncDate);
-		
+
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncDate);
 	}
-	
+
 	@Test
 	public void uploadPatientMedicalRecords_shouldCreateCorrectSyncTimeSetting() {
 		MedicalRecord medicalRecord = new MedicalRecord();
 		medicalRecord.setCccNumber("25880678");
-		
+
 		PatientRegistration patientRegistration = createDummyPatientRegistration();
 		medicalRecord.setRegistration(patientRegistration);
-		
+
 		List<MyCareHubVitalSign> vitalSigns = new ArrayList<MyCareHubVitalSign>();
-		
+
 		vitalSigns.add(new MyCareHubVitalSign(TEMPERATURE_CONCEPT_KEY, String.valueOf(TEMPERATURE), dateFormat
 		        .format(new Date()) + "Z", "39.1"));
 		vitalSigns.add(new MyCareHubVitalSign(WEIGHT_CONCEPT_KEY, String.valueOf(WEIGHT), dateFormat.format(new Date())
@@ -363,9 +363,9 @@ public class MyCareHubUtilTest {
 		        .format(new Date()) + "Z", "1000"));
 		vitalSigns.add(new MyCareHubVitalSign(RESPIRATORY_RATE_CONCEPT_KEY, String.valueOf(RESPIRATORY_RATE), dateFormat
 		        .format(new Date()) + "Z", "26"));
-		
+
 		medicalRecord.setVitalSigns(vitalSigns);
-		
+
 		List<MyCareHubTestOrder> myCareHubTestOrders = new ArrayList<MyCareHubTestOrder>();
 		MyCareHubTestOrder myCareHubTestOrder = new MyCareHubTestOrder();
 		myCareHubTestOrder.setOrderDateTime(dateFormat.format(new Date()) + "Z");
@@ -373,9 +373,9 @@ public class MyCareHubUtilTest {
 		myCareHubTestOrder.setConceptId(1019);
 		myCareHubTestOrders.add(myCareHubTestOrder);
 		medicalRecord.setTestOrders(myCareHubTestOrders);
-		
+
 		List<MyCareHubTest> myCareHubTests = new ArrayList<MyCareHubTest>();
-		
+
 		//This test has no test result concept ID
 		MyCareHubTest myCareHubTest = new MyCareHubTest();
 		myCareHubTest.setTestName("HEMOGLOBIN");
@@ -383,7 +383,7 @@ public class MyCareHubUtilTest {
 		myCareHubTest.setTestDateTime(dateFormat.format(new Date()) + "Z");
 		myCareHubTest.setResult("15.1");
 		myCareHubTests.add(myCareHubTest);
-		
+
 		MyCareHubTest myCareHubTest2 = new MyCareHubTest();
 		myCareHubTest2.setTestName("URINE PREGNANCY TEST");
 		myCareHubTest2.setTestConceptId(45);
@@ -391,9 +391,9 @@ public class MyCareHubUtilTest {
 		myCareHubTest2.setResult("POSITIVE");
 		myCareHubTest2.setResultConceptId(703);
 		myCareHubTests.add(myCareHubTest2);
-		
+
 		medicalRecord.setTests(myCareHubTests);
-		
+
 		List<MyCareHubMedication> myCareHubMedications = new ArrayList<MyCareHubMedication>();
 		MyCareHubMedication myCareHubMedication = new MyCareHubMedication();
 		myCareHubMedication.setMedicationName("CURRENT DRUGS USED");
@@ -403,7 +403,7 @@ public class MyCareHubUtilTest {
 		myCareHubMedication.setDrugConceptId(796);
 		myCareHubMedications.add(myCareHubMedication);
 		medicalRecord.setMedications(myCareHubMedications);
-		
+
 		List<MyCareHubAllergy> allergies = new ArrayList<MyCareHubAllergy>();
 		MyCareHubAllergy myCareHubAllergy = new MyCareHubAllergy();
 		myCareHubAllergy.setAllergyName("Caffeine");
@@ -416,19 +416,19 @@ public class MyCareHubUtilTest {
 		myCareHubAllergy.setAllergyDateTime(dateFormat.format(new Date()) + "Z");
 		allergies.add(myCareHubAllergy);
 		medicalRecord.setAllergies(allergies);
-		
+
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
 		medicalRecords.add(medicalRecord);
-		
+
 		MedicalRecordsRequest medicalRecordsRequest = new MedicalRecordsRequest();
 		medicalRecordsRequest.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
 		medicalRecordsRequest.setMedicalRecords(medicalRecords);
-		
+
 		Date newSyncTime = new Date();
 		MyCareHubUtil.uploadPatientMedicalRecords(medicalRecordsRequest, newSyncTime);
-		
+
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, newSyncTime);
-		
+
 	}
 	
 }

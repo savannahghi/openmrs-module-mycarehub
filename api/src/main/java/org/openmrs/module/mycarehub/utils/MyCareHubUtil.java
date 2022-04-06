@@ -419,7 +419,7 @@ public class MyCareHubUtil {
 			if (response.isSuccessful()) {
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_GET, newSyncTime);
-				
+
 				if (response.body() != null) {
 					JsonObject jsonResponse = new JsonParser().parse(response.body().string()).getAsJsonObject();
 					jsonArray = jsonResponse.getAsJsonArray("redFlags");
@@ -440,7 +440,7 @@ public class MyCareHubUtil {
 			}
 		}
 		catch (Throwable throwable) {
-			log.error("Error uploading patient registration record: " + throwable.getMessage());
+			log.error("Error getting red flags: " + throwable.getMessage());
 		}
 		return jsonArray;
 	}
