@@ -144,4 +144,11 @@
     <bean id="healthDiaryDao" class="org.openmrs.module.mycarehub.api.db.hibernate.HibernateHealthDiaryDao">
         <constructor-arg ref="dbSessionFactory"/>
     </bean>
+    <bean id="mycarehub.app.providerHome" factory-bean="kenyacore.appFactoryBean" factory-method="createInstance">
+        <constructor-arg value="mycarehub.app.home" />
+        <constructor-arg value="My Carehub" />
+        <constructor-arg value="mycarehub/mycarehubHome.page#appointmentRequests" />
+        <constructor-arg value="mycarehub:apps/mycarehub.png" />
+        <constructor-arg value="2002" />
+    </bean>
 </beans>

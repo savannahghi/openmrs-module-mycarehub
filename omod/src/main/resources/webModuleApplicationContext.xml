@@ -25,6 +25,8 @@
 	 
 	<!-- Annotation based controllers -->
 	<context:component-scan base-package="org.openmrs.module.mycarehub.web.controller" />
- 
-		
+
+	<bean class="org.openmrs.ui.framework.StandardModuleUiConfiguration">
+		<property name="moduleId" value="mycarehub"/>
+	</bean>
 </beans>
