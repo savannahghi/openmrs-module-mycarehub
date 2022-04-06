@@ -142,7 +142,6 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 			Date newSyncDate = new Date();
 			
 			JsonArray jsonArray = getPatientRedFlagRequests(setting.getLastSyncTime(), newSyncDate);
-			
 			List<RedFlags> redFlags = new ArrayList<RedFlags>();
 			if (jsonArray != null) {
 				for (int i = 0; i < jsonArray.size(); i++) {
