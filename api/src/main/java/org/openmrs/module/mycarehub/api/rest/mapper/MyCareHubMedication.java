@@ -13,7 +13,7 @@ public class MyCareHubMedication {
 	private String medicationConceptId;
 	
 	@SerializedName("medicationDateTime")
-	private Date medicationDateTime;
+	private String medicationDateTime;
 	
 	@SerializedName("value")
 	private String value;
@@ -41,11 +41,11 @@ public class MyCareHubMedication {
 		return medicationConceptId;
 	}
 	
-	public void setMedicationDateTime(Date medicationDateTime) {
+	public void setMedicationDateTime(String medicationDateTime) {
 		this.medicationDateTime = medicationDateTime;
 	}
 	
-	public Date getMedicationDateTime() {
+	public String getMedicationDateTime() {
 		return medicationDateTime;
 	}
 	

@@ -124,7 +124,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		registrationRequest.setName(patient.getFamilyName() + patient.getGivenName());
 		registrationRequest.setClientType("KenyaEMR");
 		registrationRequest.setCounseled(false);
-		registrationRequest.setMFLCODE(Integer.valueOf(MyCareHubUtil.getDefaultLocationMflCode()));
+		registrationRequest.setMFLCODE(MyCareHubUtil.getDefaultLocationMflCode());
 		if ("M".equals(patient.getGender())) {
 			registrationRequest.setGender("male");
 		} else {
@@ -222,6 +222,9 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	}
 	
 	private void uploadPatientsMedicalRecordsSinceDate(List<Patient> patients, Date lastSyncTime, Date newSyncTime) {
+		String dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(dateTimePattern);
+		
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
 		PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
 		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
@@ -230,163 +233,100 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			MedicalRecord medicalRecord = new MedicalRecord();
 			
 			List<MyCareHubVitalSign> vitalSigns = new ArrayList<MyCareHubVitalSign>();
-			medicalRecord.setVitalSigns(vitalSigns);
 			List<Obs> observations = myCareHubPatientDao.getUpdatedVitalSignsSinceDate(patient, lastSyncTime);
 			for (final Obs obs : observations) {
 				switch (obs.getConcept().getConceptId()) {
 					case TEMPERATURE:
-						vitalSigns.add(new MyCareHubVitalSign() {
-							
-							{
-								setConceptName(TEMPERATURE_CONCEPT_KEY);
-								setConceptId(obs.getConcept().getConceptId());
-								setObsDatetime(obs.getObsDatetime());
-								setValue(obs.getValueAsString(Locale.ENGLISH));
-							}
-						});
+						vitalSigns.add(new MyCareHubVitalSign(TEMPERATURE_CONCEPT_KEY, String.valueOf(obs.getConcept()
+						        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+						        .getValueAsString(Locale.ENGLISH)));
 						break;
 					case WEIGHT:
-						vitalSigns.add(new MyCareHubVitalSign() {
-							
-							{
-								setConceptName(WEIGHT_CONCEPT_KEY);
-								setConceptId(obs.getConcept().getConceptId());
-								setObsDatetime(obs.getObsDatetime());
-								setValue(obs.getValueAsString(Locale.ENGLISH));
-							}
-						});
+						vitalSigns.add(new MyCareHubVitalSign(WEIGHT_CONCEPT_KEY, String.valueOf(obs.getConcept()
+						        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+						        .getValueAsString(Locale.ENGLISH)));
 						break;
 					case HEIGHT:
-						vitalSigns.add(new MyCareHubVitalSign() {
-							
-							{
-								setConceptName(HEIGHT_CONCEPT_KEY);
-								setConceptId(obs.getConcept().getConceptId());
-								setObsDatetime(obs.getObsDatetime());
-								setValue(obs.getValueAsString(Locale.ENGLISH));
-							}
-						});
+						vitalSigns.add(new MyCareHubVitalSign(HEIGHT_CONCEPT_KEY, String.valueOf(obs.getConcept()
+						        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+						        .getValueAsString(Locale.ENGLISH)));
 						break;
 					case BMI:
-						vitalSigns.add(new MyCareHubVitalSign() {
-							
-							{
-								setConceptName(BMI_CONCEPT_KEY);
-								setConceptId(obs.getConcept().getConceptId());
-								setObsDatetime(obs.getObsDatetime());
-								setValue(obs.getValueAsString(Locale.ENGLISH));
-							}
-						});
+						vitalSigns.add(new MyCareHubVitalSign(BMI_CONCEPT_KEY, String.valueOf(obs.getConcept()
+						        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+						        .getValueAsString(Locale.ENGLISH)));
 						break;
 					case SPO2:
-						vitalSigns.add(new MyCareHubVitalSign() {
-							
-							{
-								setConceptName(SPO2_CONCEPT_KEY);
-								setConceptId(obs.getConcept().getConceptId());
-								setObsDatetime(obs.getObsDatetime());
-								setValue(obs.getValueAsString(Locale.ENGLISH));
-							}
-						});
+						vitalSigns.add(new MyCareHubVitalSign(SPO2_CONCEPT_KEY, String.valueOf(obs.getConcept()
+						        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+						        .getValueAsString(Locale.ENGLISH)));
 						break;
 					case PULSE:
-						vitalSigns.add(new MyCareHubVitalSign() {
-							
-							{
-								setConceptName(PULSE_CONCEPT_KEY);
-								setConceptId(obs.getConcept().getConceptId());
-								setObsDatetime(obs.getObsDatetime());
-								setValue(obs.getValueAsString(Locale.ENGLISH));
-							}
-						});
+						vitalSigns.add(new MyCareHubVitalSign(PULSE_CONCEPT_KEY, String.valueOf(obs.getConcept()
+						        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+						        .getValueAsString(Locale.ENGLISH)));
 						break;
 					case CD4_COUNT:
-						vitalSigns.add(new MyCareHubVitalSign() {
-							
-							{
-								setConceptName(CD4_CONCEPT_KEY);
-								setConceptId(obs.getConcept().getConceptId());
-								setObsDatetime(obs.getObsDatetime());
-								setValue(obs.getValueAsString(Locale.ENGLISH));
-							}
-						});
+						vitalSigns.add(new MyCareHubVitalSign(CD4_CONCEPT_KEY, String.valueOf(obs.getConcept()
+						        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+						        .getValueAsString(Locale.ENGLISH)));
 						break;
 					case VIRAL_LOAD:
-						vitalSigns.add(new MyCareHubVitalSign() {
-							
-							{
-								setConceptName(VIRAL_LOAD_CONCEPT_KEY);
-								setConceptId(obs.getConcept().getConceptId());
-								setObsDatetime(obs.getObsDatetime());
-								setValue(obs.getValueAsString(Locale.ENGLISH));
-							}
-						});
+						vitalSigns.add(new MyCareHubVitalSign(VIRAL_LOAD_CONCEPT_KEY, String.valueOf(obs.getConcept()
+						        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+						        .getValueAsString(Locale.ENGLISH)));
 						break;
 					case RESPIRATORY_RATE:
-						vitalSigns.add(new MyCareHubVitalSign() {
-							
-							{
-								setConceptName(RESPIRATORY_RATE_CONCEPT_KEY);
-								setConceptId(obs.getConcept().getConceptId());
-								setObsDatetime(obs.getObsDatetime());
-								setValue(obs.getValueAsString(Locale.ENGLISH));
-							}
-						});
+						vitalSigns.add(new MyCareHubVitalSign(RESPIRATORY_RATE_CONCEPT_KEY, String.valueOf(obs.getConcept()
+						        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+						        .getValueAsString(Locale.ENGLISH)));
 						break;
 				}
 			}
+			medicalRecord.setVitalSigns(vitalSigns);
 			
 			List<MyCareHubTestOrder> myCareHubTestOrders = new ArrayList<MyCareHubTestOrder>();
-			medicalRecord.setTestOrders(myCareHubTestOrders);
 			List<Obs> testOrderObs = myCareHubPatientDao.getUpdatedTestOrdersSinceDate(patient, lastSyncTime);
 			for (final Obs order : testOrderObs) {
-				myCareHubTestOrders.add(new MyCareHubTestOrder() {
-					
-					{
-						setOrderDateTime(order.getObsDatetime());
-						setOrderedTestName(order.getValueAsString(Locale.ENGLISH));
-						if (order.getValueCoded() != null) {
-							setConceptId(order.getValueCoded().getConceptId());
-						}
-					}
-				});
+				MyCareHubTestOrder myCareHubTestOrder = new MyCareHubTestOrder();
+				myCareHubTestOrder.setOrderDateTime(dateTimeFormat.format(order.getObsDatetime()) + "Z");
+				myCareHubTestOrder.setOrderedTestName(order.getValueAsString(Locale.ENGLISH));
+				if (order.getValueCoded() != null) {
+					myCareHubTestOrder.setConceptId(order.getValueCoded().getConceptId());
+				}
+				myCareHubTestOrders.add(myCareHubTestOrder);
 			}
+			medicalRecord.setTestOrders(myCareHubTestOrders);
 			
 			List<MyCareHubTest> myCareHubTests = new ArrayList<MyCareHubTest>();
-			medicalRecord.setTests(myCareHubTests);
 			List<Obs> tests = myCareHubPatientDao.getUpdatedTestsSinceDate(patient, lastSyncTime);
 			for (final Obs test : tests) {
-				myCareHubTests.add(new MyCareHubTest() {
-					
-					{
-						setTestName(test.getConcept().getName().getName());
-						setTestConceptId(test.getConcept().getConceptId());
-						setTestDateTime(test.getObsDatetime());
-						setResult(test.getValueAsString(Locale.ENGLISH));
-						if (test.getValueCoded() != null) {
-							setResultConceptId(test.getValueCoded().getConceptId());
-						}
-					}
-				});
+				MyCareHubTest myCareHubTest = new MyCareHubTest();
+				myCareHubTest.setTestName(test.getConcept().getName().getName());
+				myCareHubTest.setTestConceptId(test.getConcept().getConceptId());
+				myCareHubTest.setTestDateTime(dateTimeFormat.format(test.getObsDatetime()) + "Z");
+				myCareHubTest.setResult(test.getValueAsString(Locale.ENGLISH));
+				if (test.getValueCoded() != null) {
+					myCareHubTest.setResultConceptId(test.getValueCoded().getConceptId());
+				}
+				myCareHubTests.add(myCareHubTest);
 			}
+			medicalRecord.setTests(myCareHubTests);
 			
 			List<MyCareHubMedication> myCareHubMedications = new ArrayList<MyCareHubMedication>();
-			medicalRecord.setMedications(myCareHubMedications);
 			List<Obs> medications = myCareHubPatientDao.getUpdatedMedicationsSinceDate(patient, lastSyncTime);
 			for (final Obs medication : medications) {
-				myCareHubMedications.add(new MyCareHubMedication() {
-					
-					{
-						setMedicationName(medication.getConcept().getName().getName());
-						setMedicationConceptId(medication.getConcept().getConceptId());
-						setMedicationDateTime(medication.getObsDatetime());
-						setValue(medication.getValueAsString(Locale.ENGLISH));
-						if (medication.getValueCoded() != null) {
-							setDrugConceptId(medication.getValueCoded().getConceptId());
-						}
-					}
-				});
+				MyCareHubMedication myCareHubMedication = new MyCareHubMedication();
+				myCareHubMedication.setMedicationName(medication.getConcept().getName().getName());
+				myCareHubMedication.setMedicationConceptId(medication.getConcept().getConceptId());
+				myCareHubMedication.setMedicationDateTime(dateTimeFormat.format(medication.getObsDatetime()) + "Z");
+				myCareHubMedication.setValue(medication.getValueAsString(Locale.ENGLISH));
+				if (medication.getValueCoded() != null) {
+					myCareHubMedication.setDrugConceptId(medication.getValueCoded().getConceptId());
+				}
+				myCareHubMedications.add(myCareHubMedication);
 			}
+			medicalRecord.setMedications(myCareHubMedications);
 			
 			List<MyCareHubAllergy> allergies = myCareHubPatientDao.getUpdatedAllergiesSinceDate(patient, lastSyncTime);
 			medicalRecord.setAllergies(allergies);

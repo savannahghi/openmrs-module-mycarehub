@@ -13,7 +13,7 @@ public class MyCareHubTest {
 	private String testConceptId;
 	
 	@SerializedName("testDateTime")
-	private Date testDateTime;
+	private String testDateTime;
 	
 	@SerializedName("result")
 	private String result;
@@ -41,11 +41,11 @@ public class MyCareHubTest {
 		return testConceptId;
 	}
 	
-	public void setTestDateTime(Date testDateTime) {
+	public void setTestDateTime(String testDateTime) {
 		this.testDateTime = testDateTime;
 	}
 	
-	public Date getTestDateTime() {
+	public String getTestDateTime() {
 		return testDateTime;
 	}
 	

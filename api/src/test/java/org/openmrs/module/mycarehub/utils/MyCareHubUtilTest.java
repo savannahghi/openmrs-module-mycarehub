@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -117,9 +118,13 @@ public class MyCareHubUtilTest {
 	
 	private MyCareHubSettingsService myCareHubSettingsService;
 	
-	private String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	private String pattern = "yyyy-MM-dd";
 	
 	private SimpleDateFormat sf = new SimpleDateFormat(pattern);
+	
+	private String dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	
+	private SimpleDateFormat dateFormat = new SimpleDateFormat(dateTimePattern);
 	
 	@Before
 	public void setup() {
@@ -217,23 +222,37 @@ public class MyCareHubUtilTest {
 	}
 	
 	private PatientRegistration createDummyPatientRegistration() {
+		Random random = new Random();
+		int number = random.nextInt(99999999);
 		PatientRegistration patientRegistration = new PatientRegistration();
 		patientRegistration.setName("Dummy Patient");
-		patientRegistration.setCccNumber("12345634562345347");
+		patientRegistration.setCccNumber(String.valueOf(number));
 		patientRegistration.setClientType("PMTCT");
 		patientRegistration.setCounseled(true);
-		patientRegistration.setPhoneNumber("0788888888");
+		patientRegistration.setPhoneNumber("07" + random.nextInt(99999999));
 		patientRegistration.setGender("male");
-		patientRegistration.setMFLCODE(Integer.valueOf(MyCareHubUtil.getDefaultLocationMflCode()));
+		patientRegistration.setMFLCODE(MyCareHubUtil.getDefaultLocationMflCode());
 		
 		patientRegistration.setDateOfBirth(sf.format(new Date(0)));
 		patientRegistration.setBirthdateEstimated(false);
 		patientRegistration.setEnrollmentDate(sf.format(new Date()));
 		
+		List<String> relationshipList = new ArrayList<String>();
+		relationshipList.add("Doctor");
+		relationshipList.add("Sibling");
+		relationshipList.add("Parent");
+		relationshipList.add("Child");
+		relationshipList.add("Aunt");
+		relationshipList.add("Uncle");
+		relationshipList.add("Niece");
+		relationshipList.add("Nephew");
+		Random randomizer = new Random();
+		String relationship = relationshipList.get(randomizer.nextInt(relationshipList.size()));
+		
 		JsonObject nextOfKin = new JsonObject();
-		nextOfKin.addProperty(NEXT_OF_KIN_NAME_KEY, "Kin Names");
-		nextOfKin.addProperty(NEXT_OF_KIN_CONTACTS_KEY, "0789999989");
-		nextOfKin.addProperty(NEXT_OF_KIN_RELATIONSHIP_KEY, "Mother");
+		nextOfKin.addProperty(NEXT_OF_KIN_NAME_KEY, "Dummy Relative");
+		nextOfKin.addProperty(NEXT_OF_KIN_CONTACTS_KEY, "07" + random.nextInt(99999999));
+		nextOfKin.addProperty(NEXT_OF_KIN_RELATIONSHIP_KEY, relationship);
 		patientRegistration.setNextOfKin(nextOfKin);
 		
 		return patientRegistration;
@@ -319,157 +338,83 @@ public class MyCareHubUtilTest {
 	@Test
 	public void uploadPatientMedicalRecords_shouldCreateCorrectSyncTimeSetting() {
 		MedicalRecord medicalRecord = new MedicalRecord();
-		medicalRecord.setCccNumber("0729204651");
+		medicalRecord.setCccNumber("25880678");
 		
 		PatientRegistration patientRegistration = createDummyPatientRegistration();
 		medicalRecord.setRegistration(patientRegistration);
 		
 		List<MyCareHubVitalSign> vitalSigns = new ArrayList<MyCareHubVitalSign>();
-		vitalSigns.add(new MyCareHubVitalSign() {
-			
-			{
-				setConceptName(TEMPERATURE_CONCEPT_KEY);
-				setConceptId(TEMPERATURE);
-				setObsDatetime(new Date());
-				setValue("39.1");
-			}
-		});
-		vitalSigns.add(new MyCareHubVitalSign() {
-			
-			{
-				setConceptName(WEIGHT_CONCEPT_KEY);
-				setConceptId(WEIGHT);
-				setObsDatetime(new Date());
-				setValue("80");
-			}
-		});
-		vitalSigns.add(new MyCareHubVitalSign() {
-			
-			{
-				setConceptName(HEIGHT_CONCEPT_KEY);
-				setConceptId(HEIGHT);
-				setObsDatetime(new Date());
-				setValue("171");
-			}
-		});
-		vitalSigns.add(new MyCareHubVitalSign() {
-			
-			{
-				setConceptName(BMI_CONCEPT_KEY);
-				setConceptId(BMI);
-				setObsDatetime(new Date());
-				setValue("25.2");
-			}
-		});
 		
-		vitalSigns.add(new MyCareHubVitalSign() {
-			
-			{
-				setConceptName(SPO2_CONCEPT_KEY);
-				setConceptId(SPO2);
-				setObsDatetime(new Date());
-				setValue("96");
-			}
-		});
-		vitalSigns.add(new MyCareHubVitalSign() {
-			
-			{
-				setConceptName(PULSE_CONCEPT_KEY);
-				setConceptId(PULSE);
-				setObsDatetime(new Date());
-				setValue("80");
-			}
-		});
-		vitalSigns.add(new MyCareHubVitalSign() {
-			
-			{
-				setConceptName(CD4_CONCEPT_KEY);
-				setConceptId(CD4_COUNT);
-				setObsDatetime(new Date());
-				setValue("500.0");
-			}
-		});
-		vitalSigns.add(new MyCareHubVitalSign() {
-			
-			{
-				setConceptName(VIRAL_LOAD_CONCEPT_KEY);
-				setConceptId(VIRAL_LOAD);
-				setObsDatetime(new Date());
-				setValue("1000");
-			}
-		});
-		vitalSigns.add(new MyCareHubVitalSign() {
-			
-			{
-				setConceptName(RESPIRATORY_RATE_CONCEPT_KEY);
-				setConceptId(RESPIRATORY_RATE);
-				setObsDatetime(new Date());
-				setValue("26");
-			}
-		});
+		vitalSigns.add(new MyCareHubVitalSign(TEMPERATURE_CONCEPT_KEY, String.valueOf(TEMPERATURE), dateFormat
+		        .format(new Date()) + "Z", "39.1"));
+		vitalSigns.add(new MyCareHubVitalSign(WEIGHT_CONCEPT_KEY, String.valueOf(WEIGHT), dateFormat.format(new Date())
+		        + "Z", "80"));
+		vitalSigns.add(new MyCareHubVitalSign(HEIGHT_CONCEPT_KEY, String.valueOf(HEIGHT), dateFormat.format(new Date())
+		        + "Z", "171"));
+		vitalSigns.add(new MyCareHubVitalSign(BMI_CONCEPT_KEY, String.valueOf(BMI), dateFormat.format(new Date()) + "Z",
+		        "25.2"));
+		vitalSigns.add(new MyCareHubVitalSign(SPO2_CONCEPT_KEY, String.valueOf(SPO2), dateFormat.format(new Date()) + "Z",
+		        "96"));
+		vitalSigns.add(new MyCareHubVitalSign(PULSE_CONCEPT_KEY, String.valueOf(PULSE), dateFormat.format(new Date()) + "Z",
+		        "80"));
+		vitalSigns.add(new MyCareHubVitalSign(CD4_CONCEPT_KEY, String.valueOf(CD4_COUNT), dateFormat.format(new Date())
+		        + "Z", "500"));
+		vitalSigns.add(new MyCareHubVitalSign(VIRAL_LOAD_CONCEPT_KEY, String.valueOf(VIRAL_LOAD), dateFormat
+		        .format(new Date()) + "Z", "1000"));
+		vitalSigns.add(new MyCareHubVitalSign(RESPIRATORY_RATE_CONCEPT_KEY, String.valueOf(RESPIRATORY_RATE), dateFormat
+		        .format(new Date()) + "Z", "26"));
+		
 		medicalRecord.setVitalSigns(vitalSigns);
 		
 		List<MyCareHubTestOrder> myCareHubTestOrders = new ArrayList<MyCareHubTestOrder>();
-		myCareHubTestOrders.add(new MyCareHubTestOrder() {
-			
-			{
-				setOrderDateTime(new Date());
-				setOrderedTestName("Complete Blood Count");
-				setConceptId(1019);
-			}
-		});
+		MyCareHubTestOrder myCareHubTestOrder = new MyCareHubTestOrder();
+		myCareHubTestOrder.setOrderDateTime(dateFormat.format(new Date()) + "Z");
+		myCareHubTestOrder.setOrderedTestName("Complete Blood Count");
+		myCareHubTestOrder.setConceptId(1019);
+		myCareHubTestOrders.add(myCareHubTestOrder);
 		medicalRecord.setTestOrders(myCareHubTestOrders);
 		
 		List<MyCareHubTest> myCareHubTests = new ArrayList<MyCareHubTest>();
-		myCareHubTests.add(new MyCareHubTest() {
-			
-			{
-				setTestName("HEMOGLOBIN");
-				setTestConceptId(21);
-				setTestDateTime(new Date());
-				setResult("15.1");
-				//This test has no test result concept ID
-			}
-		});
-		myCareHubTests.add(new MyCareHubTest() {
-			
-			{
-				setTestName("URINE PREGNANCY TEST");
-				setTestConceptId(45);
-				setTestDateTime(new Date());
-				setResult("POSITIVE");
-				setResultConceptId(703);
-			}
-		});
+		
+		//This test has no test result concept ID
+		MyCareHubTest myCareHubTest = new MyCareHubTest();
+		myCareHubTest.setTestName("HEMOGLOBIN");
+		myCareHubTest.setTestConceptId(21);
+		myCareHubTest.setTestDateTime(dateFormat.format(new Date()) + "Z");
+		myCareHubTest.setResult("15.1");
+		myCareHubTests.add(myCareHubTest);
+		
+		MyCareHubTest myCareHubTest2 = new MyCareHubTest();
+		myCareHubTest2.setTestName("URINE PREGNANCY TEST");
+		myCareHubTest2.setTestConceptId(45);
+		myCareHubTest2.setTestDateTime(dateFormat.format(new Date()) + "Z");
+		myCareHubTest2.setResult("POSITIVE");
+		myCareHubTest2.setResultConceptId(703);
+		myCareHubTests.add(myCareHubTest2);
+		
 		medicalRecord.setTests(myCareHubTests);
 		
 		List<MyCareHubMedication> myCareHubMedications = new ArrayList<MyCareHubMedication>();
-		myCareHubMedications.add(new MyCareHubMedication() {
-			
-			{
-				setMedicationName("CURRENT DRUGS USED");
-				setMedicationConceptId(1193);
-				setMedicationDateTime(new Date());
-				setValue("DIDANOSINE");
-				setDrugConceptId(796);
-			}
-		});
+		MyCareHubMedication myCareHubMedication = new MyCareHubMedication();
+		myCareHubMedication.setMedicationName("CURRENT DRUGS USED");
+		myCareHubMedication.setMedicationConceptId(1193);
+		myCareHubMedication.setMedicationDateTime(dateFormat.format(new Date()) + "Z");
+		myCareHubMedication.setValue("DIDANOSINE");
+		myCareHubMedication.setDrugConceptId(796);
+		myCareHubMedications.add(myCareHubMedication);
 		medicalRecord.setMedications(myCareHubMedications);
 		
 		List<MyCareHubAllergy> allergies = new ArrayList<MyCareHubAllergy>();
-		allergies.add(new MyCareHubAllergy() {
-			
-			{
-				setAllergyName("Caffeine");
-				setAllergyConceptId(72609);
-				setReaction("Arrhythmia");
-				setReactionConceptId(120148);
-				setOtherReaction("Free text description of other reaction");
-				setSeverity("Severe");
-				setSeverityConceptId(160756);
-				setAllergyDateTime(new Date());
-			}
-		});
+		MyCareHubAllergy myCareHubAllergy = new MyCareHubAllergy();
+		myCareHubAllergy.setAllergyName("Caffeine");
+		myCareHubAllergy.setAllergyConceptId(72609);
+		myCareHubAllergy.setReaction("Arrhythmia");
+		myCareHubAllergy.setReactionConceptId(120148);
+		myCareHubAllergy.setOtherReaction("Free text description of other reaction");
+		myCareHubAllergy.setSeverity("Severe");
+		myCareHubAllergy.setSeverityConceptId(160756);
+		myCareHubAllergy.setAllergyDateTime(dateFormat.format(new Date()) + "Z");
+		allergies.add(myCareHubAllergy);
 		medicalRecord.setAllergies(allergies);
 		
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();

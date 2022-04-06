@@ -28,7 +28,7 @@ public class MyCareHubAllergy {
 	private String severityConceptId;
 	
 	@SerializedName("allergyDateTime")
-	private Date allergyDateTime;
+	private String allergyDateTime;
 	
 	public void setAllergyName(String allergyName) {
 		this.allergyName = allergyName;
@@ -98,11 +98,11 @@ public class MyCareHubAllergy {
 		return severityConceptId;
 	}
 	
-	public void setAllergyDateTime(Date allergyDateTime) {
+	public void setAllergyDateTime(String allergyDateTime) {
 		this.allergyDateTime = allergyDateTime;
 	}
 	
-	public Date getAllergyDateTime() {
+	public String getAllergyDateTime() {
 		return allergyDateTime;
 	}
 }

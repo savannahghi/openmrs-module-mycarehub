@@ -7,7 +7,7 @@ import java.util.Date;
 public class MyCareHubTestOrder {
 	
 	@SerializedName("orderDateTime")
-	private Date orderDateTime;
+	private String orderDateTime;
 	
 	@SerializedName("orderedTestName")
 	private String orderedTestName;
@@ -15,11 +15,11 @@ public class MyCareHubTestOrder {
 	@SerializedName("conceptId")
 	private String conceptId;
 	
-	public void setOrderDateTime(Date orderDateTime) {
+	public void setOrderDateTime(String orderDateTime) {
 		this.orderDateTime = orderDateTime;
 	}
 	
-	public Date getOrderDateTime() {
+	public String getOrderDateTime() {
 		return orderDateTime;
 	}
 	
