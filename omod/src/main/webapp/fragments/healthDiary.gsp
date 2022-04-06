@@ -23,11 +23,12 @@
             </tr>
             </tbody>
         </table>
-    </div>
-</div>
-<div  class="row">
-    <div class="col-lg-8">
-        <ul ng-show="healthDiariesPages > 1" uib-pagination total-items="healthDiariesTotalItems" ng-model="healthDiaryCurrentPage" max-size="maxSize" ng-change="healthDiaryPagination(healthDiaryCurrentPage)"
-            items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
+        <div class="ke-panel-content pagination">Page {{healthDiaryCurrentPage}} of {{healthDiariesPages}} &nbsp;&nbsp;&nbsp;
+            <span ng-repeat="pageIndex in createRange(healthDiariesPages);">
+                    <span  ng-show="healthDiaryCurrentPage == pageIndex">{{pageIndex}}</span>
+                    <a href="#"  ng-show="healthDiaryCurrentPage != pageIndex"
+                           ng-click="healthDiaryPagination(pageIndex)">{{pageIndex}}</a> |
+            </span>
+        </div>
     </div>
 </div>

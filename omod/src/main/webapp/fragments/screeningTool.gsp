@@ -8,7 +8,6 @@
                 <th>Client Contact</th>
                 <th>CCC Number</th>
                 <th>Request</th>
-                <th>Request Type</th>
                 <th>Screening Tool Name</th>
                 <th>Screening Score</th>
                 <th>Status</th>
@@ -25,7 +24,6 @@
                 <td>{{screeningToolRedFlag.clientContact}}</td>
                 <td>{{screeningToolRedFlag.cccNumber}}</td>
                 <td>{{screeningToolRedFlag.Request}}</td>
-                <td>{{screeningToolRedFlag.RequestType}}</td>
                 <td>{{screeningToolRedFlag.ScreeningToolName}}</td>
                 <td>{{screeningToolRedFlag.ScreeningToolScore}}</td>
                 <td>{{screeningToolRedFlag.Status}}</td>
@@ -40,11 +38,12 @@
             </tr>
             </tbody>
         </table>
-    </div>
-</div>
-<div  class="row">
-    <div class="col-lg-8">
-        <ul ng-show="screeningToolRedFlagPages > 1" uib-pagination total-items="screeningToolRedFlagTotalItems" ng-model="screeningToolRedFlagCurrentPage" max-size="maxSize" ng-change="screeningToolRedFlagPagination(screeningToolRedFlagCurrentPage)"
-            items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
+        <div class="ke-panel-content pagination">Page {{screeningToolRedFlagCurrentPage}} of {{screeningToolRedFlagPages}} &nbsp;&nbsp;&nbsp;
+            <span ng-repeat="pageIndex in createRange(screeningToolRedFlagPages);">
+                <span  ng-show="screeningToolRedFlagCurrentPage == pageIndex">{{pageIndex}}</span>
+                <a href="#"  ng-show="screeningToolRedFlagCurrentPage != pageIndex"
+                   ng-click="screeningToolRedFlagPagination(pageIndex)">{{pageIndex}}</a> |
+            </span>
+        </div>
     </div>
 </div>

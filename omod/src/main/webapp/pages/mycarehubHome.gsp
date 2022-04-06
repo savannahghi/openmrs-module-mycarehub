@@ -2,6 +2,10 @@
     .mycarehub-content{
         display: none;
     }
+
+    .pagination {
+        font-weight: bold;
+    }
 </style>
 <%
     ui.includeJavascript("mycarehub", "mycarehub.js")

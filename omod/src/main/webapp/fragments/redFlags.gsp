@@ -8,7 +8,6 @@
                 <th>Client Contact</th>
                 <th>CCC Number</th>
                 <th>Request</th>
-                <th>Request Type</th>
                 <th>Status</th>
                 <th>Progress Date</th>
                 <th>Progress By</th>
@@ -23,7 +22,6 @@
                 <td>{{redFlag.clientContact}}</td>
                 <td>{{redFlag.cccNumber}}</td>
                 <td>{{redFlag.Request}}</td>
-                <td>{{redFlag.RequestType}}</td>
                 <td>{{redFlag.Status}}</td>
                 <td>{{redFlag.progressDate}}</td>
                 <td>{{redFlag.progressBy}}</td>
@@ -36,11 +34,12 @@
             </tr>
             </tbody>
         </table>
-    </div>
-</div>
-<div  class="row">
-    <div class="col-lg-8">
-        <ul ng-show="redFlagsPages > 1" uib-pagination total-items="redFlagsTotalItems" ng-model="redFlagCurrentPage" max-size="maxSize" ng-change="redFlagPagination(redFlagCurrentPage)"
-            items-per-page="pageSize" boundary-links="true" force-ellipses="true" class="pull-right"></ul>
+        <div class="ke-panel-content pagination">Page {{redFlagCurrentPage}} of {{redFlagsPages}} &nbsp;&nbsp;&nbsp;
+            <span ng-repeat="pageIndex in createRange(redFlagsPages);">
+                <span  ng-show="redFlagCurrentPage == pageIndex">{{pageIndex}}</span>
+                <a href="#"  ng-show="redFlagCurrentPage != pageIndex"
+                   ng-click="redFlagPagination(pageIndex)">{{pageIndex}}</a> |
+            </span>
+        </div>
     </div>
 </div>
