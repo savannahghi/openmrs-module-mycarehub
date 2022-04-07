@@ -10,9 +10,12 @@ import org.openmrs.module.mycarehub.model.AppointmentRequests;
 import org.openmrs.module.mycarehub.model.HealthDiary;
 import org.openmrs.module.mycarehub.model.RedFlags;
 import org.openmrs.ui.framework.UiUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +44,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return response;
 	}
-	
+
 	private Map<String, Object> convertAppointmentRequestToJsonMap(final AppointmentRequests appointmentRequest) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (appointmentRequest != null) {
@@ -68,7 +71,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return map;
 	}
-	
+
 	public Map<String, Object> getHealthDiaries(final @RequestParam(value = "pageNumber") Integer pageNumber,
 	        final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -86,7 +89,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return response;
 	}
-	
+
 	private Map<String, Object> convertHealthDiariesToJsonMap(final HealthDiary healthDiary) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (healthDiary != null) {
@@ -107,7 +110,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return map;
 	}
-	
+
 	public Map<String, Object> getRedFlagsByType(final @RequestParam(value = "requestType") String requestType,
 	        final @RequestParam(value = "pageNumber") Integer pageNumber,
 	        final @RequestParam(value = "pageSize") Integer pageSize) {
@@ -127,8 +130,8 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return response;
 	}
-	
-	Map<String, Object> convertRedFlagsToJsonMap(final RedFlags redFlags) {
+
+	private Map<String, Object> convertRedFlagsToJsonMap(final RedFlags redFlags) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (redFlags != null) {
 			map.put("uuid", redFlags.getUuid());
@@ -155,5 +158,57 @@ public class MyCareHubUtilsFragmentController {
 			map.put("MFLCode", redFlags.getMflCode());
 		}
 		return map;
+	}
+
+	public Map<String, Object> setRedFlagInProgress(final @RequestParam(value = "uuid") String uuid) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			RedFlagService redFlagService = Context.getService(RedFlagService.class);
+			RedFlags redFlag = redFlagService.getRedFlagByUuid(uuid);
+			redFlag.setProgressDate(new Date());
+			redFlag.setStatus("IN_PROGRESS");
+			redFlag.setProgressBy(Context.getAuthenticatedUser().getUsername());
+			redFlagService.saveRedFlagRequests(redFlag);
+		}
+		return response;
+	}
+
+	public Map<String, Object> setRedFlagResolved(final @RequestParam(value = "uuid") String uuid) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			RedFlagService redFlagService = Context.getService(RedFlagService.class);
+			RedFlags redFlag = redFlagService.getRedFlagByUuid(uuid);
+			redFlag.setDateResolved(new Date());
+			redFlag.setStatus("COMPLETED");
+			redFlag.setResolvedBy(Context.getAuthenticatedUser().getUsername());
+			redFlagService.saveRedFlagRequests(redFlag);
+		}
+		return response;
+	}
+
+	public Map<String, Object> setAppointmentInProgress(final @RequestParam(value = "uuid") String uuid) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			AppointmentService appointmentService = Context.getService(AppointmentService.class);
+			AppointmentRequests appointmentRequest = appointmentService.getAppointmentRequestByUuid(uuid);
+			appointmentRequest.setProgressDate(new Date());
+			appointmentRequest.setStatus("IN_PROGRESS");
+			appointmentRequest.setProgressBy(Context.getAuthenticatedUser().getUsername());
+			appointmentService.saveAppointmentRequests(appointmentRequest);
+		}
+		return response;
+	}
+
+	public Map<String, Object> setAppointmentResolved(final @RequestParam(value = "uuid") String uuid) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {
+			AppointmentService appointmentService = Context.getService(AppointmentService.class);
+			AppointmentRequests appointmentRequest = appointmentService.getAppointmentRequestByUuid(uuid);
+			appointmentRequest.setDateResolved(new Date());
+			appointmentRequest.setStatus("COMPLETED");
+			appointmentRequest.setResolvedBy(Context.getAuthenticatedUser().getUsername());
+			appointmentService.saveAppointmentRequests(appointmentRequest);
+		}
+		return response;
 	}
 }
