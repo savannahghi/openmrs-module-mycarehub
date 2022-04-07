@@ -36,6 +36,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
 import static org.openmrs.module.mycarehub.utils.Constants.GP_DEFAULT_LOCATION_MFL_CODE;
@@ -419,7 +420,7 @@ public class MyCareHubUtil {
 			if (response.isSuccessful()) {
 				MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 				settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_GET, newSyncTime);
-
+				
 				if (response.body() != null) {
 					JsonObject jsonResponse = new JsonParser().parse(response.body().string()).getAsJsonObject();
 					jsonArray = jsonResponse.getAsJsonArray("redFlags");
@@ -563,6 +564,7 @@ public class MyCareHubUtil {
 		vitalSignsConceptsList.add(CD4_COUNT);
 		vitalSignsConceptsList.add(VIRAL_LOAD);
 		vitalSignsConceptsList.add(RESPIRATORY_RATE);
+		vitalSignsConceptsList.add(APPOINTMENT_DATE_CONCEPT_ID);
 		return vitalSignsConceptsList;
 	}
 	

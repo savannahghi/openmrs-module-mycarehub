@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
+import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_REASON_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.CD4_COUNT;
@@ -43,6 +45,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_MEDICAL_RECORDS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.APPOINTMENT_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.BMI_CONCEPT_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.CD4_CONCEPT_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.HEIGHT_CONCEPT_KEY;
@@ -285,6 +288,12 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 						case RESPIRATORY_RATE:
 							vitalSigns.add(new MyCareHubVitalSign(RESPIRATORY_RATE_CONCEPT_KEY, String.valueOf(obs
 							        .getConcept().getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getValueAsString(Locale.ENGLISH)));
+							break;
+						
+						case APPOINTMENT_DATE_CONCEPT_ID:
+							vitalSigns.add(new MyCareHubVitalSign(APPOINTMENT_DATE_KEY, String.valueOf(obs.getConcept()
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 					}
