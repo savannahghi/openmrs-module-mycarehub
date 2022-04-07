@@ -44,7 +44,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return response;
 	}
-
+	
 	private Map<String, Object> convertAppointmentRequestToJsonMap(final AppointmentRequests appointmentRequest) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (appointmentRequest != null) {
@@ -71,7 +71,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return map;
 	}
-
+	
 	public Map<String, Object> getHealthDiaries(final @RequestParam(value = "pageNumber") Integer pageNumber,
 	        final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -89,7 +89,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return response;
 	}
-
+	
 	private Map<String, Object> convertHealthDiariesToJsonMap(final HealthDiary healthDiary) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (healthDiary != null) {
@@ -110,7 +110,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return map;
 	}
-
+	
 	public Map<String, Object> getRedFlagsByType(final @RequestParam(value = "requestType") String requestType,
 	        final @RequestParam(value = "pageNumber") Integer pageNumber,
 	        final @RequestParam(value = "pageSize") Integer pageSize) {
@@ -130,7 +130,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return response;
 	}
-
+	
 	private Map<String, Object> convertRedFlagsToJsonMap(final RedFlags redFlags) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (redFlags != null) {
@@ -159,7 +159,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return map;
 	}
-
+	
 	public Map<String, Object> setRedFlagInProgress(final @RequestParam(value = "uuid") String uuid) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
@@ -172,7 +172,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return response;
 	}
-
+	
 	public Map<String, Object> setRedFlagResolved(final @RequestParam(value = "uuid") String uuid) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
@@ -185,7 +185,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return response;
 	}
-
+	
 	public Map<String, Object> setAppointmentInProgress(final @RequestParam(value = "uuid") String uuid) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
@@ -198,7 +198,7 @@ public class MyCareHubUtilsFragmentController {
 		}
 		return response;
 	}
-
+	
 	public Map<String, Object> setAppointmentResolved(final @RequestParam(value = "uuid") String uuid) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
