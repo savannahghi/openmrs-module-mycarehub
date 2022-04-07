@@ -61,10 +61,14 @@ kenyaemrApp.controller('AppointmentRequestsCtrl',['$scope', '$http', '$timeout',
     $scope.setAppointmentApproved = function (appointmentRequest) {
         $scope.setAppointmentResolved(appointmentRequest.uuid).
         then(function (response) {
-            ui.navigate(ui.pageLink("kenyaemr", "editForm", {encounterId: appointmentRequest.appointmentUuid, appId: 'mycarehub', returnUrl: ui.thisUrl()}));
+            var params = {encounterId: appointmentRequest.appointmentUuid,
+                appId: "kenyaemr.medicalEncounter", returnUrl: window.location.href};
+            ui.navigate(ui.pageLink("kenyaemr", "editForm", params));
         },function (response) {
             console.log("Error approving appointment request");
         });
+
+
     };
 }]);
 
