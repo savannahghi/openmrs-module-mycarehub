@@ -252,62 +252,62 @@ public class MyCareHubUtilTest {
 		
 		JsonObject nextOfKin = new JsonObject();
 		nextOfKin.addProperty(NEXT_OF_KIN_NAME_KEY, "Dummy Relative");
-		nextOfKin.addProperty(NEXT_OF_KIN_CONTACTS_KEY, "07" + String.format("%08d",random.nextInt(99999999)));
+		nextOfKin.addProperty(NEXT_OF_KIN_CONTACTS_KEY, "07" + String.format("%08d", random.nextInt(99999999)));
 		nextOfKin.addProperty(NEXT_OF_KIN_RELATIONSHIP_KEY, relationship);
 		patientRegistration.setNextOfKin(nextOfKin);
-
+		
 		return patientRegistration;
 	}
-
+	
 	@Test
 	public void uploadPatientAppointments_shouldCreateCorrectSyncTimeSetting() {
 		JsonObject appointmentObject = new JsonObject();
-
+		
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
+		
 		appointmentObject.addProperty(APPOINTMENT_ID_KEY, "58655");
-
+		
 		Date appointmentDate = new Date();
-
+		
 		appointmentObject.addProperty(APPOINTMENT_DATE_KEY, dateFormat.format(appointmentDate));
 		appointmentObject.addProperty(APPOINTMENT_REASON_KEY, "Appointment Reason");
 		appointmentObject.addProperty(CCC_NUMBER, "12345555");
-
+		
 		JsonArray appointmentsArray = new JsonArray();
 		appointmentsArray.add(appointmentObject);
-
+		
 		JsonObject containerObject = new JsonObject();
 		containerObject.addProperty(FACILITY_MFL_CODE, MyCareHubUtil.getDefaultLocationMflCode());
 		containerObject.add(APPOINTMENTS_CONTAINER_KEY, appointmentsArray);
-
+		
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointments(containerObject, newSyncDate);
-
+		
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);
 	}
-
+	
 	@Test
 	public void uploadPatientAppointmentRequests_shouldCreateCorrectSyncTimeSetting() {
 		JsonObject appointmentObject = new JsonObject();
 		appointmentObject.addProperty(MYCAREHUB_ID_KEY, "47e887f5-0cb9-428d-b699-41ef0572e296");
 		appointmentObject.addProperty(APPOINTMENT_REQUEST_STATUS_KEY, "IN_PROGRESS");
-
+		
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		appointmentObject.addProperty(APPOINTMENT_PROGRESS_DATE_KEY, dateTimeFormat.format(new Date()));
-		appointmentObject.addProperty(APPOINTMENT_PROGRESS_BY_KEY, "User's Name");
+		appointmentObject.addProperty(APPOINTMENT_PROGRESS_BY_KEY, "User Name");
 		appointmentObject.addProperty(APPOINTMENT_RESOLVED_DATE_KEY, "null");
 		appointmentObject.addProperty(APPOINTMENT_RESOLVED_BY_KEY, "");
-
+		
 		JsonArray appointmentsObject = new JsonArray();
 		appointmentsObject.add(appointmentObject);
-
+		
 		JsonObject containerObject = new JsonObject();
 		containerObject.add(APPOINTMENT_REQUEST_CONTAINER, appointmentsObject);
-
+		
 		Date newSyncDate = new Date();
 		MyCareHubUtil.uploadPatientAppointmentRequests(containerObject, newSyncDate);
-
+		
 		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncDate);
 	}
 	

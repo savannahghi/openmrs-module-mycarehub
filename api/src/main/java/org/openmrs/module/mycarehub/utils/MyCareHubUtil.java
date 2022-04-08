@@ -346,7 +346,7 @@ public class MyCareHubUtil {
 				
 				if (response.body() != null) {
 					JsonObject jsonResponse = new JsonParser().parse(response.body().string()).getAsJsonObject();
-					jsonArray = jsonResponse.getAsJsonArray("appointments");
+					jsonArray = jsonResponse.getAsJsonArray("Results");
 				}
 			} else {
 				try {

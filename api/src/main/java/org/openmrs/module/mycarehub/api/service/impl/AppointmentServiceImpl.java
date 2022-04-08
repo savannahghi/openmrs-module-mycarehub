@@ -2,6 +2,7 @@ package org.openmrs.module.mycarehub.api.service.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
@@ -226,7 +227,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				for (int i = 0; i < jsonArray.size(); i++) {
 					JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
 					AppointmentRequests appointmentRequest = new AppointmentRequests();
-					String mycarehubId = jsonObject1.get("ID").toString();
+					String mycarehubId = jsonObject1.get("id").getAsString();
 					AppointmentRequests existingRequests = getAppointmentRequestByMycarehubId(mycarehubId);
 					if (existingRequests != null && existingRequests.getMycarehubId() != null) {
 						appointmentRequest = existingRequests;
@@ -237,9 +238,9 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 						appointmentRequest.setVoided(false);
 					}
 					
-					appointmentRequest.setAppointmentUUID(jsonObject1.get("AppointmentID").toString());
-					appointmentRequest.setMycarehubId(jsonObject1.get("ID").toString());
-					appointmentRequest.setAppointmentReason(jsonObject1.get("AppointmentReason").toString());
+					appointmentRequest.setAppointmentUUID(jsonObject1.get("AppointmentID").getAsString());
+					appointmentRequest.setMycarehubId(jsonObject1.get("id").getAsString());
+					appointmentRequest.setAppointmentReason(jsonObject1.get("AppointmentReason").getAsString());
 					try {
 						appointmentRequest
 						        .setRequestedDate(dateFormat.parse(jsonObject1.get("SuggestedDate").getAsString()));
@@ -247,30 +248,34 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 					catch (ParseException e) {
 						log.error("Cannot parse SuggestedDate date", e);
 					}
-					appointmentRequest.setStatus(jsonObject1.get("Status").toString());
-					if (jsonObject1.get("InProgressAt").toString() != null) {
+					appointmentRequest.setStatus(jsonObject1.get("Status").getAsString());
+					if (!jsonObject1.get("InProgressAt").isJsonNull()) {
 						try {
-							appointmentRequest.setProgressDate(dateFormat.parse(jsonObject1.get("InProgressAt").toString()));
+							appointmentRequest.setProgressDate(dateFormat.parse(jsonObject1.get("InProgressAt")
+							        .getAsString()));
 						}
 						catch (ParseException e) {
 							log.error("Cannot parse InProgressAt date", e);
 						}
 					}
-					appointmentRequest.setProgressBy(jsonObject1.get("InProgressBy").toString());
-					if (jsonObject1.get("ResolvedAt").toString() != null) {
+					if (!jsonObject1.get("InProgressBy").isJsonNull())
+						appointmentRequest.setProgressBy(jsonObject1.get("InProgressBy").getAsString());
+					if (!jsonObject1.get("ResolvedAt").isJsonNull()) {
 						try {
-							appointmentRequest.setProgressDate(dateFormat.parse(jsonObject1.get("ResolvedAt").toString()));
+							appointmentRequest
+							        .setProgressDate(dateFormat.parse(jsonObject1.get("ResolvedAt").getAsString()));
 						}
 						catch (ParseException e) {
 							log.error("Cannot parse ResolvedAt date", e);
 						}
 					}
 					
-					appointmentRequest.setResolvedBy(jsonObject1.get("ResolvedBy").toString());
-					appointmentRequest.setClientName(jsonObject1.get("ClientName").toString());
-					appointmentRequest.setClientContact(jsonObject1.get("ClientContact").toString());
-					appointmentRequest.setCccNumber(jsonObject1.get("CCCNumber").toString());
-					appointmentRequest.setMflCode(jsonObject1.get("MFLCODE").toString());
+					if (!jsonObject1.get("ResolvedBy").isJsonNull())
+						appointmentRequest.setResolvedBy(jsonObject1.get("ResolvedBy").getAsString());
+					appointmentRequest.setClientName(jsonObject1.get("ClientName").getAsString());
+					appointmentRequest.setClientContact(jsonObject1.get("ClientContact").getAsString());
+					appointmentRequest.setCccNumber(jsonObject1.get("CCCNumber").getAsString());
+					appointmentRequest.setMflCode(jsonObject1.get("MFLCODE").getAsString());
 					
 					appointmentRequests.add(appointmentRequest);
 					

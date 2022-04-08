@@ -147,7 +147,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 				for (int i = 0; i < jsonArray.size(); i++) {
 					JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
 					RedFlags redFlag = new RedFlags();
-					String mycarehubId = jsonObject1.get("ID").toString();
+					String mycarehubId = jsonObject1.get("id").getAsString();
 					RedFlags existingRequests = getRedFlagRequestByMycarehubId(mycarehubId);
 					if (existingRequests != null && existingRequests.getMycarehubId() != null) {
 						redFlag = existingRequests;
@@ -158,34 +158,36 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 						redFlag.setVoided(false);
 					}
 					
-					redFlag.setMycarehubId(jsonObject1.get("ID").toString());
-					redFlag.setRequest(jsonObject1.get("Request").toString());
-					redFlag.setRequestType(jsonObject1.get("RequestType").toString());
-					redFlag.setScreeningTool(jsonObject1.get("ScreeningToolName").toString());
-					redFlag.setScreeningScore(jsonObject1.get("ScreeningToolScore").toString());
-					if (jsonObject1.get("InProgressAt").toString() != null) {
+					redFlag.setMycarehubId(jsonObject1.get("id").getAsString());
+					redFlag.setRequest(jsonObject1.get("request").getAsString());
+					redFlag.setRequestType(jsonObject1.get("requestType").getAsString());
+					redFlag.setStatus(jsonObject1.get("status").getAsString());
+					redFlag.setScreeningTool(jsonObject1.get("screeningToolName").getAsString());
+					redFlag.setScreeningScore(jsonObject1.get("screeningToolScore").getAsString());
+					if (!jsonObject1.get("inProgressAt").isJsonNull()) {
 						try {
-							redFlag.setProgressDate(dateFormat.parse(jsonObject1.get("InProgressAt").toString()));
+							redFlag.setProgressDate(dateFormat.parse(jsonObject1.get("inProgressAt").getAsString()));
 						}
 						catch (ParseException e) {
 							log.error("Cannot parse InProgressAt date", e);
 						}
 					}
-					redFlag.setProgressBy(jsonObject1.get("InProgressBy").toString());
-					if (jsonObject1.get("ResolvedAt").toString() != null) {
+					
+					if (!jsonObject1.get("inProgressBy").isJsonNull())
+						redFlag.setProgressBy(jsonObject1.get("inProgressBy").getAsString());
+					if (!jsonObject1.get("resolvedAt").isJsonNull()) {
 						try {
-							redFlag.setProgressDate(dateFormat.parse(jsonObject1.get("ResolvedAt").toString()));
+							redFlag.setProgressDate(dateFormat.parse(jsonObject1.get("resolvedAt").getAsString()));
 						}
 						catch (ParseException e) {
 							log.error("Cannot parse ResolvedAt date", e);
 						}
 					}
-					
-					redFlag.setResolvedBy(jsonObject1.get("ResolvedBy").toString());
-					redFlag.setClientName(jsonObject1.get("ClientName").toString());
-					redFlag.setClientContact(jsonObject1.get("ClientContact").toString());
-					redFlag.setCccNumber(jsonObject1.get("CCCNumber").toString());
-					redFlag.setMflCode(jsonObject1.get("MFLCODE").toString());
+					if (!jsonObject1.get("resolvedBy").isJsonNull())
+						redFlag.setResolvedBy(jsonObject1.get("resolvedBy").getAsString());
+					redFlag.setClientName(jsonObject1.get("clientName").getAsString());
+					redFlag.setClientContact(jsonObject1.get("clientContact").getAsString());
+					redFlag.setCccNumber(jsonObject1.get("cccNumber").getAsString());
 					
 					redFlags.add(redFlag);
 				}

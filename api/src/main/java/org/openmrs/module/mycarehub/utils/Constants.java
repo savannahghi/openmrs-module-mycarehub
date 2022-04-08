@@ -161,7 +161,7 @@ public class Constants {
 			
 			public static final String APPOINTMENT_RESOLVED_BY_KEY = "ResolvedBy";
 			
-			public static final String APPOINTMENT_REQUEST_CONTAINER = "appointment-request";
+			public static final String APPOINTMENT_REQUEST_CONTAINER = "serviceRequests";
 		}
 		
 		public static final class REdFlagsObjectKeys {

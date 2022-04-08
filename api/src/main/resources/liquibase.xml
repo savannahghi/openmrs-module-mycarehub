@@ -252,4 +252,32 @@
         <dropColumn tableName="mycarehub_appointment_requests" columnName="requested_time_slot"/>
     </changeSet>
 
+    <changeSet id="mycarehub-202204072025" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="mycarehub_appointment_requests" columnName="status"/>
+            </and>
+        </preConditions>
+        <comment>
+            Modify table status columns
+        </comment>
+        <modifyColumn tableName="mycarehub_appointment_requests">
+            <column name="status" type="varchar(255)"></column>
+        </modifyColumn>
+    </changeSet>
+
+    <changeSet id="mycarehub-202204072026" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="mycarehub_red_flag" columnName="status"/>
+            </and>
+        </preConditions>
+        <comment>
+            Modify table status columns
+        </comment>
+        <modifyColumn tableName="mycarehub_red_flag">
+            <column name="status" type="varchar(255)"></column>
+        </modifyColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -66,7 +66,9 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 	@Override
 	@Transactional
 	public List<RedFlags> saveRedFlagRequests(List<RedFlags> redFlags) {
-		session().saveOrUpdate(redFlags);
+		for (RedFlags redFlag : redFlags) {
+			session().saveOrUpdate(redFlag);
+		}
 		return redFlags;
 	}
 	
