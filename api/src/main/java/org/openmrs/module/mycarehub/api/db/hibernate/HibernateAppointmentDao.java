@@ -64,7 +64,9 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	@Override
 	@Transactional
 	public List<AppointmentRequests> saveAppointmentRequests(List<AppointmentRequests> appointmentRequests) {
-		session().saveOrUpdate(appointmentRequests);
+		for (AppointmentRequests appointmentRequest : appointmentRequests) {
+			session().saveOrUpdate(appointmentRequest);
+		}
 		return appointmentRequests;
 	}
 	

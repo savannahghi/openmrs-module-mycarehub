@@ -67,22 +67,22 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
 					JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
 					HealthDiary healthDiary = new HealthDiary();
 					
-					healthDiary.setCccNumber(jsonObject1.get("CCCNumber").toString());
-					healthDiary.setMood(jsonObject1.get("mood").toString());
-					healthDiary.setNote(jsonObject1.get("note").toString());
-					healthDiary.setEntryType(jsonObject1.get("entryType").toString());
-					if (jsonObject1.get("createdAt").toString() != null) {
+					healthDiary.setCccNumber(jsonObject1.get("cccNumber").getAsString());
+					healthDiary.setMood(jsonObject1.get("mood").getAsString());
+					healthDiary.setNote(jsonObject1.get("note").getAsString());
+					healthDiary.setEntryType(jsonObject1.get("entryType").getAsString());
+					if (!jsonObject1.get("createdAt").isJsonNull()) {
 						try {
-							healthDiary.setDateRecorded(dateFormat.parse(jsonObject1.get("createdAt").toString()));
+							healthDiary.setDateRecorded(dateFormat.parse(jsonObject1.get("createdAt").getAsString()));
 						}
 						catch (ParseException e) {
 							log.error("Cannot parse createdAt date", e);
 						}
 					}
 					
-					if (jsonObject1.get("sharedAt").toString() != null) {
+					if (!jsonObject1.get("sharedAt").isJsonNull()) {
 						try {
-							healthDiary.setSharedOn(dateFormat.parse(jsonObject1.get("sharedAt").toString()));
+							healthDiary.setSharedOn(dateFormat.parse(jsonObject1.get("sharedAt").getAsString()));
 						}
 						catch (ParseException e) {
 							log.error("Cannot parse sharedAt date", e);

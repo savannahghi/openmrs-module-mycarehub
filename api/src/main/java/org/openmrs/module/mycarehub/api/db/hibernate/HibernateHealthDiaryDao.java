@@ -21,7 +21,9 @@ public class HibernateHealthDiaryDao implements HealthDiaryDao {
 	
 	@Override
 	public List<HealthDiary> saveHealthDiaries(List<HealthDiary> healthDiary) {
-		session().saveOrUpdate(healthDiary);
+		for (HealthDiary healthDiary1 : healthDiary) {
+			session().saveOrUpdate(healthDiary1);
+		}
 		return healthDiary;
 	}
 	

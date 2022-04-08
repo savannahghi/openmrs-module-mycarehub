@@ -30,9 +30,9 @@ public class Constants {
 	
 	public final static String CCC_NUMBER_IDENTIFIER_TYPE_UUID = "05ee9cf4-7242-4a17-b4d4-00f707265c8a";
 	
-	public final static Integer APPOINTMENT_DATE_CONCEPT_ID = 5096;
+	public final static int APPOINTMENT_DATE_CONCEPT_ID = 5096;
 	
-	public final static Integer APPOINTMENT_REASON_CONCEPT_ID = 160288;
+	public final static int APPOINTMENT_REASON_CONCEPT_ID = 160288;
 	
 	public static final class _PersonAttributeType {
 		
@@ -161,7 +161,7 @@ public class Constants {
 			
 			public static final String APPOINTMENT_RESOLVED_BY_KEY = "ResolvedBy";
 			
-			public static final String APPOINTMENT_REQUEST_CONTAINER = "appointment-request";
+			public static final String APPOINTMENT_REQUEST_CONTAINER = "serviceRequests";
 		}
 		
 		public static final class REdFlagsObjectKeys {
@@ -200,6 +200,8 @@ public class Constants {
 			public static final String VIRAL_LOAD_CONCEPT_KEY = "viral_load";
 			
 			public static final String RESPIRATORY_RATE_CONCEPT_KEY = "respiratory_rate";
+			
+			public static final String APPOINTMENT_DATE_KEY = "appointment_date";
 		}
 	}
 }
