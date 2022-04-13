@@ -72,7 +72,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	
 	public List<Patient> getCccPatientsByIdentifier(String cccNumber) {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(
-		    "SELECT patient_id as patientId FROM patient "
+		    "SELECT patient.patient_id as patientId FROM patient "
 		            + "INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id "
 		            + "WHERE patient_identifier.identifier_type IN ("
 		            + "SELECT patient_identifier_type_id FROM patient_identifier_type "
