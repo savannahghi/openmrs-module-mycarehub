@@ -3,6 +3,7 @@ package org.openmrs.module.mycarehub.api.service.impl;
 import com.google.gson.JsonObject;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
@@ -74,17 +75,17 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	@Override
 	public void syncPatientData() {
 		uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate();
+		uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate();
 		
 		List<Patient> newMyCareHubClients = fetchRegisteredClientIdentifiersSinceLastSyncDate();
 		//set last sync time to 3 years back, to get historical records for the period
+		//Also set it as the new sync time to avoid conflict with the regular medical record sync
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.YEAR, -3);
 		Date lastSyncTime = cal.getTime();
-		Date newSyncTime = new Date();
 		
-		uploadPatientsMedicalRecordsSinceDate(newMyCareHubClients, lastSyncTime, newSyncTime);
+		uploadPatientsMedicalRecordsSinceDate(newMyCareHubClients, lastSyncTime, lastSyncTime);
 		
-		uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate();
 	}
 	
 	public void uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate() {
@@ -113,16 +114,12 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	public List<PatientRegistration> getNewOrUpdatedPatientRegistrationsSinceLastSyncDate(Date lastSyncDate) {
 		
 		List<PatientRegistration> patientRegistrationRequests = new ArrayList<PatientRegistration>();
-		List<Patient> patients = myCareHubPatientDao.getCccPatientsCreatedOrUpdatedSinceDate(lastSyncDate);
+		List<Integer> patientIds = myCareHubPatientDao.getCccPatientIdsCreatedOrUpdatedSinceDate(lastSyncDate);
 		
-		for (Patient patient : patients) {
-			PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
-			    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-			
-			if (patient.getPatientIdentifier(cccIdentifierType) != null) {
-				PatientRegistration registrationRequest = createPatientRegistration(patient);
-				patientRegistrationRequests.add(registrationRequest);
-			}
+		for (Integer patientId : patientIds) {
+			Patient patient = Context.getPatientService().getPatient(patientId);
+			PatientRegistration registrationRequest = createPatientRegistration(patient);
+			patientRegistrationRequests.add(registrationRequest);
 		}
 		return patientRegistrationRequests;
 	}
@@ -141,7 +138,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		
 		PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
 		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-		registrationRequest.setCccNumber(patient.getPatientIdentifier(cccIdentifierType).getIdentifier());
+		registrationRequest.setCccNumber(patient.getPatientIdentifier(cccIdentifierType.getPatientIdentifierTypeId())
+		        .getIdentifier());
 		
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat sf = new SimpleDateFormat(pattern);
@@ -206,9 +204,9 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		List<Patient> patients = new ArrayList<Patient>();
 		
 		for (String ccc : patientCccs) {
-			List<Patient> patientsWithCcc = myCareHubPatientDao.getCccPatientsByIdentifier(ccc);
-			if (patientsWithCcc.size() > 0) {
-				patients.addAll(patientsWithCcc);
+			List<Integer> patientIdsWithCcc = myCareHubPatientDao.getCccPatientIdsByIdentifier(ccc);
+			for (Integer patientId : patientIdsWithCcc) {
+				patients.add(Context.getPatientService().getPatient(patientId));
 			}
 		}
 		
@@ -221,8 +219,12 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		
 		Date newSyncTime = new Date();
 		if (setting != null) {
-			List<Patient> patientsWithUpdatedMedicalRecords = myCareHubPatientDao
-			        .getCccPatientsWithUpdatedMedicalRecordsSinceDate(setting.getLastSyncTime());
+			List<Integer> patientIds = myCareHubPatientDao.getCccPatientsWithUpdatedMedicalRecordsSinceDate(setting
+			        .getLastSyncTime());
+			List<Patient> patientsWithUpdatedMedicalRecords = new ArrayList<Patient>();
+			for (Integer patientId : patientIds) {
+				patientsWithUpdatedMedicalRecords.add(Context.getPatientService().getPatient(patientId));
+			}
 			uploadPatientsMedicalRecordsSinceDate(patientsWithUpdatedMedicalRecords, setting.getLastSyncTime(), newSyncTime);
 		} else {
 			settingsService.createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, newSyncTime);
@@ -236,7 +238,6 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
 		PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
 		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-		
 		for (Patient patient : patients) {
 			if (patient.getPatientIdentifier(cccIdentifierType) != null) {
 				MedicalRecord medicalRecord = new MedicalRecord();

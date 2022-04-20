@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
@@ -112,7 +113,6 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 		if (setting != null) {
 			List<Obs> appointments = dao.getAppointmentsByLastSyncDate(setting.getLastSyncTime());
 			Date newSyncDate = new Date();
-			
 			JsonObject containerObject = new JsonObject();
 			JsonArray appointmentsArray = new JsonArray();
 			PatientIdentifierType cccPatientIdentifierType = MyCareHubUtil.getcccPatientIdentifierType();
@@ -122,14 +122,13 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 					Integer encounterId = appointment.getEncounter().getEncounterId();
 					if (!encounterIds.contains(encounterId)) {
 						JsonObject appointmentObject = new JsonObject();
-						SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 						if (appointment.getConcept().getId() == APPOINTMENT_DATE_CONCEPT_ID) {
-							Obs obs = dao.getObsByEncounterAndConcept(encounterId, APPOINTMENT_REASON_CONCEPT_ID);
 							appointmentObject.addProperty(APPOINTMENT_DATE_KEY,
 							    dateFormat.format(appointment.getValueDate()));
+							Obs obs = dao.getObsByEncounterAndConcept(encounterId, APPOINTMENT_REASON_CONCEPT_ID);
 							if (obs != null) {
-								appointmentObject.addProperty(APPOINTMENT_REASON_KEY, obs.getValueCodedName().getName());
+								appointmentObject.addProperty(APPOINTMENT_REASON_KEY, obs.getValueAsString(Locale.ENGLISH));
 							} else {
 								appointmentObject.addProperty(APPOINTMENT_REASON_KEY, "");
 							}
@@ -141,11 +140,12 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 							} else {
 								appointmentObject.addProperty(APPOINTMENT_DATE_KEY, "");
 							}
-							appointmentObject.addProperty(APPOINTMENT_REASON_KEY, obs.getValueCodedName().getName());
+							appointmentObject.addProperty(APPOINTMENT_REASON_KEY,
+							    appointment.getValueAsString(Locale.ENGLISH));
 						}
 						appointmentObject.addProperty(APPOINTMENT_ID_KEY, appointment.getEncounter().getEncounterId());
-						appointmentObject.addProperty(CCC_NUMBER,
-						    appointment.getPatient().getPatientIdentifier(cccPatientIdentifierType).getIdentifier());
+						appointmentObject.addProperty(CCC_NUMBER, appointment.getEncounter().getPatient()
+						        .getPatientIdentifier(cccPatientIdentifierType).getIdentifier());
 						appointmentsArray.add(appointmentObject);
 					}
 				}

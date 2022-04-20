@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface MyCareHubPatientDao {
 	
-	List<Patient> getCccPatientsCreatedOrUpdatedSinceDate(Date lastSyncDate);
+	List<Integer> getCccPatientIdsCreatedOrUpdatedSinceDate(Date lastSyncDate);
 	
-	List<Patient> getCccPatientsByIdentifier(String cccNumber);
+	List<Integer> getCccPatientIdsByIdentifier(String cccNumber);
 	
-	List<Patient> getCccPatientsWithUpdatedMedicalRecordsSinceDate(Date lastSyncDate);
+	List<Integer> getCccPatientsWithUpdatedMedicalRecordsSinceDate(Date lastSyncDate);
 	
 	List<Obs> getUpdatedVitalSignsSinceDate(Patient patient, Date lastSyncDate);
 	
