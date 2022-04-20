@@ -32,13 +32,10 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	@Override
 	public List<Obs> getAppointmentsByLastSyncDate(Date lastSyncDate) {
 		if (lastSyncDate != null) {
-			ConceptService conceptService = Context.getConceptService();
-			Concept appointmentDate = conceptService.getConcept(APPOINTMENT_DATE_CONCEPT_ID);
-			Concept appointmentReason = conceptService.getConcept(APPOINTMENT_REASON_CONCEPT_ID);
 			Criteria criteria = session().createCriteria(Obs.class);
-			criteria.add(Restrictions.or(Restrictions.eq("concept", appointmentDate),
-			    Restrictions.eq("concept", appointmentReason)));
-			criteria.add(Restrictions.eq("dateCreated", lastSyncDate));
+			criteria.add(Restrictions.or(Restrictions.eq("concept.conceptId", APPOINTMENT_DATE_CONCEPT_ID),
+			    Restrictions.eq("concept.conceptId", APPOINTMENT_REASON_CONCEPT_ID)));
+			criteria.add(Restrictions.ge("dateCreated", lastSyncDate));
 			criteria.add(Restrictions.eq("voided", false));
 			return criteria.list();
 		}
@@ -115,8 +112,8 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	@Override
 	public Obs getObsByEncounterAndConcept(Integer encounterId, Integer conceptId) {
 		Criteria criteria = session().createCriteria(Obs.class);
-		criteria.add(Restrictions.eq("encounterId", encounterId));
-		criteria.add(Restrictions.eq("conceptId", conceptId));
+		criteria.add(Restrictions.eq("encounter.encounterId", encounterId));
+		criteria.add(Restrictions.eq("concept.conceptId", conceptId));
 		criteria.addOrder(Order.desc("obsId"));
 		criteria.setMaxResults(1);
 		return (Obs) criteria.uniqueResult();
