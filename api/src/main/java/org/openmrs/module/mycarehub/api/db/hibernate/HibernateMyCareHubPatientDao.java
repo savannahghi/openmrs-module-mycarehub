@@ -24,7 +24,6 @@ import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_SEVERITY;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Tests.TESTS_ORDERED;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getMedicalRecordConceptsList;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getTestsConceptsList;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getVitalSignsConceptsList;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPersonAttributeTypesList;
 
@@ -41,7 +40,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	}
 	
 	@Override
-	public List<Patient> getCccPatientsCreatedOrUpdatedSinceDate(Date lastSyncDate) {
+	public List<Integer> getCccPatientIdsCreatedOrUpdatedSinceDate(Date lastSyncDate) {
 		String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
 		
 		Query query = sessionFactory
@@ -66,24 +65,22 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		query.setParameter("formattedDate", formattedDate);
 		query.setParameterList("personAttributeTypeUuids", getPersonAttributeTypesList());
 		query.setParameter("cccIdentifierTypeUuid", CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-		query.setResultTransformer(Transformers.aliasToBean(Patient.class));
 		return query.list();
 	}
 	
-	public List<Patient> getCccPatientsByIdentifier(String cccNumber) {
+	public List<Integer> getCccPatientIdsByIdentifier(String cccNumber) {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(
-		    "SELECT patient_id as patientId FROM patient "
+		    "SELECT patient.patient_id as patientId FROM patient "
 		            + "INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id "
 		            + "WHERE patient_identifier.identifier_type IN ("
 		            + "SELECT patient_identifier_type_id FROM patient_identifier_type "
 		            + "WHERE uuid = :cccIdentifierTypeUuid) " + "AND patient_identifier.identifier = :cccNumber");
 		query.setParameter("cccNumber", cccNumber);
 		query.setParameter("cccIdentifierTypeUuid", CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-		query.setResultTransformer(Transformers.aliasToBean(Patient.class));
 		return query.list();
 	}
 	
-	public List<Patient> getCccPatientsWithUpdatedMedicalRecordsSinceDate(Date lastSyncDate) {
+	public List<Integer> getCccPatientsWithUpdatedMedicalRecordsSinceDate(Date lastSyncDate) {
 		
 		SQLQuery query = getSession().createSQLQuery(
 		    "SELECT patient.patient_id as patientId FROM patient "
@@ -99,24 +96,19 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		String formattedLastSyncDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
 		query.setParameter("formattedLastSyncDate", formattedLastSyncDate);
 		
-		query.setResultTransformer(Transformers.aliasToBean(Patient.class));
 		return query.list();
 	}
 	
 	public List<Obs> getUpdatedVitalSignsSinceDate(Patient patient, Date lastSyncDate) {
 		Criteria criteria = getSession().createCriteria(Obs.class);
-		criteria.add(Restrictions.eq("person_id", patient.getPatientId()));
-		criteria.add(Restrictions.ge("date_created", lastSyncDate));
-		criteria.add(Restrictions.in("concept_id", getVitalSignsConceptsList()));
+		criteria.add(Restrictions.eq("personId", patient.getPatientId()));
+		criteria.add(Restrictions.ge("dateCreated", lastSyncDate));
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.in("concept.conceptId", getVitalSignsConceptsList()));
 		return criteria.list();
 	}
 	
 	public List<MyCareHubAllergy> getUpdatedAllergiesSinceDate(Patient patient, Date lastSyncDate) {
-		SQLQuery obsGroupsQuery = getSession().createSQLQuery(
-		    "SELECT obs_group_id FROM obs "
-		            + "WHERE concept_id = :allergenConcept AND date_created >= :formattedLastSyncDate "
-		            + "AND voided = 0 AND person_id = :patientId");
-		
 		SQLQuery allergenQuery = getSession()
 		        .createSQLQuery(
 		            "SELECT allergyName,allergyConceptId,reaction,severity,allergyDateTime FROM ( "
@@ -124,29 +116,29 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		                    + "(SELECT concept_name.name FROM concept_name JOIN obs ON obs.value_coded = concept_name.concept_id "
 		                    + "WHERE obs.concept_id= :allergenConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1) AS allergyName,"
 		                    + "(SELECT value_coded FROM obs "
-		                    + "WHERE obs.concept_id= :allergenConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND LIMIT 1) AS allergyConceptId,"
+		                    + "WHERE obs.concept_id= :allergenConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS allergyConceptId,"
 		                    + "(SELECT concept_name.name FROM concept_name JOIN obs ON obs.value_coded = concept_name.concept_id "
 		                    + "WHERE obs.concept_id= :reactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1) AS reaction,"
 		                    + "(SELECT obs.value_coded FROM obs "
-		                    + "WHERE obs.concept_id= :reactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND LIMIT 1) AS reactionConceptId,"
-		                    + "(SELECT value_text FROM obs WHERE obs.concept_id=:otherReactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS otherReaction "
+		                    + "WHERE obs.concept_id= :reactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS reactionConceptId,"
+		                    + "(SELECT value_text FROM obs WHERE obs.concept_id=:otherReactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS otherReaction, "
 		                    + "(SELECT concept_name.name FROM concept_name JOIN obs ON obs.value_coded = concept_name.concept_id "
 		                    + "WHERE obs.concept_id=:severityConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1 ) AS severity,"
 		                    + "(SELECT obs.value_coded FROM obs WHERE obs.concept_id=:severityConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1 ) AS severityConceptId,"
 		                    + "(SELECT value_datetime FROM obs WHERE obs.concept_id=:allergyDateConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS allergyDateTime "
 		                    + "FROM ("
 		                    + "SELECT obs_group_id FROM obs WHERE concept_id = :allergenConcept AND date_created >= :formattedLastSyncDate AND voided = 0 AND person_id = :patientId"
-		                    + ") AS obsgroups" + ") AS allergies ");
+		                    + ") AS obsgroups) AS allergies ");
 		
-		obsGroupsQuery.setParameter("allergenConcept", ALLERGEN);
-		obsGroupsQuery.setParameter("reactionConcept", ALLERGY_REACTION);
-		obsGroupsQuery.setParameter("otherReactionConcept", ALLERGY_OTHER_REACTION);
-		obsGroupsQuery.setParameter("severityConcept", ALLERGY_SEVERITY);
-		obsGroupsQuery.setParameter("allergyDateConcept", ALLERGY_DATE);
-		obsGroupsQuery.setParameter("patientId", patient.getPatientId());
+		allergenQuery.setParameter("allergenConcept", ALLERGEN);
+		allergenQuery.setParameter("reactionConcept", ALLERGY_REACTION);
+		allergenQuery.setParameter("otherReactionConcept", ALLERGY_OTHER_REACTION);
+		allergenQuery.setParameter("severityConcept", ALLERGY_SEVERITY);
+		allergenQuery.setParameter("allergyDateConcept", ALLERGY_DATE);
+		allergenQuery.setParameter("patientId", patient.getPatientId());
 		
 		String formattedLastSyncDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
-		obsGroupsQuery.setParameter("formattedLastSyncDate", formattedLastSyncDate);
+		allergenQuery.setParameter("formattedLastSyncDate", formattedLastSyncDate);
 		allergenQuery.setResultTransformer(Transformers.aliasToBean(MyCareHubAllergy.class));
 		
 		return allergenQuery.list();
@@ -154,34 +146,34 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	
 	public List<Obs> getUpdatedTestsSinceDate(Patient patient, Date lastSyncDate) {
 		SQLQuery testsConcepts = getSession().createSQLQuery(
-		    "SELECT concept_id FROM concept WHERE class_id = 1 AND voided=0");
+		    "SELECT concept_id FROM concept WHERE class_id = 1 AND retired=0");
 		
 		Criteria criteria = getSession().createCriteria(Obs.class);
-		criteria.add(Restrictions.eq("person_id", patient.getPatientId()));
-		criteria.add(Restrictions.ge("date_created", lastSyncDate));
-		criteria.add(Restrictions.in("concept_id", testsConcepts.list()));
+		criteria.add(Restrictions.eq("personId", patient.getPatientId()));
+		criteria.add(Restrictions.ge("dateCreated", lastSyncDate));
 		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.in("concept.conceptId", testsConcepts.list()));
 		return criteria.list();
 	}
 	
 	public List<Obs> getUpdatedTestOrdersSinceDate(Patient patient, Date lastSyncDate) {
 		Criteria criteria = getSession().createCriteria(Obs.class);
-		criteria.add(Restrictions.eq("person_id", patient.getPatientId()));
-		criteria.add(Restrictions.ge("date_created", lastSyncDate));
-		criteria.add(Restrictions.eq("concept_id", TESTS_ORDERED));
+		criteria.add(Restrictions.eq("personId", patient.getPatientId()));
+		criteria.add(Restrictions.ge("dateCreated", lastSyncDate));
 		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.eq("concept.conceptId", TESTS_ORDERED));
 		return criteria.list();
 	}
 	
 	public List<Obs> getUpdatedMedicationsSinceDate(Patient patient, Date lastSyncDate) {
 		SQLQuery drugsConcepts = getSession().createSQLQuery(
 		    "SELECT concept_id FROM concept "
-		            + "WHERE (class_id = 3 OR concept_id In (SELECT concept_id FROM drug)) AND voided=0");
+		            + "WHERE (class_id = 3 OR concept_id In (SELECT concept_id FROM drug)) AND retired=0");
 		
 		Criteria criteria = getSession().createCriteria(Obs.class);
-		criteria.add(Restrictions.eq("person_id", patient.getPatientId()));
-		criteria.add(Restrictions.ge("date_created", lastSyncDate));
-		criteria.add(Restrictions.in("value_coded", drugsConcepts.list()));
+		criteria.add(Restrictions.eq("personId", patient.getPatientId()));
+		criteria.add(Restrictions.ge("dateCreated", lastSyncDate));
+		criteria.add(Restrictions.in("valueCoded.conceptId", drugsConcepts.list()));
 		criteria.add(Restrictions.eq("voided", false));
 		return criteria.list();
 	}
