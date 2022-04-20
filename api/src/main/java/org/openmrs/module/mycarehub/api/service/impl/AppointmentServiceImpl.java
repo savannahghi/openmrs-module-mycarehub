@@ -2,7 +2,6 @@ package org.openmrs.module.mycarehub.api.service.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
@@ -10,7 +9,6 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.mycarehub.api.db.AppointmentDao;
 import org.openmrs.module.mycarehub.api.service.AppointmentService;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
@@ -143,7 +141,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 							}
 							appointmentObject.addProperty(APPOINTMENT_REASON_KEY, obs.getValueCodedName().getName());
 						}
-						appointmentObject.addProperty(APPOINTMENT_ID_KEY, appointment.getEncounter().getEncounterId());
+						appointmentObject.addProperty(APPOINTMENT_ID_KEY, String.valueOf(appointment.getEncounter().getEncounterId()));
 						appointmentObject.addProperty(CCC_NUMBER,
 						    appointment.getPatient().getPatientIdentifier(cccPatientIdentifierType).getIdentifier());
 						appointmentsArray.add(appointmentObject);
