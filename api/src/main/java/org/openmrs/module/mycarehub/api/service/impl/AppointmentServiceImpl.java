@@ -141,10 +141,10 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 							appointmentObject.addProperty(APPOINTMENT_REASON_KEY,
 							    appointment.getValueAsString(Locale.ENGLISH));
 						}
-
-						appointmentObject.addProperty(APPOINTMENT_ID_KEY, String.valueOf(appointment.getEncounter().getEncounterId()));
-						appointmentObject.addProperty(CCC_NUMBER,
-						    appointment.getPatient().getPatientIdentifier(cccPatientIdentifierType).getIdentifier());
+						appointmentObject.addProperty(APPOINTMENT_ID_KEY,
+						    String.valueOf(appointment.getEncounter().getEncounterId()));
+						appointmentObject.addProperty(CCC_NUMBER, appointment.getEncounter().getPatient()
+						        .getPatientIdentifier(cccPatientIdentifierType).getIdentifier());
 						appointmentsArray.add(appointmentObject);
 					}
 				}

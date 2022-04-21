@@ -1,9 +1,10 @@
 package org.openmrs.module.mycarehub.api.service.impl;
 
 import com.google.gson.JsonObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
-import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_REASON_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.CD4_COUNT;
@@ -85,7 +85,6 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		Date lastSyncTime = cal.getTime();
 		
 		uploadPatientsMedicalRecordsSinceDate(newMyCareHubClients, lastSyncTime, lastSyncTime);
-		
 	}
 	
 	public void uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate() {
@@ -126,7 +125,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	
 	private PatientRegistration createPatientRegistration(Patient patient) {
 		PatientRegistration registrationRequest = new PatientRegistration();
-		registrationRequest.setName(patient.getFamilyName() + patient.getGivenName());
+		registrationRequest.setName(patient.getFamilyName() + " " + patient.getGivenName());
 		registrationRequest.setClientType("KenyaEMR");
 		registrationRequest.setCounseled(false);
 		registrationRequest.setMFLCODE(MyCareHubUtil.getDefaultLocationMflCode());

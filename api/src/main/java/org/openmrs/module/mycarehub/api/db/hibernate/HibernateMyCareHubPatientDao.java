@@ -59,6 +59,9 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		                    + "INNER JOIN person_attribute_type ON person_attribute.person_attribute_type_id = person_attribute_type.person_attribute_type_id "
 		                    + "WHERE ( person_attribute.date_created >=:formattedDate OR person_attribute.date_changed >=:formattedDate) "
 		                    + "AND person_attribute_type.uuid IN (:personAttributeTypeUuids) )) "
+		                    + "OR patient.patient_id in ( "
+		                    + "SELECT patient_id FROM patient_identifier  "
+		                    + "WHERE ( patient_identifier.date_created >=:formattedDate OR patient_identifier.date_changed >=:formattedDate))"
 		                    + "AND patient_identifier.identifier_type IN ( "
 		                    + "SELECT patient_identifier_type_id FROM patient_identifier_type WHERE uuid = :cccIdentifierTypeUuid)"
 		                    + "AND patient.voided=0");
