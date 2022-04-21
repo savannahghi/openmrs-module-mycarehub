@@ -21,7 +21,7 @@ public class MedicalRecord {
 	@SerializedName("testOrders")
 	private List<MyCareHubTestOrder> testOrders;
 	
-	@SerializedName("tests")
+	@SerializedName("testResults")
 	private List<MyCareHubTest> tests;
 	
 	@SerializedName("allergies")
