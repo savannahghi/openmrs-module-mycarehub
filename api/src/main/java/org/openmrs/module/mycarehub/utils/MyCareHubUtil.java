@@ -29,6 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class MyCareHubUtil {
 	
 	private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	private static final String syncTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	private static final String syncTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 	
 	private static final SimpleDateFormat syncTimeFormat = new SimpleDateFormat(syncTimePattern);
 	
@@ -220,11 +221,8 @@ public class MyCareHubUtil {
 		}
 		
 		try {
-			String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-			SimpleDateFormat sf = new SimpleDateFormat(pattern);
-			
 			String url = getApiUrl() + "kenya-emr/patients?MFLCODE=" + getDefaultLocationMflCode() + "&lastSyncTime="
-			        + syncTimeFormat.format(lastSycTime) + "Z";
+			        + URLEncoder.encode(syncTimeFormat.format(lastSycTime), "UTF-8");
 			String accessToken = getApiToken();
 			Call<NewClientsIdentifiersResponse> call = restApiService.getNewClientsIdentifiers(getBearer(accessToken), url);
 			
@@ -335,7 +333,7 @@ public class MyCareHubUtil {
 		
 		try {
 			String url = getApiUrl() + "kenya-emr/appointment-service-request?MFLCODE=" + getDefaultLocationMflCode()
-			        + "&lastSyncTime=" + syncTimeFormat.format(lastSyncTime) + "Z";
+			        + "&lastSyncTime=" + URLEncoder.encode(syncTimeFormat.format(lastSyncTime), "UTF-8");
 			
 			Call<ResponseBody> call = restApiService.fetchPatientAppointmentRequests(getBearer(getApiToken()), url);
 			Response<ResponseBody> response = call.execute();
@@ -413,7 +411,7 @@ public class MyCareHubUtil {
 		
 		try {
 			String url = getApiUrl() + "kenya-emr/service_request?MFLCODE=" + getDefaultLocationMflCode() + "&lastSyncTime="
-			        + syncTimeFormat.format(lastSyncTime) + "Z";
+			        + URLEncoder.encode(syncTimeFormat.format(lastSyncTime), "UTF-8");
 			
 			Call<ResponseBody> call = restApiService.fetchPatientRedFlags(getBearer(getApiToken()), url);
 			Response<ResponseBody> response = call.execute();
@@ -490,7 +488,7 @@ public class MyCareHubUtil {
 		
 		try {
 			String url = getApiUrl() + "kenya-emr/health_diary?MFLCODE=" + getDefaultLocationMflCode() + "&lastSyncTime="
-			        + syncTimeFormat.format(lastSyncTime) + "Z";
+			        + URLEncoder.encode(syncTimeFormat.format(lastSyncTime), "UTF-8");
 			
 			Call<ResponseBody> call = restApiService.fetchPatientHealthDiaries(getBearer(getApiToken()), url);
 			
