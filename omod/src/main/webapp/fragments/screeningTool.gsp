@@ -33,7 +33,7 @@
                 <td>{{screeningToolRedFlag.resolvedBy}}</td>
                 <td>
                     <button ng-hide="screeningToolRedFlag.progressDate != '' || screeningToolRedFlag.dateResolved != ''" type="submit" ng-click="setRedFlagInProgress(screeningToolRedFlag.uuid)" class="btn btn-primary">IN PROGRESS</button>&nbsp;
-                    <button ng-hide="screeningToolRedFlag.dateResolved != ''" type="submit" ng-click="setRedFlagResolved(screeningToolRedFlag.uuid)" class="btn btn-warning">RESOLVED</button>&nbsp;
+                    <button ng-hide="screeningToolRedFlag.dateResolved != ''" type="submit" ng-click="setRedFlagResolved(screeningToolRedFlag.uuid)" class="btn btn-warning">RESOLVE</button>&nbsp;
                 </td>
             </tr>
             </tbody>

@@ -29,7 +29,7 @@
                 <td>{{redFlag.resolvedBy}}</td>
                 <td>
                     <button ng-hide="redFlag.progressDate != '' || redFlag.dateResolved != ''" type="submit" ng-click="setRedFlagInProgress(redFlag.uuid)" class="btn btn-primary">IN PROGRESS</button>&nbsp;
-                    <button ng-hide="redFlag.dateResolved != ''" type="submit" ng-click="setRedFlagResolved(redFlag.uuid)" class="btn btn-warning">RESOLVED</button>&nbsp;
+                    <button ng-hide="redFlag.dateResolved != ''" type="submit" ng-click="setRedFlagResolved(redFlag.uuid)" class="btn btn-warning">RESOLVE</button>&nbsp;
                 </td>
             </tr>
             </tbody>
