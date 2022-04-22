@@ -179,7 +179,7 @@ public class MyCareHubUtilsFragmentController {
 			RedFlagService redFlagService = Context.getService(RedFlagService.class);
 			RedFlags redFlag = redFlagService.getRedFlagByUuid(uuid);
 			redFlag.setDateResolved(new Date());
-			redFlag.setStatus("COMPLETED");
+			redFlag.setStatus("RESOLVED");
 			redFlag.setResolvedBy(Context.getAuthenticatedUser().getUsername());
 			redFlagService.saveRedFlagRequests(redFlag);
 		}
@@ -205,7 +205,7 @@ public class MyCareHubUtilsFragmentController {
 			AppointmentService appointmentService = Context.getService(AppointmentService.class);
 			AppointmentRequests appointmentRequest = appointmentService.getAppointmentRequestByUuid(uuid);
 			appointmentRequest.setDateResolved(new Date());
-			appointmentRequest.setStatus("COMPLETED");
+			appointmentRequest.setStatus("RESOLVED");
 			appointmentRequest.setResolvedBy(Context.getAuthenticatedUser().getUsername());
 			appointmentService.saveAppointmentRequests(appointmentRequest);
 		}

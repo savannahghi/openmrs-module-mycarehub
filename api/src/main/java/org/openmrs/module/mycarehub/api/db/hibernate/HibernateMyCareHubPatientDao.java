@@ -13,6 +13,7 @@ import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -179,7 +180,12 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		Criteria criteria = getSession().createCriteria(Obs.class);
 		criteria.add(Restrictions.eq("personId", patient.getPatientId()));
 		criteria.add(Restrictions.ge("dateCreated", lastSyncDate));
-		criteria.add(Restrictions.in("valueCoded.conceptId", drugsConcepts.list()));
+		
+		List<Integer> fullDrugConcepts = new ArrayList<Integer>();
+		fullDrugConcepts.addAll(drugsConcepts.list());
+		fullDrugConcepts.add(164505);
+		fullDrugConcepts.add(162565);
+		criteria.add(Restrictions.in("valueCoded.conceptId", fullDrugConcepts));
 		criteria.add(Restrictions.eq("voided", false));
 		return criteria.list();
 	}

@@ -43,6 +43,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentR
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.CCC_NUMBER;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.FACILITY_MFL_CODE;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.MYCAREHUB_ID_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 
 public class AppointmentServiceImpl extends BaseOpenmrsService implements AppointmentService {
 	
@@ -50,7 +51,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	
 	private AppointmentDao dao;
 	
-	private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+	private final SimpleDateFormat mycarehubDateTimeFormatter = new SimpleDateFormat(mycarehubDateTimePattern);
 	
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -180,14 +181,14 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 					appointmentObject.addProperty(APPOINTMENT_REQUEST_STATUS_KEY, appointmentRequest.getStatus());
 					if (appointmentRequest.getProgressDate() != null) {
 						appointmentObject.addProperty(APPOINTMENT_PROGRESS_DATE_KEY,
-						    dateTimeFormat.format(appointmentRequest.getProgressDate()));
+						    mycarehubDateTimeFormatter.format(appointmentRequest.getProgressDate()));
 					} else {
 						appointmentObject.addProperty(APPOINTMENT_PROGRESS_DATE_KEY, "null");
 					}
 					appointmentObject.addProperty(APPOINTMENT_PROGRESS_BY_KEY, appointmentRequest.getProgressBy());
 					if (appointmentRequest.getDateResolved() != null) {
 						appointmentObject.addProperty(APPOINTMENT_RESOLVED_DATE_KEY,
-						    dateTimeFormat.format(appointmentRequest.getDateResolved()));
+						    mycarehubDateTimeFormatter.format(appointmentRequest.getDateResolved()));
 					} else {
 						appointmentObject.addProperty(APPOINTMENT_RESOLVED_DATE_KEY, "null");
 					}
@@ -217,7 +218,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("MFLCODE", MyCareHubUtil.getDefaultLocationMflCode());
-			jsonObject.addProperty("lastSyncTime", dateTimeFormat.format(setting.getLastSyncTime()));
+			jsonObject.addProperty("lastSyncTime", mycarehubDateTimeFormatter.format(setting.getLastSyncTime()));
 			
 			JsonArray jsonArray = MyCareHubUtil.fetchPatientAppointmentRequests(setting.getLastSyncTime(), newSyncDate);
 			
