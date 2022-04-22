@@ -2,6 +2,9 @@ package org.openmrs.module.mycarehub.utils;
 
 import org.openmrs.logic.op.In;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Constants {
 	
 	public final static String EMPTY = "";
@@ -106,13 +109,39 @@ public class Constants {
 		
 		public static final class Allergies {
 			
-			public static final int ALLERGEN = 160643;
+			public static final List<Integer> ALLERGY_GROUP_CONCEPTS = new ArrayList<Integer>() {
+
+				{
+					add(121760);
+					add(121689);
+				}
+			};
 			
-			public static final int ALLERGY_REACTION = 160646;
+			public static final List<Integer> ALLERGEN_CONCEPTS = new ArrayList<Integer>() {
+
+				{
+					add(160643);
+					add(1193);
+				}
+			};
 			
+			public static final List<Integer> ALLERGY_REACTION_CONCEPTS = new ArrayList<Integer>() {
+
+				{
+					add(160646);
+					add(159935);
+				}
+			};
+
 			public static final int ALLERGY_OTHER_REACTION = 160644;
 			
-			public static final int ALLERGY_SEVERITY = 160759;
+			public static final List<Integer> ALLERGY_SEVERITY_CONCEPTS = new ArrayList<Integer>() {
+
+				{
+					add(160759);
+					add(162760);
+				}
+			};
 			
 			public static final int ALLERGY_DATE = 160753;
 		}

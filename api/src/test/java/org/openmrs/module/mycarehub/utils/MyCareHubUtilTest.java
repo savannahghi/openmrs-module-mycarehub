@@ -26,6 +26,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -412,13 +413,13 @@ public class MyCareHubUtilTest {
 		List<MyCareHubAllergy> allergies = new ArrayList<MyCareHubAllergy>();
 		MyCareHubAllergy myCareHubAllergy = new MyCareHubAllergy();
 		myCareHubAllergy.setAllergyName("Caffeine");
-		myCareHubAllergy.setAllergyConceptId(72609);
+		myCareHubAllergy.setAllergyAnswerConceptId(BigInteger.valueOf(72609));
 		myCareHubAllergy.setReaction("Arrhythmia");
-		myCareHubAllergy.setReactionConceptId(120148);
+		myCareHubAllergy.setReactionAnswerConceptId(BigInteger.valueOf(120148));
 		myCareHubAllergy.setOtherReaction("Free text description of other reaction");
 		myCareHubAllergy.setSeverity("Severe");
-		myCareHubAllergy.setSeverityConceptId(160756);
-		myCareHubAllergy.setAllergyDateTime(dateFormat.format(new Date()) + "Z");
+		myCareHubAllergy.setSeverityAnswerConceptId(BigInteger.valueOf(160756));
+		myCareHubAllergy.setAllergyDateTimeObj(new Date());
 		allergies.add(myCareHubAllergy);
 		medicalRecord.setAllergies(allergies);
 		

@@ -144,7 +144,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		SimpleDateFormat sf = new SimpleDateFormat(pattern);
 		registrationRequest.setDateOfBirth(sf.format(patient.getBirthdate()));
 		registrationRequest.setBirthdateEstimated(patient.getBirthdateEstimated());
-		
+		Context.getProgramWorkflowService().getPatientProgram(patient.getPatientId());
 		registrationRequest.setEnrollmentDate(sf.format(patient.getDateCreated()));
 		
 		PersonAttributeType phoneNumberAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(

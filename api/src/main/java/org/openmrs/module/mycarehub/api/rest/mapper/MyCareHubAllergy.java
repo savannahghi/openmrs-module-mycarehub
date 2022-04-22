@@ -2,6 +2,8 @@ package org.openmrs.module.mycarehub.api.rest.mapper;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MyCareHubAllergy {
@@ -10,13 +12,17 @@ public class MyCareHubAllergy {
 	private String allergyName;
 	
 	@SerializedName("allergyConceptId")
-	private String allergyConceptId;
+	private String allergyConceptIdStr;
+
+	private transient BigInteger allergyAnswerConceptId;
 	
 	@SerializedName("reaction")
 	private String reaction;
 	
 	@SerializedName("reactionConceptId")
-	private String reactionConceptId;
+	private String reactionConceptIdStr;
+
+	private transient BigInteger reactionAnswerConceptId;
 	
 	@SerializedName("other_reaction")
 	private String otherReaction;
@@ -25,10 +31,15 @@ public class MyCareHubAllergy {
 	private String severity;
 	
 	@SerializedName("severityConceptId")
-	private String severityConceptId;
+	private String severityConceptIdStr;
+
+	private transient BigInteger severityAnswerConceptId;
 	
 	@SerializedName("allergyDateTime")
-	private String allergyDateTime;
+	private String allergyDateTimeStr;
+
+	private transient Date allergyDateTimeObj;
+
 	
 	public void setAllergyName(String allergyName) {
 		this.allergyName = allergyName;
@@ -38,16 +49,13 @@ public class MyCareHubAllergy {
 		return allergyName;
 	}
 	
-	public void setAllergyConceptId(Integer allergyConceptId) {
-		setSeverityConceptId(String.valueOf(allergyConceptId));
+	public void setAllergyAnswerConceptId(BigInteger allergyAnswerConceptId) {
+		this.allergyAnswerConceptId = allergyAnswerConceptId;
+		this.allergyConceptIdStr = String.valueOf(allergyAnswerConceptId);
 	}
 	
-	public void setAllergyConceptId(String allergyConceptId) {
-		this.allergyConceptId = allergyConceptId;
-	}
-	
-	public String getAllergyConceptId() {
-		return allergyConceptId;
+	public String getAllergyConceptIdStr() {
+		return allergyConceptIdStr;
 	}
 	
 	public void setReaction(String reaction) {
@@ -66,16 +74,17 @@ public class MyCareHubAllergy {
 		return reaction;
 	}
 	
-	public void setReactionConceptId(Integer reactionConceptId) {
-		setSeverityConceptId(String.valueOf(reactionConceptId));
+	public void setReactionAnswerConceptId(BigInteger reactionAnswerConceptId) {
+		this.reactionAnswerConceptId = reactionAnswerConceptId;
+		this.reactionConceptIdStr = String.valueOf(reactionAnswerConceptId);
 	}
 	
-	public void setReactionConceptId(String reactionConceptId) {
-		this.reactionConceptId = reactionConceptId;
+	public BigInteger getReactionAnswerConceptId() {
+		return reactionAnswerConceptId;
 	}
 	
-	public String getReactionConceptId() {
-		return reactionConceptId;
+	public String getReactionConceptIdStr() {
+		return reactionConceptIdStr;
 	}
 	
 	public void setSeverity(String severity) {
@@ -86,23 +95,25 @@ public class MyCareHubAllergy {
 		return severity;
 	}
 	
-	public void setSeverityConceptId(Integer severityConceptId) {
-		setSeverityConceptId(String.valueOf(severityConceptId));
+	public void setSeverityAnswerConceptId(BigInteger severityAnswerConceptId) {
+		this.severityAnswerConceptId = severityAnswerConceptId;
+		this.severityConceptIdStr = String.valueOf(severityAnswerConceptId);
 	}
 	
-	public void setSeverityConceptId(String severityConceptId) {
-		this.severityConceptId = severityConceptId;
+	public BigInteger getSeverityAnswerConceptId() {
+		return severityAnswerConceptId;
 	}
 	
-	public String getSeverityConceptId() {
-		return severityConceptId;
+	public String getSeverityConceptIdStr() {
+		return severityConceptIdStr;
 	}
 	
-	public void setAllergyDateTime(String allergyDateTime) {
-		this.allergyDateTime = allergyDateTime;
+	public void setAllergyDateTimeObj(Date allergyDateTimeObj) {
+		this.allergyDateTimeObj = allergyDateTimeObj;
+		allergyDateTimeStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(allergyDateTimeObj);
 	}
 	
-	public String getAllergyDateTime() {
-		return allergyDateTime;
+	public String getAllergyDateTimeStr() {
+		return allergyDateTimeStr;
 	}
 }
