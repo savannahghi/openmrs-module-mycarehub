@@ -30,6 +30,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObje
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_BY_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_STATUS_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPatientRedFlagRequests;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.postPatientRedFlags;
@@ -40,7 +41,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	
 	private MyCareHubRedFlagDao dao;
 	
-	private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+	private final SimpleDateFormat mycarehubDateTimeFormatter = new SimpleDateFormat(mycarehubDateTimePattern);
 	
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -106,14 +107,14 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 					redFlagObject.addProperty(RED_FLAG_REQUEST_TYPE_KEY, redFlag.getRequestType());
 					if (redFlag.getProgressDate() != null) {
 						redFlagObject.addProperty(RED_FLAG_PROGRESS_DATE_KEY,
-						    dateTimeFormat.format(redFlag.getProgressDate()));
+						    mycarehubDateTimeFormatter.format(redFlag.getProgressDate()));
 					} else {
 						redFlagObject.addProperty(RED_FLAG_PROGRESS_DATE_KEY, "null");
 					}
 					redFlagObject.addProperty(RED_FLAG_PROGRESS_BY_KEY, redFlag.getProgressBy());
 					if (redFlag.getDateResolved() != null) {
 						redFlagObject.addProperty(RED_FLAG_RESOLVED_DATE_KEY,
-						    dateTimeFormat.format(redFlag.getDateResolved()));
+						    mycarehubDateTimeFormatter.format(redFlag.getDateResolved()));
 					} else {
 						redFlagObject.addProperty(RED_FLAG_RESOLVED_DATE_KEY, "null");
 					}
