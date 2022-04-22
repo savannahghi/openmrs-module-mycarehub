@@ -95,6 +95,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObje
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_BY_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_STATUS_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -124,9 +125,7 @@ public class MyCareHubUtilTest {
 	
 	private SimpleDateFormat sf = new SimpleDateFormat(pattern);
 	
-	private String dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-	
-	private SimpleDateFormat dateFormat = new SimpleDateFormat(dateTimePattern);
+	private SimpleDateFormat myCareHubDateTimeFormatter = new SimpleDateFormat(mycarehubDateTimePattern);
 	
 	@Before
 	public void setup() {
@@ -348,33 +347,33 @@ public class MyCareHubUtilTest {
 		
 		List<MyCareHubVitalSign> vitalSigns = new ArrayList<MyCareHubVitalSign>();
 		
-		vitalSigns.add(new MyCareHubVitalSign(TEMPERATURE_CONCEPT_KEY, String.valueOf(TEMPERATURE), dateFormat
-		        .format(new Date()) + "Z", "39.1"));
-		vitalSigns.add(new MyCareHubVitalSign(WEIGHT_CONCEPT_KEY, String.valueOf(WEIGHT), dateFormat.format(new Date())
-		        + "Z", "80"));
-		vitalSigns.add(new MyCareHubVitalSign(HEIGHT_CONCEPT_KEY, String.valueOf(HEIGHT), dateFormat.format(new Date())
-		        + "Z", "171"));
-		vitalSigns.add(new MyCareHubVitalSign(BMI_CONCEPT_KEY, String.valueOf(BMI), dateFormat.format(new Date()) + "Z",
-		        "25.2"));
-		vitalSigns.add(new MyCareHubVitalSign(SPO2_CONCEPT_KEY, String.valueOf(SPO2), dateFormat.format(new Date()) + "Z",
-		        "96"));
-		vitalSigns.add(new MyCareHubVitalSign(PULSE_CONCEPT_KEY, String.valueOf(PULSE), dateFormat.format(new Date()) + "Z",
-		        "80"));
-		vitalSigns.add(new MyCareHubVitalSign(CD4_CONCEPT_KEY, String.valueOf(CD4_COUNT), dateFormat.format(new Date())
-		        + "Z", "500"));
-		vitalSigns.add(new MyCareHubVitalSign(VIRAL_LOAD_CONCEPT_KEY, String.valueOf(VIRAL_LOAD), dateFormat
-		        .format(new Date()) + "Z", "1000"));
-		vitalSigns.add(new MyCareHubVitalSign(RESPIRATORY_RATE_CONCEPT_KEY, String.valueOf(RESPIRATORY_RATE), dateFormat
-		        .format(new Date()) + "Z", "26"));
+		vitalSigns.add(new MyCareHubVitalSign(TEMPERATURE_CONCEPT_KEY, String.valueOf(TEMPERATURE),
+		        myCareHubDateTimeFormatter.format(new Date()), "39.1"));
+		vitalSigns.add(new MyCareHubVitalSign(WEIGHT_CONCEPT_KEY, String.valueOf(WEIGHT), myCareHubDateTimeFormatter
+		        .format(new Date()), "80"));
+		vitalSigns.add(new MyCareHubVitalSign(HEIGHT_CONCEPT_KEY, String.valueOf(HEIGHT), myCareHubDateTimeFormatter
+		        .format(new Date()), "171"));
+		vitalSigns.add(new MyCareHubVitalSign(BMI_CONCEPT_KEY, String.valueOf(BMI), myCareHubDateTimeFormatter
+		        .format(new Date()), "25.2"));
+		vitalSigns.add(new MyCareHubVitalSign(SPO2_CONCEPT_KEY, String.valueOf(SPO2), myCareHubDateTimeFormatter
+		        .format(new Date()), "96"));
+		vitalSigns.add(new MyCareHubVitalSign(PULSE_CONCEPT_KEY, String.valueOf(PULSE), myCareHubDateTimeFormatter
+		        .format(new Date()), "80"));
+		vitalSigns.add(new MyCareHubVitalSign(CD4_CONCEPT_KEY, String.valueOf(CD4_COUNT), myCareHubDateTimeFormatter
+		        .format(new Date()), "500"));
+		vitalSigns.add(new MyCareHubVitalSign(VIRAL_LOAD_CONCEPT_KEY, String.valueOf(VIRAL_LOAD), myCareHubDateTimeFormatter
+		        .format(new Date()), "1000"));
+		vitalSigns.add(new MyCareHubVitalSign(RESPIRATORY_RATE_CONCEPT_KEY, String.valueOf(RESPIRATORY_RATE),
+		        myCareHubDateTimeFormatter.format(new Date()), "26"));
 		
-		vitalSigns.add(new MyCareHubVitalSign(APPOINTMENT_DATE_KEY, String.valueOf(APPOINTMENT_DATE_CONCEPT_ID), dateFormat
-		        .format(new Date()) + "Z", dateTimeFormat.format(new Date())));
+		vitalSigns.add(new MyCareHubVitalSign(APPOINTMENT_DATE_KEY, String.valueOf(APPOINTMENT_DATE_CONCEPT_ID),
+		        myCareHubDateTimeFormatter.format(new Date()), dateTimeFormat.format(new Date())));
 		
 		medicalRecord.setVitalSigns(vitalSigns);
 		
 		List<MyCareHubTestOrder> myCareHubTestOrders = new ArrayList<MyCareHubTestOrder>();
 		MyCareHubTestOrder myCareHubTestOrder = new MyCareHubTestOrder();
-		myCareHubTestOrder.setOrderDateTime(dateFormat.format(new Date()) + "Z");
+		myCareHubTestOrder.setOrderDateTime(myCareHubDateTimeFormatter.format(new Date()));
 		myCareHubTestOrder.setOrderedTestName("Complete Blood Count");
 		myCareHubTestOrder.setConceptId(1019);
 		myCareHubTestOrders.add(myCareHubTestOrder);
@@ -386,14 +385,14 @@ public class MyCareHubUtilTest {
 		MyCareHubTest myCareHubTest = new MyCareHubTest();
 		myCareHubTest.setTestName("HEMOGLOBIN");
 		myCareHubTest.setTestConceptId(21);
-		myCareHubTest.setTestDateTime(dateFormat.format(new Date()) + "Z");
+		myCareHubTest.setTestDateTime(myCareHubDateTimeFormatter.format(new Date()));
 		myCareHubTest.setResult("15.1");
 		myCareHubTests.add(myCareHubTest);
 		
 		MyCareHubTest myCareHubTest2 = new MyCareHubTest();
 		myCareHubTest2.setTestName("URINE PREGNANCY TEST");
 		myCareHubTest2.setTestConceptId(45);
-		myCareHubTest2.setTestDateTime(dateFormat.format(new Date()) + "Z");
+		myCareHubTest2.setTestDateTime(myCareHubDateTimeFormatter.format(new Date()));
 		myCareHubTest2.setResult("POSITIVE");
 		myCareHubTest2.setResultConceptId(703);
 		myCareHubTests.add(myCareHubTest2);
@@ -404,7 +403,7 @@ public class MyCareHubUtilTest {
 		MyCareHubMedication myCareHubMedication = new MyCareHubMedication();
 		myCareHubMedication.setMedicationName("CURRENT DRUGS USED");
 		myCareHubMedication.setMedicationConceptId(1193);
-		myCareHubMedication.setMedicationDateTime(dateFormat.format(new Date()) + "Z");
+		myCareHubMedication.setMedicationDateTime(myCareHubDateTimeFormatter.format(new Date()));
 		myCareHubMedication.setValue("DIDANOSINE");
 		myCareHubMedication.setDrugConceptId(796);
 		myCareHubMedications.add(myCareHubMedication);

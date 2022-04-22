@@ -63,6 +63,7 @@ import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
+import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 
 public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements MyCareHubPatientService {
 	
@@ -232,7 +233,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	
 	private void uploadPatientsMedicalRecordsSinceDate(List<Patient> patients, Date lastSyncTime, Date newSyncTime) {
 		String dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(dateTimePattern);
+		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(mycarehubDateTimePattern);
 		
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
 		PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
@@ -247,53 +248,53 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 					switch (obs.getConcept().getConceptId()) {
 						case TEMPERATURE:
 							vitalSigns.add(new MyCareHubVitalSign(TEMPERATURE_CONCEPT_KEY, String.valueOf(obs.getConcept()
-							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 						case WEIGHT:
 							vitalSigns.add(new MyCareHubVitalSign(WEIGHT_CONCEPT_KEY, String.valueOf(obs.getConcept()
-							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 						case HEIGHT:
 							vitalSigns.add(new MyCareHubVitalSign(HEIGHT_CONCEPT_KEY, String.valueOf(obs.getConcept()
-							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 						case BMI:
 							vitalSigns.add(new MyCareHubVitalSign(BMI_CONCEPT_KEY, String.valueOf(obs.getConcept()
-							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 						case SPO2:
 							vitalSigns.add(new MyCareHubVitalSign(SPO2_CONCEPT_KEY, String.valueOf(obs.getConcept()
-							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 						case PULSE:
 							vitalSigns.add(new MyCareHubVitalSign(PULSE_CONCEPT_KEY, String.valueOf(obs.getConcept()
-							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 						case CD4_COUNT:
 							vitalSigns.add(new MyCareHubVitalSign(CD4_CONCEPT_KEY, String.valueOf(obs.getConcept()
-							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 						case VIRAL_LOAD:
 							vitalSigns.add(new MyCareHubVitalSign(VIRAL_LOAD_CONCEPT_KEY, String.valueOf(obs.getConcept()
-							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 						case RESPIRATORY_RATE:
 							vitalSigns.add(new MyCareHubVitalSign(RESPIRATORY_RATE_CONCEPT_KEY, String.valueOf(obs
-							        .getConcept().getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConcept().getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 						
 						case APPOINTMENT_DATE_CONCEPT_ID:
 							vitalSigns.add(new MyCareHubVitalSign(APPOINTMENT_DATE_KEY, String.valueOf(obs.getConcept()
-							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()) + "Z", obs
+							        .getConceptId()), dateTimeFormat.format(obs.getObsDatetime()), obs
 							        .getValueAsString(Locale.ENGLISH)));
 							break;
 					}
@@ -304,7 +305,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				List<Obs> testOrderObs = myCareHubPatientDao.getUpdatedTestOrdersSinceDate(patient, lastSyncTime);
 				for (final Obs order : testOrderObs) {
 					MyCareHubTestOrder myCareHubTestOrder = new MyCareHubTestOrder();
-					myCareHubTestOrder.setOrderDateTime(dateTimeFormat.format(order.getObsDatetime()) + "Z");
+					myCareHubTestOrder.setOrderDateTime(dateTimeFormat.format(order.getObsDatetime()));
 					myCareHubTestOrder.setOrderedTestName(order.getValueAsString(Locale.ENGLISH));
 					if (order.getValueCoded() != null) {
 						myCareHubTestOrder.setConceptId(order.getValueCoded().getConceptId());
@@ -319,7 +320,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 					MyCareHubTest myCareHubTest = new MyCareHubTest();
 					myCareHubTest.setTestName(test.getConcept().getName().getName());
 					myCareHubTest.setTestConceptId(test.getConcept().getConceptId());
-					myCareHubTest.setTestDateTime(dateTimeFormat.format(test.getObsDatetime()) + "Z");
+					myCareHubTest.setTestDateTime(dateTimeFormat.format(test.getObsDatetime()));
 					myCareHubTest.setResult(test.getValueAsString(Locale.ENGLISH));
 					if (test.getValueCoded() != null) {
 						myCareHubTest.setResultConceptId(test.getValueCoded().getConceptId());
@@ -334,7 +335,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 					MyCareHubMedication myCareHubMedication = new MyCareHubMedication();
 					myCareHubMedication.setMedicationName(medication.getConcept().getName().getName());
 					myCareHubMedication.setMedicationConceptId(medication.getConcept().getConceptId());
-					myCareHubMedication.setMedicationDateTime(dateTimeFormat.format(medication.getObsDatetime()) + "Z");
+					myCareHubMedication.setMedicationDateTime(dateTimeFormat.format(medication.getObsDatetime()));
 					myCareHubMedication.setValue(medication.getValueAsString(Locale.ENGLISH));
 					if (medication.getValueCoded() != null) {
 						myCareHubMedication.setDrugConceptId(medication.getValueCoded().getConceptId());

@@ -141,10 +141,10 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		allergenQuery.setParameter("allergyDateConcept", ALLERGY_DATE);
 		allergenQuery.setParameterList("allergyGroupConcepts", ALLERGY_GROUP_CONCEPTS);
 		allergenQuery.setParameter("patientId", patient.getPatientId());
-
+		
 		String formattedLastSyncDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
 		allergenQuery.setParameter("formattedLastSyncDate", formattedLastSyncDate);
-
+		
 		allergenQuery.setResultTransformer(Transformers.aliasToBean(MyCareHubAllergy.class));
 		
 		return allergenQuery.list();

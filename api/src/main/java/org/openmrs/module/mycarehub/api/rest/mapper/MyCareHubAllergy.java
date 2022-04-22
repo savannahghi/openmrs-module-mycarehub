@@ -6,6 +6,8 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
+
 public class MyCareHubAllergy {
 	
 	@SerializedName("name")
@@ -13,7 +15,7 @@ public class MyCareHubAllergy {
 	
 	@SerializedName("allergyConceptId")
 	private String allergyConceptIdStr;
-
+	
 	private transient BigInteger allergyAnswerConceptId;
 	
 	@SerializedName("reaction")
@@ -21,7 +23,7 @@ public class MyCareHubAllergy {
 	
 	@SerializedName("reactionConceptId")
 	private String reactionConceptIdStr;
-
+	
 	private transient BigInteger reactionAnswerConceptId;
 	
 	@SerializedName("other_reaction")
@@ -32,14 +34,13 @@ public class MyCareHubAllergy {
 	
 	@SerializedName("severityConceptId")
 	private String severityConceptIdStr;
-
+	
 	private transient BigInteger severityAnswerConceptId;
 	
 	@SerializedName("allergyDateTime")
 	private String allergyDateTimeStr;
-
+	
 	private transient Date allergyDateTimeObj;
-
 	
 	public void setAllergyName(String allergyName) {
 		this.allergyName = allergyName;
@@ -110,7 +111,7 @@ public class MyCareHubAllergy {
 	
 	public void setAllergyDateTimeObj(Date allergyDateTimeObj) {
 		this.allergyDateTimeObj = allergyDateTimeObj;
-		allergyDateTimeStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(allergyDateTimeObj);
+		allergyDateTimeStr = new SimpleDateFormat(mycarehubDateTimePattern).format(allergyDateTimeObj);
 	}
 	
 	public String getAllergyDateTimeStr() {
