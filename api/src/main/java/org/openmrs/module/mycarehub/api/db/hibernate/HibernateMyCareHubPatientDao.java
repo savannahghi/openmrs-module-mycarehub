@@ -17,11 +17,12 @@ import java.util.Date;
 import java.util.List;
 
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGEN;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGEN_CONCEPTS;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_DATE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_GROUP_CONCEPTS;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_OTHER_REACTION;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_REACTION;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_SEVERITY;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_REACTION_CONCEPTS;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_SEVERITY_CONCEPTS;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Tests.TESTS_ORDERED;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getMedicalRecordConceptsList;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getVitalSignsConceptsList;
@@ -114,34 +115,36 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	public List<MyCareHubAllergy> getUpdatedAllergiesSinceDate(Patient patient, Date lastSyncDate) {
 		SQLQuery allergenQuery = getSession()
 		        .createSQLQuery(
-		            "SELECT allergyName,allergyConceptId,reaction,severity,allergyDateTime FROM ( "
+		            "SELECT allergyName,allergyAnswerConceptId,reaction,reactionAnswerConceptId,severity,severityAnswerConceptId,allergyDateTimeObj FROM ( "
 		                    + "SELECT "
 		                    + "(SELECT concept_name.name FROM concept_name JOIN obs ON obs.value_coded = concept_name.concept_id "
-		                    + "WHERE obs.concept_id= :allergenConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1) AS allergyName,"
+		                    + "WHERE obs.concept_id IN :allergenConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1) AS allergyName,"
 		                    + "(SELECT value_coded FROM obs "
-		                    + "WHERE obs.concept_id= :allergenConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS allergyConceptId,"
+		                    + "WHERE obs.concept_id IN :allergenConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS allergyAnswerConceptId,"
 		                    + "(SELECT concept_name.name FROM concept_name JOIN obs ON obs.value_coded = concept_name.concept_id "
-		                    + "WHERE obs.concept_id= :reactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1) AS reaction,"
+		                    + "WHERE obs.concept_id IN :reactionConcepts AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1) AS reaction,"
 		                    + "(SELECT obs.value_coded FROM obs "
-		                    + "WHERE obs.concept_id= :reactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS reactionConceptId,"
+		                    + "WHERE obs.concept_id IN :reactionConcepts AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS reactionAnswerConceptId,"
 		                    + "(SELECT value_text FROM obs WHERE obs.concept_id=:otherReactionConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS otherReaction, "
 		                    + "(SELECT concept_name.name FROM concept_name JOIN obs ON obs.value_coded = concept_name.concept_id "
-		                    + "WHERE obs.concept_id=:severityConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1 ) AS severity,"
-		                    + "(SELECT obs.value_coded FROM obs WHERE obs.concept_id=:severityConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1 ) AS severityConceptId,"
-		                    + "(SELECT value_datetime FROM obs WHERE obs.concept_id=:allergyDateConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS allergyDateTime "
+		                    + "WHERE obs.concept_id IN :severityConcepts AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 AND concept_name.locale='en' LIMIT 1 ) AS severity,"
+		                    + "(SELECT obs.value_coded FROM obs WHERE obs.concept_id IN :severityConcepts AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1 ) AS severityAnswerConceptId,"
+		                    + "(SELECT value_datetime FROM obs WHERE obs.concept_id=:allergyDateConcept AND obs.obs_group_id = obsgroups.obs_group_id  AND obs.voided=0 LIMIT 1) AS allergyDateTimeObj "
 		                    + "FROM ("
-		                    + "SELECT obs_group_id FROM obs WHERE concept_id = :allergenConcept AND date_created >= :formattedLastSyncDate AND voided = 0 AND person_id = :patientId"
+		                    + "SELECT obs_id AS obs_group_id FROM obs WHERE concept_id IN :allergyGroupConcepts AND date_created >= :formattedLastSyncDate AND voided = 0 AND person_id = :patientId"
 		                    + ") AS obsgroups) AS allergies ");
 		
-		allergenQuery.setParameter("allergenConcept", ALLERGEN);
-		allergenQuery.setParameter("reactionConcept", ALLERGY_REACTION);
+		allergenQuery.setParameterList("allergenConcept", ALLERGEN_CONCEPTS);
+		allergenQuery.setParameterList("reactionConcepts", ALLERGY_REACTION_CONCEPTS);
 		allergenQuery.setParameter("otherReactionConcept", ALLERGY_OTHER_REACTION);
-		allergenQuery.setParameter("severityConcept", ALLERGY_SEVERITY);
+		allergenQuery.setParameterList("severityConcepts", ALLERGY_SEVERITY_CONCEPTS);
 		allergenQuery.setParameter("allergyDateConcept", ALLERGY_DATE);
+		allergenQuery.setParameterList("allergyGroupConcepts", ALLERGY_GROUP_CONCEPTS);
 		allergenQuery.setParameter("patientId", patient.getPatientId());
-		
+
 		String formattedLastSyncDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
 		allergenQuery.setParameter("formattedLastSyncDate", formattedLastSyncDate);
+
 		allergenQuery.setResultTransformer(Transformers.aliasToBean(MyCareHubAllergy.class));
 		
 		return allergenQuery.list();
