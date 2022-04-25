@@ -530,51 +530,6 @@ public class MyCareHubUtil {
 		return cccIdentifierType;
 	}
 	
-	public static List<Integer> getMedicalRecordConceptsList() {
-		List<Integer> medicalRecordConceptsList = new ArrayList<Integer>();
-		medicalRecordConceptsList.addAll(getMedicationsConceptsList());
-		medicalRecordConceptsList.addAll(getTestsConceptsList());
-		medicalRecordConceptsList.addAll(getVitalSignsConceptsList());
-		return medicalRecordConceptsList;
-	}
-	
-	public static List<Integer> getMedicationsConceptsList() {
-		List<Integer> medicationsConceptsList = new ArrayList<Integer>();
-		medicationsConceptsList.add(REGIMEN);
-		return medicationsConceptsList;
-	}
-	
-	public static List<Integer> getTestsConceptsList() {
-		List<Integer> testsConceptsList = new ArrayList<Integer>();
-		testsConceptsList.add(WIDAL);
-		testsConceptsList.add(HIV_POLYMERASE);
-		return testsConceptsList;
-	}
-	
-	public static List<Integer> getVitalSignsConceptsList() {
-		List<Integer> vitalSignsConceptsList = new ArrayList<Integer>();
-		vitalSignsConceptsList.add(PULSE);
-		vitalSignsConceptsList.add(TEMPERATURE);
-		vitalSignsConceptsList.add(WEIGHT);
-		vitalSignsConceptsList.add(HEIGHT);
-		vitalSignsConceptsList.add(BMI);
-		vitalSignsConceptsList.add(SPO2);
-		vitalSignsConceptsList.add(CD4_COUNT);
-		vitalSignsConceptsList.add(VIRAL_LOAD);
-		vitalSignsConceptsList.add(RESPIRATORY_RATE);
-		vitalSignsConceptsList.add(APPOINTMENT_DATE_CONCEPT_ID);
-		return vitalSignsConceptsList;
-	}
-	
-	public static List<String> getPersonAttributeTypesList() {
-		List<String> personAttributeTypeUuids = new ArrayList<String>();
-		personAttributeTypeUuids.add(TELEPHONE_CONTACT);
-		personAttributeTypeUuids.add(NEXT_OF_KIN_NAME);
-		personAttributeTypeUuids.add(NEXT_OF_KIN_CONTACT);
-		personAttributeTypeUuids.add(NEXT_OF_KIN_RELATIONSHIP);
-		return personAttributeTypeUuids;
-	}
-	
 	public static String getBearer(String token) {
 		return "Bearer ".concat(token);
 	}

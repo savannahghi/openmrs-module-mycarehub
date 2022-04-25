@@ -1,8 +1,6 @@
 package org.openmrs.module.mycarehub.api.service.impl;
 
 import com.google.gson.JsonObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
@@ -186,7 +184,6 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				    nextOfKinRelationshipPersonAttribute.getValue());
 			}
 		}
-		
 		registrationRequest.setNextOfKin(nextOfKinJsonObject);
 		return registrationRequest;
 	}
