@@ -52,7 +52,9 @@ public class MyCareHubAllergy {
 	
 	public void setAllergyAnswerConceptId(BigInteger allergyAnswerConceptId) {
 		this.allergyAnswerConceptId = allergyAnswerConceptId;
-		this.allergyConceptIdStr = String.valueOf(allergyAnswerConceptId);
+		
+		if (allergyAnswerConceptId != null)
+			this.allergyConceptIdStr = String.valueOf(allergyAnswerConceptId);
 	}
 	
 	public String getAllergyConceptIdStr() {
@@ -77,7 +79,9 @@ public class MyCareHubAllergy {
 	
 	public void setReactionAnswerConceptId(BigInteger reactionAnswerConceptId) {
 		this.reactionAnswerConceptId = reactionAnswerConceptId;
-		this.reactionConceptIdStr = String.valueOf(reactionAnswerConceptId);
+		
+		if (reactionAnswerConceptId != null)
+			this.reactionConceptIdStr = String.valueOf(reactionAnswerConceptId);
 	}
 	
 	public BigInteger getReactionAnswerConceptId() {
@@ -98,7 +102,9 @@ public class MyCareHubAllergy {
 	
 	public void setSeverityAnswerConceptId(BigInteger severityAnswerConceptId) {
 		this.severityAnswerConceptId = severityAnswerConceptId;
-		this.severityConceptIdStr = String.valueOf(severityAnswerConceptId);
+		
+		if (severityAnswerConceptId != null)
+			this.severityConceptIdStr = String.valueOf(severityAnswerConceptId);
 	}
 	
 	public BigInteger getSeverityAnswerConceptId() {
@@ -111,7 +117,9 @@ public class MyCareHubAllergy {
 	
 	public void setAllergyDateTimeObj(Date allergyDateTimeObj) {
 		this.allergyDateTimeObj = allergyDateTimeObj;
-		allergyDateTimeStr = new SimpleDateFormat(mycarehubDateTimePattern).format(allergyDateTimeObj);
+		
+		if (allergyDateTimeObj != null)
+			allergyDateTimeStr = new SimpleDateFormat(mycarehubDateTimePattern).format(allergyDateTimeObj);
 	}
 	
 	public String getAllergyDateTimeStr() {
