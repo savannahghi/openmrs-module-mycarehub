@@ -5,7 +5,7 @@ OpenMRS module to link myCareHub to KenyaEMR
 
 Description
 -----------
-OpenMRS module to sync data to and from my care hub backend
+OpenMRS module to sync data to and from myCareHub backend
 
 Building from Source
 --------------------

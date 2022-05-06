@@ -146,7 +146,7 @@
     </bean>
     <bean id="mycarehub.app.providerHome" factory-bean="kenyacore.appFactoryBean" factory-method="createInstance">
         <constructor-arg value="mycarehub.app.home" />
-        <constructor-arg value="My Carehub" />
+        <constructor-arg value="myCareHub" />
         <constructor-arg value="mycarehub/mycarehubHome.page#appointmentRequests" />
         <constructor-arg value="mycarehub:apps/mycarehub.png" />
         <constructor-arg value="2002" />

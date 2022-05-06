@@ -2,6 +2,8 @@ package org.openmrs.module.mycarehub.api.db.hibernate;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -46,9 +48,19 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 	}
 	
 	@Override
-	public List<RedFlags> getPagedRedFlagsByRequestType(String requestType, Integer pageNumber, Integer pageSize) {
+	public List<RedFlags> getPagedRedFlagsByRequestType(String searchString, String requestType, Integer pageNumber,
+	        Integer pageSize) {
 		Criteria criteria = session().createCriteria(RedFlags.class);
 		criteria.add(Restrictions.eq("voided", false));
+		if (StringUtils.isNotEmpty(searchString)) {
+			Disjunction disjunction = Restrictions.disjunction();
+			disjunction.add(Restrictions.ilike("clientName", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("clientContact", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("cccNumber", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("status", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("request", searchString, MatchMode.ANYWHERE));
+			criteria.add(disjunction);
+		}
 		if (StringUtils.isNotEmpty(requestType)) {
 			criteria.add(Restrictions.eq("requestType", requestType));
 		}
@@ -87,8 +99,17 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 	}
 	
 	@Override
-	public Number countRedFlagsByType(String requestType) {
+	public Number countRedFlagsByType(String searchString, String requestType) {
 		Criteria criteria = session().createCriteria(RedFlags.class);
+		if (StringUtils.isNotEmpty(searchString)) {
+			Disjunction disjunction = Restrictions.disjunction();
+			disjunction.add(Restrictions.ilike("clientName", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("clientContact", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("cccNumber", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("status", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("request", searchString, MatchMode.ANYWHERE));
+			criteria.add(disjunction);
+		}
 		if (StringUtils.isNotEmpty(requestType)) {
 			criteria.add(Restrictions.eq("requestType", requestType));
 		}

@@ -1,6 +1,9 @@
-<div class="ke-panel-frame">
-    <div class="ke-panel-heading">Screening Tool</div>
-    <div class="ke-panel-content"  ng-controller="ScreeningToolCtrl" ng-init="init()">
+<div class="ke-panel-frame"  ng-controller="ScreeningToolCtrl" ng-init="init()">
+    <div class="ke-panel-heading">Screening Tool
+        <input type="text" name="screeningToolRedFlagSearchString" ng-model="screeningToolRedFlagSearchString"
+               ng-change="loadScreeningToolRedFlags()" style="width: 260px;margin-left:50px" placeholder="Search ..."/>
+    </div>
+    <div class="ke-panel-content">
         <table class="ke-table-vertical">
             <thead>
             <tr>

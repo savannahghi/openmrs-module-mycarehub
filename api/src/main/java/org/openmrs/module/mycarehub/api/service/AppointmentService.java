@@ -23,9 +23,9 @@ public interface AppointmentService extends OpenmrsService {
 	
 	AppointmentRequests getAppointmentRequestByMycarehubId(String mycarehubId);
 	
-	Number countAppointments();
+	Number countAppointments(String searchString);
 	
-	List<AppointmentRequests> getPagedAppointments(Integer pageNumber, Integer pageSize);
+	List<AppointmentRequests> getPagedAppointments(String searchString, Integer pageNumber, Integer pageSize);
 	
 	void syncPatientAppointments();
 	

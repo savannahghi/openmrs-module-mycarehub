@@ -1,4 +1,4 @@
-kenyaemrApp.controller('AppointmentRequestsCtrl',['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+kenyaemrApp.controller('AppointmentRequestsCtrl',['$scope', '$http', function($scope, $http) {
 /**
  * Initializes the controller
  * @param appId the current app id
@@ -7,19 +7,33 @@ kenyaemrApp.controller('AppointmentRequestsCtrl',['$scope', '$http', '$timeout',
      $scope.appId = appId;
      $scope.maxSize = 10;
      $scope.pageSize = 10;
+     $scope.appointmentsSearchString = " ";
      $scope.appointmentsCurrentPage = 1;
      $scope.appointmentsTotalItems = 0;
-     $scope.loadAppointmentRequests();
+     setTimeout(()=>{
+         $scope.loadAppointmentRequests();
+     },1000);
     };
+    
     $scope.loadAppointmentRequests = function(){
         var params = {pageNumber:$scope.appointmentsCurrentPage, pageSize:$scope.pageSize}
-        $http.get(ui.fragmentActionLink('mycarehub','myCareHubUtils','getAppointmentRequests',params))
+        var appointmentsUri = 'getAppointmentRequests';
+        if($scope.appointmentsSearchString != "") {
+            params.searchString = $scope.appointmentsSearchString;
+            appointmentsUri = 'searchAppointmentRequests';
+        }
+        
+        $http.get(ui.fragmentActionLink('mycarehub','myCareHubUtils',appointmentsUri,params))
             .success(function (response) {
                 var serverData = response;
                 $scope.appointmentRequests = serverData.objects;
                 $scope.appointmentPages = serverData.pages;
                 $scope.appointmentsTotalItems = serverData.totalItems;
             });
+    }
+    
+    $scope.searchAppointments = function(){
+        $scope.loadAppointmentRequests();
     }
 
     $scope.appointmentPagination = function (appointmentsCurrentPage) {
@@ -72,7 +86,7 @@ kenyaemrApp.controller('AppointmentRequestsCtrl',['$scope', '$http', '$timeout',
     };
 }]);
 
-kenyaemrApp.controller('HealthDiaryCtrl',['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+kenyaemrApp.controller('HealthDiaryCtrl',['$scope', '$http', function($scope, $http) {
     /**
      * Initializes the controller
      * @param appId the current app id
@@ -81,19 +95,24 @@ kenyaemrApp.controller('HealthDiaryCtrl',['$scope', '$http', '$timeout', functio
         $scope.pageSize = 20;
         $scope.healthDiaryCurrentPage = 1;
         $scope.healthDiaryTotalItems = 0;
+        $scope.healthDiarySearchString = " ";
         $scope.loadHealthDiaries();
     };
     $scope.loadHealthDiaries = function(){
-        var params = {pageNumber:$scope.healthDiaryCurrentPage, pageSize:$scope.pageSize}
-        $http.get(ui.fragmentActionLink('mycarehub','myCareHubUtils','getHealthDiaries',params))
+        var params = {searchString:$scope.healthDiarySearchString,pageNumber:$scope.healthDiaryCurrentPage, pageSize:$scope.pageSize}
+        var healthDiariesUri = 'getHealthDiaries';
+        
+        if($scope.healthDiarySearchString != ''){
+            params.searchString = $scope.healthDiarySearchString;
+            healthDiariesUri = 'searchHealthDiaries';
+        }
+        
+        $http.get(ui.fragmentActionLink('mycarehub','myCareHubUtils',healthDiariesUri,params))
             .success(function (response) {
                 var serverData = response;
                 $scope.healthDiaries = serverData.objects;
                 $scope.healthDiariesPages = serverData.pages;
                 $scope.healthDiariesTotalItems = serverData.totalItems;
-
-                console.log("$scope.healthDiariesPages: "+$scope.healthDiariesPages);
-                console.log("$scope.healthDiariesTotalItems: "+$scope.healthDiariesTotalItems);
             });
     }
     $scope.healthDiaryPagination = function (healthDiaryCurrentPage) {
@@ -110,7 +129,7 @@ kenyaemrApp.controller('HealthDiaryCtrl',['$scope', '$http', '$timeout', functio
     };
 }]);
 
-kenyaemrApp.controller('RedFlagsCtrl',['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+kenyaemrApp.controller('RedFlagsCtrl',['$scope', '$http', function($scope, $http) {
     /**
      * Initializes the controller
      * @param appId the current app id
@@ -119,11 +138,20 @@ kenyaemrApp.controller('RedFlagsCtrl',['$scope', '$http', '$timeout', function($
         $scope.pageSize = 10;
         $scope.redFlagCurrentPage = 1;
         $scope.redFlagTotalItems = 0;
+        $scope.redFlagsSearchString = "";
         $scope.loadRedFlags();
     };
     $scope.loadRedFlags = function(){
-        var params = {pageNumber:$scope.redFlagCurrentPage, pageSize:$scope.pageSize, requestType:'RED_FLAG'}
-        $http.get(ui.fragmentActionLink('mycarehub','myCareHubUtils','getRedFlagsByType',params))
+        var params = {pageNumber:$scope.redFlagCurrentPage, 
+            pageSize:$scope.pageSize, requestType:'RED_FLAG'};
+        
+        var redFlagsUri = 'getRedFlagsByType';
+
+        if($scope.redFlagsSearchString != "") {
+            params.searchString = $scope.redFlagsSearchString;
+            redFlagsUri = 'searchRedFlagsByType'
+        }
+        $http.get(ui.fragmentActionLink('mycarehub','myCareHubUtils',redFlagsUri,params))
             .success(function (response) {
                 var serverData = response;
                 $scope.redFlags = serverData.objects;
@@ -172,11 +200,22 @@ kenyaemrApp.controller('ScreeningToolCtrl',['$scope', '$http', '$timeout', funct
         $scope.pageSize = 10;
         $scope.screeningToolRedFlagCurrentPage = 1;
         $scope.screeningToolRedFlagTotalItems = 0;
+        $scope.screeningToolRedFlagSearchString = "";
         $scope.loadScreeningToolRedFlags();
     };
     $scope.loadScreeningToolRedFlags = function(){
-        var params = {pageNumber:$scope.screeningToolRedFlagCurrentPage, pageSize:$scope.pageSize, requestType:'SCREENING_TOOL_RED_FLAG'}
-        $http.get(ui.fragmentActionLink('mycarehub','myCareHubUtils','getRedFlagsByType',params))
+        var params = {
+                pageNumber: $scope.screeningToolRedFlagCurrentPage, pageSize: $scope.pageSize,
+                requestType: 'SCREENING_TOOLS_RED_FLAG'
+            };
+        var screeningToolRedFlagsUri = 'getRedFlagsByType';
+            
+        if($scope.screeningToolRedFlagSearchString != "") {
+            params.searchString=$scope.screeningToolRedFlagSearchString;
+            screeningToolRedFlagsUri = 'searchRedFlagsByType';
+        }
+        
+        $http.get(ui.fragmentActionLink('mycarehub','myCareHubUtils',screeningToolRedFlagsUri,params))
             .success(function (response) {
                 var serverData = response;
                 $scope.screeningToolRedFlags = serverData.objects;

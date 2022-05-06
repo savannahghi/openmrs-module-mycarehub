@@ -15,8 +15,9 @@ mycarehubModule.factory('$serviceRequests', function ($http) {
         return $http.get("serviceRequests.json?requestType=" +requestType+ "&pageNumber=" + pageNumber + "&pageSize=" + pageSize);
     };
 
-    var getAppointmentRequests = function (pageNumber, pageSize) {
-        return $http.get("appointmentRequests.json?pageNumber=" + pageNumber + "&pageSize=" + pageSize);
+    var getAppointmentRequests = function (searchString, pageNumber, pageSize) {
+        console.log("searchString = "+searchString);
+        return $http.get("appointmentRequests.json?searchString="+searchString+"&pageNumber=" + pageNumber + "&pageSize=" + pageSize);
     };
 
     var getHealthDiaries = function (pageNumber, pageSize) {

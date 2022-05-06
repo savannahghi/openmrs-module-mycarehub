@@ -13,7 +13,8 @@ public interface MyCareHubRedFlagDao {
 	
 	List<RedFlags> getAllRedFlagRequestsByLastSyncDate(Date lastSyncDate);
 	
-	List<RedFlags> getPagedRedFlagsByRequestType(String requestType, Integer pageNumber, Integer pageSize);
+	List<RedFlags> getPagedRedFlagsByRequestType(String searchString, String requestType, Integer pageNumber,
+	        Integer pageSize);
 	
 	List<RedFlags> saveRedFlagRequests(List<RedFlags> redFlags);
 	
@@ -21,5 +22,5 @@ public interface MyCareHubRedFlagDao {
 	
 	RedFlags getRedFlagRequestByMycarehubId(String mycarehubId);
 	
-	Number countRedFlagsByType(String requestType);
+	Number countRedFlagsByType(String searchString, String requestType);
 }

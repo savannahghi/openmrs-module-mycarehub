@@ -1,6 +1,9 @@
-<div class="ke-panel-frame">
-    <div class="ke-panel-heading">Appointment Requests</div>
-    <div class="ke-panel-content" ng-controller="AppointmentRequestsCtrl" ng-init="init()">
+<div class="ke-panel-frame" ng-controller="AppointmentRequestsCtrl" ng-init="init()">
+    <div class="ke-panel-heading">Appointment Requests
+        <input type="text" name="appointmentsSearchString" ng-model="appointmentsSearchString"
+               ng-change="searchAppointments()" style="width: 260px;margin-left:50px" placeholder="Search ..."/>
+    </div>
+    <div class="ke-panel-content">
         <table class="ke-table-vertical">
             <thead>
             <tr>

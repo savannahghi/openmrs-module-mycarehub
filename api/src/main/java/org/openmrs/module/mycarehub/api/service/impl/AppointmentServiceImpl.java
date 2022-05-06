@@ -95,13 +95,13 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	}
 	
 	@Override
-	public Number countAppointments() {
-		return dao.countAppointments();
+	public Number countAppointments(String searchString) {
+		return dao.countAppointments(searchString);
 	}
 	
 	@Override
-	public List<AppointmentRequests> getPagedAppointments(Integer pageNumber, Integer pageSize) {
-		List<AppointmentRequests> appointments = dao.getPagedAppointments(pageNumber, pageSize);
+	public List<AppointmentRequests> getPagedAppointments(String searchString, Integer pageNumber, Integer pageSize) {
+		List<AppointmentRequests> appointments = dao.getPagedAppointments(searchString, pageNumber, pageSize);
 		return appointments;
 	}
 	
