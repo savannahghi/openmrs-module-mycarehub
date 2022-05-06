@@ -12,8 +12,10 @@ import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -198,8 +200,11 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		            + "WHERE (class_id = 3 OR concept_id In (SELECT concept_id FROM drug)) AND retired=0");
 		List<Integer> fullDrugConcepts = new ArrayList<Integer>();
 		fullDrugConcepts.addAll(drugsConcepts.list());
-		fullDrugConcepts.add(164505);
-		fullDrugConcepts.add(162565);
+		
+		Integer[] otherDrugConcepts = { 164505, 1652, 160124, 162565, 162563, 162199, 792, 160104, 1652, 160124, 162561,
+		        162200, 164505, 162559, 164508, 164509, 164510, 162200, 162561, 164505, 162563, 162201, 164508, 164509,
+		        164510, 162561, 164511, 162201, 164512, 162200 };
+		fullDrugConcepts.addAll(Arrays.asList(otherDrugConcepts));
 		return fullDrugConcepts;
 	}
 	
