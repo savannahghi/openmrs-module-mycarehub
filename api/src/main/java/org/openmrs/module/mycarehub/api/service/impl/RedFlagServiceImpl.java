@@ -65,8 +65,9 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	}
 	
 	@Override
-	public List<RedFlags> getPagedRedFlagsByRequestType(String requestType, Integer pageNumber, Integer pageSize) {
-		return dao.getPagedRedFlagsByRequestType(requestType, pageNumber, pageSize);
+	public List<RedFlags> getPagedRedFlagsByRequestType(String searchString, String requestType, Integer pageNumber,
+	        Integer pageSize) {
+		return dao.getPagedRedFlagsByRequestType(searchString, requestType, pageNumber, pageSize);
 	}
 	
 	@Override
@@ -85,8 +86,8 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	}
 	
 	@Override
-	public Number countRedFlagsByType(String requestType) {
-		return dao.countRedFlagsByType(requestType);
+	public Number countRedFlagsByType(String searchString, String requestType) {
+		return dao.countRedFlagsByType(searchString, requestType);
 	}
 	
 	@Override

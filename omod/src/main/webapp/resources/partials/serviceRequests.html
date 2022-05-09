@@ -23,6 +23,10 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <tr><td colspan="11"><div class="col-lg-3 pull-right" style="padding: 1.5rem;">
+                            <input type="text" class="form-control" ng-model="appointmentsSearchString"
+                                   ng-change="searchAppointmentRequests()" placeholder="Search..." style="padding-left: 10px;" />
+                        </div></td></tr>
                         <tr ng-repeat="appointmentRequest in appointmentRequests">
                             <td>{{appointmentRequest.clientName}}</td>
                             <td>{{appointmentRequest.clientContact}}</td>

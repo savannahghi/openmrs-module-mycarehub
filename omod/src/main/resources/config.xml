@@ -64,6 +64,11 @@
 		<description>Date-time when the current token expires</description>
 	</globalProperty>
 
+    <privilege>
+        <name>App: mycarehub.app.home</name>
+        <description>Ability to access myCareHub functionality via KenyaEMR dashboard</description>
+    </privilege>
+
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
 	<messages>

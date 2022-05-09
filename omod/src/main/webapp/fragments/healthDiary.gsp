@@ -1,6 +1,9 @@
-<div class="ke-panel-frame">
-    <div class="ke-panel-heading">Health Diary</div>
-    <div class="ke-panel-content"  ng-controller="HealthDiaryCtrl" ng-init="init()">
+<div class="ke-panel-frame"  ng-controller="HealthDiaryCtrl" ng-init="init()">
+    <div class="ke-panel-heading">Health Diary
+        <input type="text" name="healthDiarySearchString" ng-model="healthDiarySearchString"
+               ng-change="loadHealthDiaries()" style="width: 260px;margin-left:50px" placeholder="Search ..."/>
+    </div>
+    <div class="ke-panel-content">
         <table class="ke-table-vertical">
             <thead>
             <tr>

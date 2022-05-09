@@ -44,13 +44,13 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
 	}
 	
 	@Override
-	public Number countHealthDiaries() {
-		return dao.countHealthDiaries();
+	public Number countHealthDiaries(String searchString) {
+		return dao.countHealthDiaries(searchString);
 	}
 	
 	@Override
-	public List<HealthDiary> getPagedHealthDiaries(Integer pageNumber, Integer pageSize) {
-		return dao.getPagedHealthDiaries(pageNumber, pageSize);
+	public List<HealthDiary> getPagedHealthDiaries(String searchString, Integer pageNumber, Integer pageSize) {
+		return dao.getPagedHealthDiaries(searchString, pageNumber, pageSize);
 	}
 	
 	@Override

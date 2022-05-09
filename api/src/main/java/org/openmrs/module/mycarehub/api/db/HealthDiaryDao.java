@@ -8,8 +8,8 @@ public interface HealthDiaryDao {
 	
 	List<HealthDiary> saveHealthDiaries(List<HealthDiary> healthDiary);
 	
-	Number countHealthDiaries();
+	Number countHealthDiaries(String searchString);
 	
-	List<HealthDiary> getPagedHealthDiaries(Integer pageNumber, Integer pageSize);
+	List<HealthDiary> getPagedHealthDiaries(String searchString, Integer pageNumber, Integer pageSize);
 	
 }

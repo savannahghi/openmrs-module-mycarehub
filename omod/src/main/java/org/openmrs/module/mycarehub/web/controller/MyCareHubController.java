@@ -50,20 +50,23 @@ public class MyCareHubController {
 	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/appointmentRequests.json")
-	public Map<String, Object> getAppointmentRequests(final @RequestParam(value = "pageNumber") Integer pageNumber,
+	public Map<String, Object> getAppointmentRequests(final @RequestParam(value = "searchString") String searchString,
+	        final @RequestParam(value = "pageNumber") Integer pageNumber,
 	        final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
 			AppointmentService appointmentService = Context.getService(AppointmentService.class);
-			int pages = (appointmentService.countAppointments().intValue() + pageSize - 1) / pageSize;
+			int totalItems = appointmentService.countAppointments(searchString).intValue();
+			int pages = (totalItems + pageSize - 1) / pageSize;
 			List<Object> objects = new ArrayList<Object>();
 			
-			for (AppointmentRequests appointmentRequest : appointmentService.getPagedAppointments(pageNumber, pageSize)) {
+			for (AppointmentRequests appointmentRequest : appointmentService.getPagedAppointments(searchString, pageNumber,
+			    pageSize)) {
 				objects.add(convertAppointmentRequestToJsonMap(appointmentRequest));
 			}
 			
 			response.put("pages", pages);
-			response.put("totalItems", appointmentService.countAppointments().intValue());
+			response.put("totalItems", totalItems);
 			response.put("objects", objects);
 		}
 		return response;
@@ -71,21 +74,24 @@ public class MyCareHubController {
 	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/serviceRequests.json")
-	public Map<String, Object> getRedFlagsByType(final @RequestParam(value = "requestType") String requestType,
+	public Map<String, Object> getRedFlagsByType(final @RequestParam(value = "searchString") String searchString,
+	        final @RequestParam(value = "requestType") String requestType,
 	        final @RequestParam(value = "pageNumber") Integer pageNumber,
 	        final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
 			RedFlagService redFlagService = Context.getService(RedFlagService.class);
-			int pages = (redFlagService.countRedFlagsByType(requestType).intValue() + pageSize - 1) / pageSize;
+			int totalItems = redFlagService.countRedFlagsByType(searchString, requestType).intValue();
+			int pages = (totalItems + pageSize - 1) / pageSize;
 			List<Object> objects = new ArrayList<Object>();
 			
-			for (RedFlags redFlags : redFlagService.getPagedRedFlagsByRequestType(requestType, pageNumber, pageSize)) {
+			for (RedFlags redFlags : redFlagService.getPagedRedFlagsByRequestType(searchString, requestType, pageNumber,
+			    pageSize)) {
 				objects.add(convertRedFlagsToJsonMap(redFlags));
 			}
 			
 			response.put("pages", pages);
-			response.put("totalItems", redFlagService.countRedFlagsByType(requestType).intValue());
+			response.put("totalItems", totalItems);
 			response.put("objects", objects);
 		}
 		return response;
@@ -93,20 +99,22 @@ public class MyCareHubController {
 	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET, value = "/module/mycarehub/healthDiaries.json")
-	public Map<String, Object> getHealthDiaries(final @RequestParam(value = "pageNumber") Integer pageNumber,
+	public Map<String, Object> getHealthDiaries(final @RequestParam(value = "searchString") String searchString,
+	        final @RequestParam(value = "pageNumber") Integer pageNumber,
 	        final @RequestParam(value = "pageSize") Integer pageSize) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
 			HealthDiaryService healthDiaryService = Context.getService(HealthDiaryService.class);
-			int pages = (healthDiaryService.countHealthDiaries().intValue() + pageSize - 1) / pageSize;
+			int totalItems = healthDiaryService.countHealthDiaries(searchString).intValue();
+			int pages = (totalItems + pageSize - 1) / pageSize;
 			List<Object> objects = new ArrayList<Object>();
 			
-			for (HealthDiary healthDiary : healthDiaryService.getPagedHealthDiaries(pageNumber, pageSize)) {
+			for (HealthDiary healthDiary : healthDiaryService.getPagedHealthDiaries(searchString, pageNumber, pageSize)) {
 				objects.add(convertHealthDiariesToJsonMap(healthDiary));
 			}
 			
 			response.put("pages", pages);
-			response.put("totalItems", healthDiaryService.countHealthDiaries().intValue());
+			response.put("totalItems", totalItems);
 			response.put("objects", objects);
 		}
 		return response;

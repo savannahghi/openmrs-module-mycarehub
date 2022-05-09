@@ -1,6 +1,9 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -89,15 +92,34 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	}
 	
 	@Override
-	public Number countAppointments() {
+	public Number countAppointments(String searchString) {
 		Criteria criteria = session().createCriteria(AppointmentRequests.class);
+		if (StringUtils.isNotEmpty(searchString)) {
+			Disjunction disjunction = Restrictions.disjunction();
+			disjunction.add(Restrictions.ilike("clientName", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("cccNumber", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("appointmentReason", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("status", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("clientContact", searchString, MatchMode.ANYWHERE));
+			criteria.add(disjunction);
+		}
 		criteria.setProjection(Projections.rowCount());
 		return (Number) criteria.uniqueResult();
 	}
 	
 	@Override
-	public List<AppointmentRequests> getPagedAppointments(Integer pageNumber, Integer pageSize) {
+	public List<AppointmentRequests> getPagedAppointments(String searchString, Integer pageNumber, Integer pageSize) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AppointmentRequests.class);
+		if (StringUtils.isNotEmpty(searchString)) {
+			Disjunction disjunction = Restrictions.disjunction();
+			disjunction.add(Restrictions.ilike("clientName", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("cccNumber", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("appointmentReason", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("status", searchString, MatchMode.ANYWHERE));
+			disjunction.add(Restrictions.ilike("clientContact", searchString, MatchMode.ANYWHERE));
+			criteria.add(disjunction);
+		}
+		
 		if (pageNumber != null && pageNumber > 0) {
 			criteria.setFirstResult((pageNumber - 1) * pageSize);
 		}

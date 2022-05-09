@@ -21,7 +21,7 @@
 %>
 
 <div class="ke-page-sidebar">
-    ${ ui.includeFragment("kenyaui", "widget/panelMenu", [ heading: "My Care Hub", items: sideMenuItems ]) }
+    ${ ui.includeFragment("kenyaui", "widget/panelMenu", [ heading: "myCareHub", items: sideMenuItems ]) }
 </div>
 <div class="ke-page-content">
     <div id="appointmentRequests" class="mycarehub-content" >

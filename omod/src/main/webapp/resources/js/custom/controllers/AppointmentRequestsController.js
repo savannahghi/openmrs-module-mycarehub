@@ -2,6 +2,7 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
 
      $scope.maxSize = 10;
      $scope.pageSize = 10;
+     $scope.appointmentsSearchString = "";
      $scope.appointmentsCurrentPage = 1;
      $scope.appointmentsTotalItems = 0;
      $scope.healthDiaryCurrentPage = 1;
@@ -11,15 +12,18 @@ function AppointmentRequestsCtrl($scope, $routeParams, $serviceRequests, $locati
      $scope.screeningToolRedFlagCurrentPage = 1;
      $scope.screeningToolRedFlagTotalItems = 0;
 
-//Appointments
-    $serviceRequests.getAppointmentRequests($scope.appointmentsCurrentPage, $scope.pageSize).
-    then(function (response) {
-        var serverData = response.data;
-        $scope.appointmentRequests = serverData.objects;
-        $scope.appointmentPages = serverData.pages;
-        $scope.appointmentsTotalItems = serverData.totalItems;
-        $('#wait').hide();
-    });
+//Appointments 
+    $scope.searchAppointmentRequests = function() {
+        console.log("appointmentsSearchString="+$scope.appointmentsSearchString);
+        $serviceRequests.getAppointmentRequests($scope.appointmentsSearchString, $scope.appointmentsCurrentPage, $scope.pageSize).then(function (response) {
+            var serverData = response.data;
+            $scope.appointmentRequests = serverData.objects;
+            $scope.appointmentPages = serverData.pages;
+            $scope.appointmentsTotalItems = serverData.totalItems;
+            $('#wait').hide();
+        });
+    };
+    $scope.searchAppointmentRequests();
 
     $scope.appointmentPagination = function (appointmentsCurrentPage) {
         $('#wait').show();

@@ -22,9 +22,9 @@ public interface AppointmentDao {
 	
 	AppointmentRequests getAppointmentRequestByUuid(String uuid);
 	
-	Number countAppointments();
+	Number countAppointments(String searchString);
 	
-	List<AppointmentRequests> getPagedAppointments(Integer pageNumber, Integer pageSize);
+	List<AppointmentRequests> getPagedAppointments(String searchString, Integer pageNumber, Integer pageSize);
 	
 	Obs getObsByEncounterAndConcept(Integer encounterId, Integer conceptId);
 }
