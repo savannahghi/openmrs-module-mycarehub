@@ -66,8 +66,9 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
 				for (int i = 0; i < jsonArray.size(); i++) {
 					JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
 					HealthDiary healthDiary = new HealthDiary();
-					
 					healthDiary.setCccNumber(jsonObject1.get("cccNumber").getAsString());
+					healthDiary.setClientName(jsonObject1.get("clientName").getAsString());
+					healthDiary.setClientContact(jsonObject1.get("phoneNumber").getAsString());
 					healthDiary.setMood(jsonObject1.get("mood").getAsString());
 					healthDiary.setNote(jsonObject1.get("note").getAsString());
 					healthDiary.setEntryType(jsonObject1.get("entryType").getAsString());

@@ -280,4 +280,24 @@
         </modifyColumn>
     </changeSet>
 
+    <changeSet id="mycarehub-202205251115" author="bmokaya">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <not>
+                    <columnExists tableName="mycarehub_healthdiary" columnName="client_name"/>
+                </not>
+                <not>
+                    <columnExists tableName="mycarehub_healthdiary" columnName="client_contact"/>
+                </not>
+            </and>
+        </preConditions>
+        <comment>
+            Add Column mycarehub_id
+        </comment>
+        <addColumn tableName="mycarehub_healthdiary">
+            <column name="client_name" type="varchar(255)"></column>
+            <column name="client_contact" type="varchar(255)"></column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -20,6 +20,10 @@ public class HealthDiary extends BaseOpenmrsData {
 	
 	private Date sharedOn;
 	
+	private String clientContact;
+	
+	private String clientName;
+	
 	@Override
 	public Integer getId() {
 		return id;
@@ -76,5 +80,21 @@ public class HealthDiary extends BaseOpenmrsData {
 	
 	public void setSharedOn(Date sharedOn) {
 		this.sharedOn = sharedOn;
+	}
+	
+	public String getClientContact() {
+		return clientContact;
+	}
+	
+	public void setClientContact(String clientContact) {
+		this.clientContact = clientContact;
+	}
+	
+	public String getClientName() {
+		return clientName;
+	}
+	
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
 	}
 }

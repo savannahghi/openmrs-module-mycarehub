@@ -13,8 +13,6 @@
                 <th>Appointment Reason</th>
                 <th>Requested Date</th>
                 <th>Status</th>
-                <th>Progress Date</th>
-                <th>Progress By</th>
                 <th>Date Resolved</th>
                 <th>Resolved By</th>
                 <th>ACTION</th>
@@ -28,12 +26,9 @@
                 <td>{{appointmentRequest.appointmentReason}}</td>
                 <td>{{appointmentRequest.requestedDate}}</td>
                 <td>{{appointmentRequest.status}}</td>
-                <td>{{appointmentRequest.progressDate}}</td>
-                <td>{{appointmentRequest.progressBy}}</td>
                 <td>{{appointmentRequest.dateResolved}}</td>
                 <td>{{appointmentRequest.resolvedBy}}</td>
                 <td>
-                    <button ng-hide="appointmentRequest.progressDate != '' || appointmentRequest.dateResolved != ''" type="submit" ng-click="setAppointmentInProgress(appointmentRequest.uuid)" class="btn btn-primary">IN PROGRESS</button>&nbsp;
                     <button ng-hide="appointmentRequest.dateResolved != ''" type="submit" ng-click="setAppointmentRejected(appointmentRequest.uuid)" class="btn btn-warning">REJECT</button>&nbsp;
                     <button ng-hide="appointmentRequest.dateResolved != ''" type="submit" ng-click="setAppointmentApproved(appointmentRequest)" class="btn btn-warning">APPROVE</button>&nbsp;
                 </td>

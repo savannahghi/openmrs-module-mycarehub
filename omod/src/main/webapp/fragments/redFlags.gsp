@@ -12,8 +12,6 @@
                 <th>CCC Number</th>
                 <th>Request</th>
                 <th>Status</th>
-                <th>Progress Date</th>
-                <th>Progress By</th>
                 <th>Date Resolved</th>
                 <th>Resolved By</th>
                 <th></th>
@@ -26,12 +24,9 @@
                 <td>{{redFlag.cccNumber}}</td>
                 <td>{{redFlag.Request}}</td>
                 <td>{{redFlag.Status}}</td>
-                <td>{{redFlag.progressDate}}</td>
-                <td>{{redFlag.progressBy}}</td>
                 <td>{{redFlag.dateResolved}}</td>
                 <td>{{redFlag.resolvedBy}}</td>
                 <td>
-                    <button ng-hide="redFlag.progressDate != '' || redFlag.dateResolved != ''" type="submit" ng-click="setRedFlagInProgress(redFlag.uuid)" class="btn btn-primary">IN PROGRESS</button>&nbsp;
                     <button ng-hide="redFlag.dateResolved != ''" type="submit" ng-click="setRedFlagResolved(redFlag.uuid)" class="btn btn-warning">RESOLVE</button>&nbsp;
                 </td>
             </tr>
