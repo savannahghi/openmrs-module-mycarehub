@@ -19,8 +19,8 @@
             </thead>
             <tbody>
             <tr ng-repeat="healthDiary in healthDiaries">
-                <td>{{redFlag.clientName}}</td>
-                <td>{{redFlag.clientContact}}</td>
+                <td>{{healthDiary.clientName}}</td>
+                <td>{{healthDiary.clientContact}}</td>
                 <td>{{healthDiary.cccNumber}}</td>
                 <td>{{healthDiary.mood}}</td>
                 <td>{{healthDiary.note}}</td>
