@@ -8,6 +8,8 @@
             <generator class="native"/>
         </id>
         <property name="cccNumber" type="java.lang.String" not-null="true" column="ccc_number" length="255"/>
+        <property name="clientName" type="java.lang.String" column="client_name" length="255"/>
+        <property name="clientContact" type="java.lang.String" column="client_contact" length="255"/>
         <property name="mood" type="java.lang.String" not-null="true" column="mood" length="255"/>
         <property name="note" type="java.lang.String" column="note" length="255"/>
         <property name="entryType" type="java.lang.String" column="entry_type" length="255"/>

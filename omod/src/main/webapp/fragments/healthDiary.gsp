@@ -7,6 +7,8 @@
         <table class="ke-table-vertical">
             <thead>
             <tr>
+                <th>Client Name</th>
+                <th>Client Contact</th>
                 <th>CCC Number</th>
                 <th>Mood</th>
                 <th>Note</th>
@@ -17,6 +19,8 @@
             </thead>
             <tbody>
             <tr ng-repeat="healthDiary in healthDiaries">
+                <td>{{redFlag.clientName}}</td>
+                <td>{{redFlag.clientContact}}</td>
                 <td>{{healthDiary.cccNumber}}</td>
                 <td>{{healthDiary.mood}}</td>
                 <td>{{healthDiary.note}}</td>

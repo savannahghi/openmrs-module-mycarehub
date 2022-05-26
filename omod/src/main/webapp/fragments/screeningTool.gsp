@@ -1,5 +1,5 @@
 <div class="ke-panel-frame"  ng-controller="ScreeningToolCtrl" ng-init="init()">
-    <div class="ke-panel-heading">Screening Tool
+    <div class="ke-panel-heading">Screening Tool Red Flags
         <input type="text" name="screeningToolRedFlagSearchString" ng-model="screeningToolRedFlagSearchString"
                ng-change="loadScreeningToolRedFlags()" style="width: 260px;margin-left:50px" placeholder="Search ..."/>
     </div>
@@ -14,8 +14,6 @@
                 <th>Screening Tool Name</th>
                 <th>Screening Score</th>
                 <th>Status</th>
-                <th>Progress Date</th>
-                <th>Progress By</th>
                 <th>Date Resolved</th>
                 <th>Resolved By</th>
                 <th></th>
@@ -30,12 +28,9 @@
                 <td>{{screeningToolRedFlag.ScreeningToolName}}</td>
                 <td>{{screeningToolRedFlag.ScreeningToolScore}}</td>
                 <td>{{screeningToolRedFlag.Status}}</td>
-                <td>{{screeningToolRedFlag.progressDate}}</td>
-                <td>{{screeningToolRedFlag.progressBy}}</td>
                 <td>{{screeningToolRedFlag.dateResolved}}</td>
                 <td>{{screeningToolRedFlag.resolvedBy}}</td>
                 <td>
-                    <button ng-hide="screeningToolRedFlag.progressDate != '' || screeningToolRedFlag.dateResolved != ''" type="submit" ng-click="setRedFlagInProgress(screeningToolRedFlag.uuid)" class="btn btn-primary">IN PROGRESS</button>&nbsp;
                     <button ng-hide="screeningToolRedFlag.dateResolved != ''" type="submit" ng-click="setRedFlagResolved(screeningToolRedFlag.uuid)" class="btn btn-warning">RESOLVE</button>&nbsp;
                 </td>
             </tr>
