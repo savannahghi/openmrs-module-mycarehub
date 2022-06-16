@@ -37,7 +37,7 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	public List<Obs> getAppointmentsByLastSyncDate(Date lastSyncDate) {
 		if (lastSyncDate != null) {
 			List<Integer> consentedPatientIds = sessionFactory.getCurrentSession()
-			        .createSQLQuery("SELECT patient_id FROM Fmycarehub_consented_patient").list();
+			        .createSQLQuery("SELECT patient_id FROM mycarehub_consented_patient").list();
 			if (consentedPatientIds.size() > 0) {
 				Criteria criteria = session().createCriteria(Obs.class);
 				criteria.add(Restrictions.or(Restrictions.eq("concept.conceptId", APPOINTMENT_DATE_CONCEPT_ID),
