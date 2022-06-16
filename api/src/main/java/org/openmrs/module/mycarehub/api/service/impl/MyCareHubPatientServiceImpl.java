@@ -20,6 +20,7 @@ import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
 import org.openmrs.module.mycarehub.api.service.MyCareHubPatientService;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
+import org.openmrs.module.mycarehub.model.ConsentedPatient;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 
@@ -73,27 +74,53 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	
 	@Override
 	public void syncPatientData() {
-		uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate();
+		uploadUpdatedPatientDemographicsSinceLastSyncDate();
 		uploadUpdatedPatientsMedicalRecordsSinceLastSyncDate();
 		
 		List<Patient> newMyCareHubClients = fetchRegisteredClientIdentifiersSinceLastSyncDate();
-		//set last sync time to 3 years back, to get historical records for the period
-		//Also set it as the new sync time to avoid conflict with the regular medical record sync
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.YEAR, -3);
-		Date lastSyncTime = cal.getTime();
+		if (!newMyCareHubClients.isEmpty()) {
+			//set last sync time to 3 years back, to get historical records for the period
+			//Also set it as the new sync time to avoid conflict with the regular medical record sync
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.YEAR, -3);
+			Date lastSyncTime = cal.getTime();
+			saveConsentedPatients(newMyCareHubClients);
+			uploadPatientsMedicalRecordsSinceDate(newMyCareHubClients, lastSyncTime, lastSyncTime);
+		}
+	}
+
+	public void saveConsentedPatients(List<Patient> listFromMycareHub) {
+		List<Integer> clientPatientIdList = new ArrayList<Integer>();
+		for (Patient client : listFromMycareHub) {
+			clientPatientIdList.add(client.getId());
+		}
+		List<ConsentedPatient> previouslySyncedPatients = myCareHubPatientDao
+		        .getConsentedPatientsInList(clientPatientIdList);
+		List<Integer> previouslySyncedPatientIds = new ArrayList<Integer>();
+		for (ConsentedPatient consentedPatient : previouslySyncedPatients) {
+			previouslySyncedPatientIds.add(consentedPatient.getPatientId());
+		}
 		
-		uploadPatientsMedicalRecordsSinceDate(newMyCareHubClients, lastSyncTime, lastSyncTime);
+		clientPatientIdList.removeAll(previouslySyncedPatientIds);
+		if (!clientPatientIdList.isEmpty()) {
+			for (final Integer patientId : clientPatientIdList) {
+				myCareHubPatientDao.saveNewConsentedPatients(new ConsentedPatient() {
+					{
+						setPatientId(patientId);
+					}
+				});
+			}
+		}
 	}
 	
-	public void uploadNewOrUpdatedPatientDemographicsSinceLastSyncDate() {
+	public void uploadUpdatedPatientDemographicsSinceLastSyncDate() {
 		MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
 		MyCareHubSetting setting = settingsService.getLatestMyCareHubSettingByType(KENYAEMR_PATIENT_REGISTRATIONS);
 		
 		Date newSyncTime = new Date();
 		
 		if (setting != null) {
-			List<PatientRegistration> patientRegistrations = getNewOrUpdatedPatientRegistrationsSinceLastSyncDate(setting
+			List<PatientRegistration> patientRegistrations = getUpdatedPatientRegistrationsSinceLastSyncDate(setting
 			        .getLastSyncTime());
 			if (patientRegistrations.size() > 0) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
@@ -109,10 +136,10 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		}
 	}
 	
-	public List<PatientRegistration> getNewOrUpdatedPatientRegistrationsSinceLastSyncDate(Date lastSyncDate) {
+	public List<PatientRegistration> getUpdatedPatientRegistrationsSinceLastSyncDate(Date lastSyncDate) {
 		
 		List<PatientRegistration> patientRegistrationRequests = new ArrayList<PatientRegistration>();
-		List<Integer> patientIds = myCareHubPatientDao.getCccPatientIdsCreatedOrUpdatedSinceDate(lastSyncDate);
+		List<Integer> patientIds = myCareHubPatientDao.getConsentedPatientIdsUpdatedSinceDate(lastSyncDate);
 		
 		for (Integer patientId : patientIds) {
 			Patient patient = Context.getPatientService().getPatient(patientId);
@@ -216,7 +243,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		
 		Date newSyncTime = new Date();
 		if (setting != null) {
-			List<Integer> patientIds = myCareHubPatientDao.getCccPatientsWithUpdatedMedicalRecordsSinceDate(setting
+			List<Integer> patientIds = myCareHubPatientDao.getConsentedPatientsWithUpdatedMedicalRecordsSinceDate(setting
 			        .getLastSyncTime());
 			List<Patient> patientsWithUpdatedMedicalRecords = new ArrayList<Patient>();
 			for (Integer patientId : patientIds) {

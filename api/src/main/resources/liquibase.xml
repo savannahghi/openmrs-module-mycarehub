@@ -174,7 +174,9 @@
 
     <changeSet id="mycarehub-202203141250" author="bmokaya">
         <preConditions onFail="MARK_RAN">
-            <tableExists tableName="mycarehub_red_flag"/>
+            <not>
+                <columnExists tableName="mycarehub_red_flag" columnName="mycarehub_id"/>
+            </not>
         </preConditions>
         <comment>
             Add Column mycarehub_id
@@ -298,6 +300,32 @@
             <column name="client_name" type="varchar(255)"></column>
             <column name="client_contact" type="varchar(255)"></column>
         </addColumn>
+    </changeSet>
+
+    <changeSet id="mycarehub-202206161401" author="mssavai">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="mycarehub_consented_patient"/></not>
+        </preConditions>
+        <comment>
+            Creating consented patients table
+        </comment>
+        <createTable tableName="mycarehub_consented_patient">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="patient_id" type="int"/>
+            <column name="creator" valueNumeric="1" type="int"/>
+            <column name="date_created" type="datetime"/>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="voided" valueBoolean="false" type="boolean"/>
+            <column name="voided_by" type="int"/>
+            <column name="date_voided" type="datetime"/>
+            <column name="void_reason" type="text"/>
+            <column name="uuid" type="char(38)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
 </databaseChangeLog>
