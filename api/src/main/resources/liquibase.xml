@@ -174,7 +174,9 @@
 
     <changeSet id="mycarehub-202203141250" author="bmokaya">
         <preConditions onFail="MARK_RAN">
-            <columnExists tableName="mycarehub_red_flag" columnName="mycarehub_id"/>
+            <not>
+                <columnExists tableName="mycarehub_red_flag" columnName="mycarehub_id"/>
+            </not>
         </preConditions>
         <comment>
             Add Column mycarehub_id
