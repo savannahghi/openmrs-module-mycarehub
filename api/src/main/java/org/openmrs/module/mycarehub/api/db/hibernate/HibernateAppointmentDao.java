@@ -18,6 +18,7 @@ import org.openmrs.module.mycarehub.model.AppointmentRequests;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,14 +36,19 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	@Override
 	public List<Obs> getAppointmentsByLastSyncDate(Date lastSyncDate) {
 		if (lastSyncDate != null) {
-			Criteria criteria = session().createCriteria(Obs.class);
-			criteria.add(Restrictions.or(Restrictions.eq("concept.conceptId", APPOINTMENT_DATE_CONCEPT_ID),
-			    Restrictions.eq("concept.conceptId", APPOINTMENT_REASON_CONCEPT_ID)));
-			criteria.add(Restrictions.ge("dateCreated", lastSyncDate));
-			criteria.add(Restrictions.eq("voided", false));
-			return criteria.list();
+			List<Integer> consentedPatientIds = sessionFactory.getCurrentSession()
+			        .createSQLQuery("SELECT patient_id FROM Fmycarehub_consented_patient").list();
+			if (consentedPatientIds.size() > 0) {
+				Criteria criteria = session().createCriteria(Obs.class);
+				criteria.add(Restrictions.or(Restrictions.eq("concept.conceptId", APPOINTMENT_DATE_CONCEPT_ID),
+				    Restrictions.eq("concept.conceptId", APPOINTMENT_REASON_CONCEPT_ID)));
+				criteria.add(Restrictions.ge("dateCreated", lastSyncDate));
+				criteria.add(Restrictions.eq("voided", false));
+				criteria.add(Restrictions.in("personId", consentedPatientIds));
+				return criteria.list();
+			}
 		}
-		return null;
+		return new ArrayList<Obs>();
 	}
 	
 	@Override
