@@ -43,16 +43,17 @@
 	<!-- Any required properties goes here-->
 	<globalProperty>
 		<property>mycarehub.api.url</property>
+        <defaultValue>https://mycarehub-prod.savannahghi.org/</defaultValue>
 		<description>The URL of the myCareHub backend server</description>
 	</globalProperty>
 	<globalProperty>
 		<property>mycarehub.api.username</property>
-		<defaultValue>admin</defaultValue>
+		<defaultValue>kenya-emr@savannahinformatics.com</defaultValue>
 		<description>Username for myCareHub api user</description>
 	</globalProperty>
 	<globalProperty>
 		<property>mycarehub.api.password</property>
-		<defaultValue>test</defaultValue>
+		<defaultValue>#kenya-EMR#</defaultValue>
 		<description>Password to authenticate myCareHub api user</description>
 	</globalProperty>
 	<globalProperty>
