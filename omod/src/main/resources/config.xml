@@ -38,12 +38,13 @@
 		RedFlag.hbm.xml
 		MyCareHubSettings.hbm.xml
 		HealthDiary.hbm.xml
+        ConsentedPatient.hbm.xml
 	</mappingFiles>
 
 	<!-- Any required properties goes here-->
 	<globalProperty>
 		<property>mycarehub.api.url</property>
-        <defaultValue>https://mycarehub-prod.savannahghi.org/</defaultValue>
+        <defaultValue>https://mycarehub-demo.savannahghi.org/</defaultValue>
 		<description>The URL of the myCareHub backend server</description>
 	</globalProperty>
 	<globalProperty>
@@ -64,12 +65,6 @@
 		<property>mycarehub.api.token.expiry</property>
 		<description>Date-time when the current token expires</description>
 	</globalProperty>
-
-    <privilege>
-        <name>App: mycarehub.app.home</name>
-        <description>Ability to access myCareHub functionality via KenyaEMR dashboard</description>
-    </privilege>
-
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
 	<messages>
