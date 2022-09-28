@@ -88,7 +88,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 			uploadPatientsMedicalRecordsSinceDate(newMyCareHubClients, lastSyncTime, lastSyncTime);
 		}
 	}
-
+	
 	public void saveConsentedPatients(List<Patient> listFromMycareHub) {
 		List<Integer> clientPatientIdList = new ArrayList<Integer>();
 		for (Patient client : listFromMycareHub) {
@@ -104,11 +104,9 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		clientPatientIdList.removeAll(previouslySyncedPatientIds);
 		if (!clientPatientIdList.isEmpty()) {
 			for (final Integer patientId : clientPatientIdList) {
-				myCareHubPatientDao.saveNewConsentedPatients(new ConsentedPatient() {
-					{
-						setPatientId(patientId);
-					}
-				});
+				ConsentedPatient cPatient = new ConsentedPatient();
+				cPatient.setPatientId(patientId);
+				myCareHubPatientDao.saveNewConsentedPatients(cPatient);
 			}
 		}
 	}

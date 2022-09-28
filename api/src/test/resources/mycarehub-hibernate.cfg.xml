@@ -9,5 +9,6 @@
         <mapping resource="AppointmentRequests.hbm.xml"/>
         <mapping resource="HealthDiary.hbm.xml"/>
         <mapping resource="RedFlag.hbm.xml"/>
+        <mapping resource="ConsentedPatient.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>
