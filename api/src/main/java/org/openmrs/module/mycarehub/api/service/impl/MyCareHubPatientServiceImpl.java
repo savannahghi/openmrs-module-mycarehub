@@ -150,6 +150,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	private PatientRegistration createPatientRegistration(Patient patient) {
 		PatientRegistration registrationRequest = new PatientRegistration();
 		registrationRequest.setName(patient.getFamilyName() + " " + patient.getGivenName());
+		// TODO: 24/10/2022 Extract these strings into a constants file
 		registrationRequest.setClientType("KenyaEMR");
 		registrationRequest.setCounseled(false);
 		registrationRequest.setMFLCODE(MyCareHubUtil.getDefaultLocationMflCode());
@@ -163,7 +164,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
 		registrationRequest.setCccNumber(patient.getPatientIdentifier(cccIdentifierType.getPatientIdentifierTypeId())
 		        .getIdentifier());
-		
+
+		// TODO: 24/10/2022 Extract these strings into a constants file
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat sf = new SimpleDateFormat(pattern);
 		registrationRequest.setDateOfBirth(sf.format(patient.getBirthdate()));
@@ -254,6 +256,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	}
 	
 	private void uploadPatientsMedicalRecordsSinceDate(List<Patient> patients, Date lastSyncTime, Date newSyncTime) {
+		// TODO: 24/10/2022 Extract these strings into a constants file
 		String dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(mycarehubDateTimePattern);
 		
