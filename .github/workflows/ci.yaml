@@ -1,0 +1,68 @@
+name: Build and Test with Maven 
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform: [ ubuntu-latest ]
+        java-version: [ 8 ]
+        maven: [ '3.6.3']
+ 
+    runs-on: ${{ matrix.platform }}
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      JAVA_VERSION: ${{ matrix.java-version }}
+ 
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: adopt
+          cache: maven
+
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.5.1
+        with:
+          java-version: ${{ matrix.java-version }}
+          maven-version: ${{ matrix.maven }}
+
+      # Enable caching dependencies to speed up the build
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Check out kenya core repository
+        uses: actions/checkout@v3.0.1
+        with:
+          repository: palladiumkenya/openmrs-module-kenyacore
+
+      - name: Compile and build kenya core repository
+        run: mvn clean install -DskipTests
+
+      - name: Check out kenya UI repository
+        uses: actions/checkout@master
+        with:
+          repository: palladiumkenya/openmrs-module-kenyaui
+      
+      - name: Compile and build kenya UI repository
+        run: mvn clean install -DskipTests
+
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+
+      # - name: Run tests with Maven
+      #   run: mvn test --batch-mode --file pom.xml
+
+      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
