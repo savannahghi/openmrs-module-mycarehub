@@ -36,6 +36,7 @@ public class HibernateAppointmentDao implements AppointmentDao {
 	@Override
 	public List<Obs> getAppointmentsByLastSyncDate(Date lastSyncDate) {
 		if (lastSyncDate != null) {
+			// TODO: 24/10/2022 Extract these queries into a shared place
 			List<Integer> consentedPatientIds = sessionFactory.getCurrentSession()
 			        .createSQLQuery("SELECT patient_id FROM mycarehub_consented_patient").list();
 			if (consentedPatientIds.size() > 0) {
