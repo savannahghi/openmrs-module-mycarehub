@@ -9,7 +9,7 @@ OpenMRS module to sync data to and from myCareHub backend
 
 Building from Source
 --------------------
-You will need to have Java 1.6+ and Maven 2.x+ installed.  Use the command 'mvn package' to 
+You will need to have [Java 1.8+](https://www.oracle.com/java/technologies/javase/javase8u211-later-archive-downloads.html) and [Maven 3.x+](https://maven.apache.org/docs/3.6.3/release-notes.html) installed.  Use the command 'mvn package' to 
 compile and package the module.  The .omod file will be in the omod/target folder.
 
 Alternatively you can add the snippet provided in the [Creating Modules](https://wiki.openmrs.org/x/cAEr) page to your 
@@ -20,6 +20,13 @@ omod/pom.xml and use the mvn command:
 It will allow you to deploy any changes to your web 
 resources such as jsp or js files without re-installing the module. The deploy path says 
 where OpenMRS is deployed.
+
+Setting up dev environment
+------------
+1. [Set Up](https://wiki.openmrs.org/display/docs/OpenMRS+SDK+Step+By+Step+Tutorials)
+2. Clone [MyCareHub](https://github.com/savannahghi/openmrs-module-mycarehub) Module
+
+
 
 Installation
 ------------
