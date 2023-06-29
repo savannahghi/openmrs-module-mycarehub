@@ -164,7 +164,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		    CCC_NUMBER_IDENTIFIER_TYPE_UUID);
 		registrationRequest.setCccNumber(patient.getPatientIdentifier(cccIdentifierType.getPatientIdentifierTypeId())
 		        .getIdentifier());
-
+		
 		// TODO: 24/10/2022 Extract these strings into a constants file
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat sf = new SimpleDateFormat(pattern);
