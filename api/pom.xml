@@ -6,7 +6,12 @@
 		<artifactId>mycarehub</artifactId>
 		<version>1.0.8-SNAPSHOT</version>
 	</parent>
-
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 	<artifactId>mycarehub-api</artifactId>
 	<packaging>jar</packaging>
 	<name>MyCareHub API</name>
@@ -57,8 +62,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>kenyacore-api</artifactId>
+			<groupId>com.github.palladiumkenya</groupId>
+			<artifactId>openmrs-module-kenyacore</artifactId>
+			<version>3.0.1</version>
 		</dependency>
 
 		<dependency>

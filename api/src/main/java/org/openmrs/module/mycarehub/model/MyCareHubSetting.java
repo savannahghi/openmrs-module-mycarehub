@@ -4,8 +4,8 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.openmrs.BaseOpenmrsData;
 import java.util.Date;
 
-/** Holds configuration for the scheduler task
- *
+/**
+ * Holds configuration for the scheduler task.
  * It provides key information used for synchronization like the [settingType] and [lastSyncTime]
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

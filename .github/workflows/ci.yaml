@@ -39,29 +39,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Check out kenya core repository
-        uses: actions/checkout@v3.0.1
-        with:
-          repository: palladiumkenya/openmrs-module-kenyacore
-
-      - name: Compile and build kenya core repository
-        run: mvn clean install -DskipTests
-
-      - name: Check out kenya UI repository
-        uses: actions/checkout@master
-        with:
-          repository: palladiumkenya/openmrs-module-kenyaui
-      
-      - name: Compile and build kenya UI repository
-        run: mvn clean install -DskipTests
-
+      # System dependencies
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
-
-      # - name: Run tests with Maven
-      #   run: mvn test --batch-mode --file pom.xml
+        
+      # Run tests
+      - name: Run tests with Maven
+        run: mvn test --batch-mode --file pom.xml
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
       - name: Update dependency graph

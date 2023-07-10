@@ -68,7 +68,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	@Override
 	public List<Integer> getConsentedPatientIdsUpdatedSinceDate(Date lastSyncDate) {
 		String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
-
+		
 		List<Integer> consentedPatientIds = sessionFactory.getCurrentSession()
 		        .createSQLQuery("SELECT patient_id FROM mycarehub_consented_patient").list();
 		if (consentedPatientIds.size() > 0) {
@@ -101,7 +101,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 		}
 		return new ArrayList<Integer>();
 	}
-
+	
 	public List<Integer> getCccPatientIdsByIdentifier(String cccNumber) {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(
 		    "SELECT patient.patient_id as patientId FROM patient "
@@ -132,7 +132,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 			query.setParameterList("conceptIds", getMedicalRecordConceptsList());
 			query.setParameterList("drugConceptIds", getDrugsConceptsList());
 			query.setParameterList("consentedPatientUuids", consentedPatientIds);
-
+			
 			String formattedLastSyncDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
 			query.setParameter("formattedLastSyncDate", formattedLastSyncDate);
 			return query.list();
