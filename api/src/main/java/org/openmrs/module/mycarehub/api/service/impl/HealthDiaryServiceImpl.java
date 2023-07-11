@@ -12,6 +12,7 @@ import org.openmrs.module.mycarehub.api.service.HealthDiaryService;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.model.HealthDiary;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
+import org.openmrs.module.mycarehub.utils.Constants;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,11 +29,10 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
 	private static final Log log = LogFactory.getLog(HealthDiaryServiceImpl.class);
 	
 	private HealthDiaryDao dao;
+
+	private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(Constants.DATE_TIME_FORMAT);
 	
-	//ToDo: Move date formats to constants
-	private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-	
-	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
 	
 	public HealthDiaryServiceImpl(HealthDiaryDao dao) {
 		this.dao = dao;
