@@ -10,6 +10,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import static org.openmrs.module.mycarehub.utils.Constants.SIMPLE_DATE_FORMAT;
 
 import static org.openmrs.module.mycarehub.utils.Constants.*;
 
