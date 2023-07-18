@@ -31,8 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
-import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
+import static org.openmrs.module.mycarehub.utils.Constants.*;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.CD4_COUNT;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.HEIGHT;
@@ -62,7 +61,6 @@ import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
-import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 
 public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements MyCareHubPatientService {
 	
@@ -165,9 +163,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		registrationRequest.setCccNumber(patient.getPatientIdentifier(cccIdentifierType.getPatientIdentifierTypeId())
 		        .getIdentifier());
 		
-		// TODO: 24/10/2022 Extract these strings into a constants file
-		String pattern = "yyyy-MM-dd";
-		SimpleDateFormat sf = new SimpleDateFormat(pattern);
+		SimpleDateFormat sf = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
 		registrationRequest.setDateOfBirth(sf.format(patient.getBirthdate()));
 		registrationRequest.setBirthdateEstimated(patient.getBirthdateEstimated());
 		Context.getProgramWorkflowService().getPatientProgram(patient.getPatientId());
@@ -256,9 +252,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	}
 	
 	private void uploadPatientsMedicalRecordsSinceDate(List<Patient> patients, Date lastSyncTime, Date newSyncTime) {
-		// TODO: 24/10/2022 Extract these strings into a constants file
-		String dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(mycarehubDateTimePattern);
+		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(MYCAREHUB_DATE_TIME_PATTERN);
 		
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
 		PatientIdentifierType cccIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(

@@ -5,17 +5,11 @@ import org.openmrs.BaseOpenmrsData;
 import java.util.Date;
 
 /**
- * A record of how the patient is feeling, selected by their mood
- * How the patient is feeling at a particular moment. 
- * Their mood The mood options follow a Likert scale like nature and have 2 extremes
- * For example,the mood options on myCareHub are:
- * 1. VERY_HAPPY
- * 2. HAPPY
- * 3. MEH
- * 4. SAD
- * 5. VERY_SAD
- * Aside from the mood, the client also enters a `Note` which describes their mood 
- * If a client has selected MEH, SAD or VERY_SAD as their mood, a service request is triggered by the
+ * A record of how the patient is feeling, selected by their mood How the patient is feeling at a
+ * particular moment. Their mood The mood options follow a Likert scale like nature and have 2
+ * extremes For example,the mood options on myCareHub are: 1. VERY_HAPPY 2. HAPPY 3. MEH 4. SAD 5.
+ * VERY_SAD Aside from the mood, the client also enters a `Note` which describes their mood If a
+ * client has selected MEH, SAD or VERY_SAD as their mood, a service request is triggered by the
  * myCareHub platform and the service request is synchronized to KenyaEMR via the myCareHub module
  * Health Diary entries are recorded once a day (every 24hrs)
  */
