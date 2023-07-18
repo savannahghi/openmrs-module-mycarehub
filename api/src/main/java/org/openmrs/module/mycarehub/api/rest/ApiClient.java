@@ -1,7 +1,5 @@
 package org.openmrs.module.mycarehub.api.rest;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.logging.Log;
@@ -11,8 +9,6 @@ import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static org.openmrs.module.mycarehub.utils.Constants.*;
-
 public class ApiClient {
 	
 	private static final String TAG = ApiClient.class.getSimpleName();
@@ -21,21 +17,14 @@ public class ApiClient {
 	
 	private static Retrofit retrofit = null;
 	
-	public static <S> RestApiService getRestService() {
+	/**
+	 * check if the retrofit instance is null and call initializeRetrofit() to initialize it if
+	 * needed. This ensures that retrofit is configured only once, and subsequent calls to
+	 * getRestService() will reuse the same instance.
+	 */
+	public static RestApiService getRestService() {
 		if (retrofit == null) {
-			Gson gson = new GsonBuilder().setDateFormat(SIMPLE_DATE_FORMAT).create();
-			String apiUrl = MyCareHubUtil.getApiUrl();
-			
-			if (new UrlValidator().isValid(apiUrl)) {
-				HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-				loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-				
-				OkHttpClient client = new OkHttpClient.Builder().addInterceptor(loggingInterceptor).build();
-				
-				retrofit = new Retrofit.Builder().baseUrl(apiUrl).client(client)
-				        .addConverterFactory(GsonConverterFactory.create(gson)).build();
-			} else
-				log.error("You have a Malformed URL");
+			initializeRetrofit();
 		}
 		
 		if (retrofit != null) {
@@ -43,9 +32,34 @@ public class ApiClient {
 				return retrofit.create(RestApiService.class);
 			}
 			catch (Exception ex) {
-				log.error(TAG, ex.getCause());
+				log.error(TAG, ex);
 			}
 		}
+		
 		return null;
+	}
+	
+	// Separate setup and initialization of retrofit
+	private static void initializeRetrofit() {
+		GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create();
+		String apiUrl = MyCareHubUtil.getApiUrl();
+		
+		if (isUrlValid(apiUrl)) {
+			HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+			loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+			
+			OkHttpClient client = new OkHttpClient.Builder().addInterceptor(loggingInterceptor).build();
+			
+			retrofit = new Retrofit.Builder().baseUrl(apiUrl).client(client).addConverterFactory(gsonConverterFactory)
+			        .build();
+		} else {
+			log.error("Malformed URL: " + apiUrl);
+		}
+	}
+	
+	// Encapsulate url validation
+	private static boolean isUrlValid(String url) {
+		UrlValidator urlValidator = new UrlValidator();
+		return urlValidator.isValid(url);
 	}
 }
