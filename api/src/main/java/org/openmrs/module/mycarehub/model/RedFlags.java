@@ -5,9 +5,8 @@ import org.openmrs.BaseOpenmrsData;
 import java.util.Date;
 
 /**
- * A red flag is created when someone selects MEH, SAD and VERY_SAD 
- * as their mood in their @see HealthDiary
- * A red flag is automatically created based on a user's mood
+ * A red flag is created when someone selects MEH, SAD and VERY_SAD as their mood in their @see
+ * HealthDiary A red flag is automatically created based on a user's mood
  */
 public class RedFlags extends BaseOpenmrsData {
 	

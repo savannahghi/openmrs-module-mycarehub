@@ -11,6 +11,8 @@ import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static org.openmrs.module.mycarehub.utils.Constants.*;
+
 public class ApiClient {
 	
 	private static final String TAG = ApiClient.class.getSimpleName();
@@ -21,7 +23,7 @@ public class ApiClient {
 	
 	public static <S> RestApiService getRestService() {
 		if (retrofit == null) {
-			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create(); //TODO: lastSyncTime have @Mokaya
+			Gson gson = new GsonBuilder().setDateFormat(SIMPLE_DATE_FORMAT).create();
 			String apiUrl = MyCareHubUtil.getApiUrl();
 			
 			if (new UrlValidator().isValid(apiUrl)) {

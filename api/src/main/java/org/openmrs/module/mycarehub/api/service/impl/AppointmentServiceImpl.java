@@ -16,34 +16,15 @@ import org.openmrs.module.mycarehub.model.AppointmentRequests;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 
-import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
-import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_REASON_CONCEPT_ID;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENTS_CONTAINER_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_ID_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_REASON_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_BY_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_REQUEST_CONTAINER;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_REQUEST_STATUS_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_RESOLVED_BY_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_RESOLVED_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.CCC_NUMBER;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.FACILITY_MFL_CODE;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.MYCAREHUB_ID_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
+import static org.openmrs.module.mycarehub.utils.Constants.*;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.*;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.*;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.*;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.*;
 
 public class AppointmentServiceImpl extends BaseOpenmrsService implements AppointmentService {
 	
@@ -51,9 +32,9 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	
 	private AppointmentDao dao;
 	
-	private final SimpleDateFormat mycarehubDateTimeFormatter = new SimpleDateFormat(mycarehubDateTimePattern);
+	private final SimpleDateFormat mycarehubDateTimeFormatter = new SimpleDateFormat(MYCAREHUB_DATE_TIME_PATTERN);
 	
-	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
 	
 	public AppointmentServiceImpl(AppointmentDao dao) {
 		this.dao = dao;

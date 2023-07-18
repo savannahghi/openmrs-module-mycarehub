@@ -10,16 +10,7 @@ import org.junit.runner.RunWith;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.rest.RestApiService;
-import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubMedication;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTest;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTestOrder;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubVitalSign;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.*;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.exception.AuthenticationException;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -28,77 +19,21 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
-import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_DEFAULT_LOCATION_MFL_CODE;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_PASSWORD;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_USERNAME;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_PASSWORD;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.CD4_COUNT;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.HEIGHT;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.PULSE;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.RESPIRATORY_RATE;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.SPO2;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.TEMPERATURE;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.VIRAL_LOAD;
-import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.WEIGHT;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_MEDICAL_RECORDS;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_HEALTH_DIARY_GET;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENTS_CONTAINER_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.*;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.*;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.*;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_ID_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_REASON_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_BY_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_PROGRESS_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_REQUEST_CONTAINER;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_REQUEST_STATUS_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_RESOLVED_BY_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.APPOINTMENT_RESOLVED_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.CCC_NUMBER;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.FACILITY_MFL_CODE;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.MYCAREHUB_ID_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.BMI_CONCEPT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.CD4_CONCEPT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.HEIGHT_CONCEPT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.PULSE_CONCEPT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.RESPIRATORY_RATE_CONCEPT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.SPO2_CONCEPT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.TEMPERATURE_CONCEPT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.VIRAL_LOAD_CONCEPT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.WEIGHT_CONCEPT_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_CONTACTS_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_NAME_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.NEXT_OF_KIN_RELATIONSHIP_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_CONTAINER;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_PROGRESS_BY_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_PROGRESS_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_REQUEST_TYPE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_BY_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_DATE_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_STATUS_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.*;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentRequestObjectKeys.*;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.*;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.MedicalRecordKeys.*;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.NextOfKinPatientRegistrationKeys.*;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.*;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Context.class)
@@ -125,7 +60,7 @@ public class MyCareHubUtilTest {
 	
 	private SimpleDateFormat sf = new SimpleDateFormat(pattern);
 	
-	private SimpleDateFormat myCareHubDateTimeFormatter = new SimpleDateFormat(mycarehubDateTimePattern);
+	private SimpleDateFormat myCareHubDateTimeFormatter = new SimpleDateFormat(MYCAREHUB_DATE_TIME_PATTERN);
 	
 	@Before
 	public void setup() {
