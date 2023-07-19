@@ -1,6 +1,10 @@
 package org.openmrs.module.mycarehub.utils;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import okhttp3.ResponseBody;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,10 +14,19 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.rest.ApiClient;
 import org.openmrs.module.mycarehub.api.rest.RestApiService;
-import org.openmrs.module.mycarehub.api.rest.mapper.*;
+import org.openmrs.module.mycarehub.api.rest.mapper.ApiError;
+import org.openmrs.module.mycarehub.api.rest.mapper.LoginRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.exception.AuthenticationException;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 import java.net.URLEncoder;
@@ -24,8 +37,41 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.mycarehub.utils.Constants.*;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.*;
+import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
+import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
+import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_DEFAULT_LOCATION_MFL_CODE;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_PASSWORD;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_USERNAME;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_PASSWORD;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
+import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Medications.REGIMEN;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Tests.HIV_POLYMERASE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Tests.WIDAL;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.CD4_COUNT;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.HEIGHT;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.PULSE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.RESPIRATORY_RATE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.SPO2;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.TEMPERATURE;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.VIRAL_LOAD;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.WEIGHT;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_MEDICAL_RECORDS;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_HEALTH_DIARY_GET;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
+import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_CONTACT;
+import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
+import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
+import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
 
 public class MyCareHubUtil {
 	
@@ -33,9 +79,13 @@ public class MyCareHubUtil {
 	
 	private static final Log log = LogFactory.getLog(MyCareHubUtil.class);
 	
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	
 	private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	private static final SimpleDateFormat syncTimeFormat = new SimpleDateFormat(MYCAREHUB_DATE_TIME_PATTERN);
+	private static final String syncTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+	
+	private static final SimpleDateFormat syncTimeFormat = new SimpleDateFormat(syncTimePattern);
 	
 	public static String getApiUrl() {
 		AdministrationService as = Context.getAdministrationService();
@@ -56,7 +106,6 @@ public class MyCareHubUtil {
 		AdministrationService as = Context.getAdministrationService();
 		String expiryTime = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, EMPTY);
 		String token = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
-		
 		// Check if we have an expiry time.
 		if (expiryTime != null && !expiryTime.isEmpty() && token != null && !token.isEmpty()) {
 			//check if its past now or within 5 secs of expiring due to latency in making calls
@@ -73,7 +122,6 @@ public class MyCareHubUtil {
 				log.error(e.getMessage());
 			}
 		}
-		
 		// if we are here we MUST get a new token and on failure return EMPTY
 		try {
 			authenticateMyCareHub();
@@ -83,7 +131,6 @@ public class MyCareHubUtil {
 			as.saveGlobalProperty(new GlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, EMPTY));
 			throw e;
 		}
-		
 		token = as.getGlobalProperty(GP_MYCAREHUB_API_TOKEN, EMPTY);
 		return token;
 	}
@@ -121,7 +168,6 @@ public class MyCareHubUtil {
 		catch (Throwable throwable) {
 			throw new AuthenticationException(throwable);
 		}
-		
 		return loginResponse;
 	}
 	

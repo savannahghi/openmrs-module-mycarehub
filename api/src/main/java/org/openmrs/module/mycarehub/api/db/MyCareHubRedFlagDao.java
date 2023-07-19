@@ -6,9 +6,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Middleware for handling client red flags. A red flag is a service request created when a patient
- * enters MEH, SAD or VERY_SAD as their mood in their health diary. There are various types of red
- * flags.
+ * Middleware for handling client red flags. 
+ * A red flag is a service request created when a patient enters MEH, SAD or VERY_SAD 
+ * as their mood in their health diary. 
+ * There are various types of red flags.
  */
 public interface MyCareHubRedFlagDao {
 	

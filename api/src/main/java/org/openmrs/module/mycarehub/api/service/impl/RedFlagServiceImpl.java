@@ -20,11 +20,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static org.openmrs.module.mycarehub.utils.Constants.MYCAREHUB_DATE_TIME_PATTERN;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.MYCAREHUB_ID_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.*;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_CONTAINER;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_PROGRESS_BY_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_PROGRESS_DATE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_REQUEST_TYPE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_BY_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_DATE_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_STATUS_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
+import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPatientRedFlagRequests;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.postPatientRedFlags;
 
@@ -34,7 +41,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 	
 	private MyCareHubRedFlagDao dao;
 	
-	private final SimpleDateFormat mycarehubDateTimeFormatter = new SimpleDateFormat(MYCAREHUB_DATE_TIME_PATTERN);
+	private final SimpleDateFormat mycarehubDateTimeFormatter = new SimpleDateFormat(mycarehubDateTimePattern);
 	
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	

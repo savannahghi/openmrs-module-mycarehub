@@ -1,5 +1,6 @@
 package org.openmrs.module.mycarehub.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ public class Constants {
 	
 	public final static String EMPTY = "";
 	
-	public static final String MYCAREHUB_DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+	public static final String mycarehubDateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 	
 	/** A URL to reach myCareHub API. **/
 	public final static String GP_MYCAREHUB_API_URL = "mycarehub.api.url";
@@ -36,12 +37,10 @@ public class Constants {
 	public final static int APPOINTMENT_DATE_CONCEPT_ID = 5096;
 	
 	public final static int APPOINTMENT_REASON_CONCEPT_ID = 160288;
-	
+
 	public static final String DATE_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
-	
+
 	public static final String DATE_FORMAT = "dd-MM-yyyy";
-	
-	public static final String SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
 	
 	public static final class _PersonAttributeType {
 		
