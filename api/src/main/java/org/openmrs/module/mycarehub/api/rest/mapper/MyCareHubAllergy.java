@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.openmrs.module.mycarehub.utils.Constants.MYCAREHUB_DATE_TIME_PATTERN;
+import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 
 public class MyCareHubAllergy {
 	
@@ -119,7 +119,7 @@ public class MyCareHubAllergy {
 		this.allergyDateTimeObj = allergyDateTimeObj;
 		
 		if (allergyDateTimeObj != null)
-			allergyDateTimeStr = new SimpleDateFormat(MYCAREHUB_DATE_TIME_PATTERN).format(allergyDateTimeObj);
+			allergyDateTimeStr = new SimpleDateFormat(mycarehubDateTimePattern).format(allergyDateTimeObj);
 	}
 	
 	public String getAllergyDateTimeStr() {

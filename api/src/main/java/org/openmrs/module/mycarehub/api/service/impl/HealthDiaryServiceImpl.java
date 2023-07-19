@@ -29,7 +29,7 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
 	private static final Log log = LogFactory.getLog(HealthDiaryServiceImpl.class);
 	
 	private HealthDiaryDao dao;
-	
+
 	private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(Constants.DATE_TIME_FORMAT);
 	
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);

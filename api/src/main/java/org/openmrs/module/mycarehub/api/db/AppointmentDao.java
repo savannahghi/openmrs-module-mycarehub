@@ -7,8 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * A scheduled appointment in KenyaEMR. All appointments are synchronized to myCareHub for viewing
- * on the platform. Appointments can also be rescheduled from myCareHub.
+ * A scheduled appointment in KenyaEMR.
+ * All appointments are synchronized to myCareHub for viewing on the platform.
+ * Appointments can also be rescheduled from myCareHub.
  */
 public interface AppointmentDao {
 	

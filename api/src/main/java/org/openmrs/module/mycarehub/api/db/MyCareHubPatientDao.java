@@ -9,9 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Handles storage and retrieval of patient information to/from KenyaEMR. A consented patient is a
- * patient who has given consent to use myCareHub. Any patient from the myCareHub API is considered
- * consented
+ * Handles storage and retrieval of patient information to/from KenyaEMR.
+ * A consented patient is a patient who has given consent to use myCareHub.
+ * Any patient from the myCareHub API is considered consented
  */
 public interface MyCareHubPatientDao {
 	

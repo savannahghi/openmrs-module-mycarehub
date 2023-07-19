@@ -2,12 +2,20 @@ package org.openmrs.module.mycarehub.api.db.hibernate;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.openmrs.Concept;
 import org.openmrs.Obs;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.mycarehub.api.db.AppointmentDao;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
+import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
