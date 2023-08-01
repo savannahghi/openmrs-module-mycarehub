@@ -1,12 +1,11 @@
 package org.openmrs.module.mycarehub.api.db;
 
+import java.util.Date;
+import java.util.List;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
 import org.openmrs.module.mycarehub.model.ConsentedPatient;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * Handles storage and retrieval of patient information to/from KenyaEMR. A consented patient is a

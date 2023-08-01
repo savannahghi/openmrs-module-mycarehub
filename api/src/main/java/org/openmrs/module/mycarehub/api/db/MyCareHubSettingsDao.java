@@ -2,9 +2,7 @@ package org.openmrs.module.mycarehub.api.db;
 
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 
-/**
- * Handles the storage and retrieval of the myCareHub setting.
- */
+/** Handles the storage and retrieval of the myCareHub setting. */
 public interface MyCareHubSettingsDao {
 	
 	/**

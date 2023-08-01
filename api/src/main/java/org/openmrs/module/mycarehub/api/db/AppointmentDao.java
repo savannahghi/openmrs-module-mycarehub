@@ -1,10 +1,9 @@
 package org.openmrs.module.mycarehub.api.db;
 
-import org.openmrs.Obs;
-import org.openmrs.module.mycarehub.model.AppointmentRequests;
-
 import java.util.Date;
 import java.util.List;
+import org.openmrs.Obs;
+import org.openmrs.module.mycarehub.model.AppointmentRequests;
 
 /**
  * A scheduled appointment in KenyaEMR. All appointments are synchronized to myCareHub for viewing

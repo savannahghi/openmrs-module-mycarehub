@@ -1,8 +1,7 @@
 package org.openmrs.module.mycarehub.model;
 
-import org.openmrs.BaseOpenmrsData;
-
 import java.util.Date;
+import org.openmrs.BaseOpenmrsData;
 
 /**
  * A red flag is created when someone selects MEH, SAD and VERY_SAD as their mood in their @see
@@ -39,9 +38,7 @@ public class RedFlags extends BaseOpenmrsData {
 	// The contact information of the patient
 	private String clientContact;
 	
-	/**
-	 * The patient's Comprehensive Care Clinic(CCC) number
-	 */
+	/** The patient's Comprehensive Care Clinic(CCC) number */
 	private String cccNumber;
 	
 	// The facility code for this hospital

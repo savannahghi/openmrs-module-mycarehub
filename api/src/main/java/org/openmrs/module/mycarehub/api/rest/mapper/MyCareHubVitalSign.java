@@ -2,8 +2,6 @@ package org.openmrs.module.mycarehub.api.rest.mapper;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
 public class MyCareHubVitalSign {
 	
 	@SerializedName("name")

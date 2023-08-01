@@ -1,13 +1,12 @@
 package org.openmrs.module.mycarehub.api.service.impl;
 
+import java.util.Date;
+import java.util.UUID;
 import org.openmrs.User;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.mycarehub.api.db.MyCareHubSettingsDao;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
-
-import java.util.Date;
-import java.util.UUID;
 
 public class MyCareHubSettingsServiceImpl extends BaseOpenmrsService implements MyCareHubSettingsService {
 	

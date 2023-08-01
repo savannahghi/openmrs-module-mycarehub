@@ -1,5 +1,7 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
+import java.util.Date;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Disjunction;
@@ -12,9 +14,6 @@ import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.mycarehub.api.db.MyCareHubRedFlagDao;
 import org.openmrs.module.mycarehub.model.RedFlags;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 	
@@ -120,5 +119,4 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
 	private DbSession session() {
 		return sessionFactory.getCurrentSession();
 	}
-	
 }

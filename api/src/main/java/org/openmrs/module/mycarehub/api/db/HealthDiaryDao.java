@@ -1,12 +1,9 @@
 package org.openmrs.module.mycarehub.api.db;
 
+import java.util.List;
 import org.openmrs.module.mycarehub.model.HealthDiary;
 
-import java.util.List;
-
-/**
- * CRUD middleware that governs access and retrieval of a patient's health diary.
- */
+/** CRUD middleware that governs access and retrieval of a patient's health diary. */
 public interface HealthDiaryDao {
 	
 	/**
@@ -34,5 +31,4 @@ public interface HealthDiaryDao {
 	 * @return A list of health diary entries.
 	 */
 	List<HealthDiary> getPagedHealthDiaries(String searchString, Integer pageNumber, Integer pageSize);
-	
 }

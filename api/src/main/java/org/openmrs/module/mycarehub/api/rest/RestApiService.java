@@ -9,7 +9,6 @@ import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersRequest;
 import org.openmrs.module.mycarehub.api.rest.mapper.NewClientsIdentifiersResponse;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

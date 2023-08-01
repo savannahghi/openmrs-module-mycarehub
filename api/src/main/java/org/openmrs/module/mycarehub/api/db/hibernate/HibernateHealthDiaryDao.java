@@ -1,5 +1,6 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Disjunction;
@@ -11,8 +12,6 @@ import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.mycarehub.api.db.HealthDiaryDao;
 import org.openmrs.module.mycarehub.model.HealthDiary;
-
-import java.util.List;
 
 public class HibernateHealthDiaryDao implements HealthDiaryDao {
 	

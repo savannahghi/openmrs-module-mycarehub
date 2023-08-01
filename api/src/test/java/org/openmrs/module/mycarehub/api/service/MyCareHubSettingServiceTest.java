@@ -1,13 +1,12 @@
 package org.openmrs.module.mycarehub.api.service;
 
+import java.util.Date;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-
-import java.util.Date;
 
 public class MyCareHubSettingServiceTest extends BaseModuleContextSensitiveTest {
 	

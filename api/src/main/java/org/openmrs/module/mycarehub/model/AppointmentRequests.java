@@ -1,8 +1,7 @@
 package org.openmrs.module.mycarehub.model;
 
-import org.openmrs.BaseOpenmrsData;
-
 import java.util.Date;
+import org.openmrs.BaseOpenmrsData;
 
 public class AppointmentRequests extends BaseOpenmrsData {
 	

@@ -1,24 +1,5 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.api.db.hibernate.DbSession;
-import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
-import org.openmrs.module.mycarehub.model.ConsentedPatient;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGEN_CONCEPTS;
@@ -42,6 +23,24 @@ import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_NAME;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.NEXT_OF_KIN_RELATIONSHIP;
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.api.db.hibernate.DbSession;
+import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
+import org.openmrs.module.mycarehub.model.ConsentedPatient;
 
 public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
 	

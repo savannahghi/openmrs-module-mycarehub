@@ -21,7 +21,7 @@ public class ApiClient {
 	
 	public static <S> RestApiService getRestService() {
 		if (retrofit == null) {
-			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create(); //TODO: lastSyncTime have @Mokaya
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create(); // TODO: lastSyncTime have @Mokaya
 			String apiUrl = MyCareHubUtil.getApiUrl();
 			
 			if (new UrlValidator().isValid(apiUrl)) {

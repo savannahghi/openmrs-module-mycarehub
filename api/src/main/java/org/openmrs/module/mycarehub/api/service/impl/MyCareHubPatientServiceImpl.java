@@ -1,36 +1,5 @@
 package org.openmrs.module.mycarehub.api.service.impl;
 
-import com.google.gson.JsonObject;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonAttributeType;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubMedication;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTest;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTestOrder;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubVitalSign;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
-import org.openmrs.module.mycarehub.api.service.MyCareHubPatientService;
-import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
-import org.openmrs.module.mycarehub.model.ConsentedPatient;
-import org.openmrs.module.mycarehub.model.MyCareHubSetting;
-import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
@@ -64,6 +33,36 @@ import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.
 import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
 import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 
+import com.google.gson.JsonObject;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubMedication;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTestOrder;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubVitalSign;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
+import org.openmrs.module.mycarehub.api.service.MyCareHubPatientService;
+import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
+import org.openmrs.module.mycarehub.model.ConsentedPatient;
+import org.openmrs.module.mycarehub.model.MyCareHubSetting;
+import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
+
 public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements MyCareHubPatientService {
 	
 	MyCareHubPatientDao myCareHubPatientDao;
@@ -79,8 +78,8 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		
 		List<Patient> newMyCareHubClients = fetchRegisteredClientIdentifiersSinceLastSyncDate();
 		if (!newMyCareHubClients.isEmpty()) {
-			//set last sync time to 3 years back, to get historical records for the period
-			//Also set it as the new sync time to avoid conflict with the regular medical record sync
+			// set last sync time to 3 years back, to get historical records for the period
+			// Also set it as the new sync time to avoid conflict with the regular medical record sync
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.YEAR, -3);
 			Date lastSyncTime = cal.getTime();

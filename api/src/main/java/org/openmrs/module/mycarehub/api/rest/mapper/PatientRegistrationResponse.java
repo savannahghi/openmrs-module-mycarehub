@@ -9,6 +9,5 @@ public class PatientRegistrationResponse {
 	
 	public PatientRegistrationResponse(Boolean success) {
 		this.success = success;
-		
 	}
 }

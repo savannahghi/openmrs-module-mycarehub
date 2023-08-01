@@ -1,12 +1,11 @@
 package org.openmrs.module.mycarehub.api.rest.mapper;
 
-import com.google.gson.annotations.SerializedName;
+import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 
+import com.google.gson.annotations.SerializedName;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 
 public class MyCareHubAllergy {
 	

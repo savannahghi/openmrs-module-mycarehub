@@ -1,35 +1,10 @@
 package org.openmrs.module.mycarehub.api.service.impl;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.Obs;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.User;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.mycarehub.api.db.AppointmentDao;
-import org.openmrs.module.mycarehub.api.service.AppointmentService;
-import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
-import org.openmrs.module.mycarehub.model.AppointmentRequests;
-import org.openmrs.module.mycarehub.model.MyCareHubSetting;
-import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
-
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_REASON_CONCEPT_ID;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENTS_CONTAINER_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentObjectKeys.APPOINTMENT_ID_KEY;
@@ -44,6 +19,29 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.FACILITY_MFL_CODE;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.MYCAREHUB_ID_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.Obs;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.mycarehub.api.db.AppointmentDao;
+import org.openmrs.module.mycarehub.api.service.AppointmentService;
+import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
+import org.openmrs.module.mycarehub.model.AppointmentRequests;
+import org.openmrs.module.mycarehub.model.MyCareHubSetting;
+import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 
 public class AppointmentServiceImpl extends BaseOpenmrsService implements AppointmentService {
 	
@@ -278,7 +276,6 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 					appointmentRequest.setMflCode(jsonObject1.get("MFLCODE").getAsString());
 					
 					appointmentRequests.add(appointmentRequest);
-					
 				}
 			}
 			if (appointmentRequests.size() > 0) {

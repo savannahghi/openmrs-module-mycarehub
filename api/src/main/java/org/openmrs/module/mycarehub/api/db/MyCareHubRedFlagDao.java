@@ -1,9 +1,8 @@
 package org.openmrs.module.mycarehub.api.db;
 
-import org.openmrs.module.mycarehub.model.RedFlags;
-
 import java.util.Date;
 import java.util.List;
+import org.openmrs.module.mycarehub.model.RedFlags;
 
 /**
  * Middleware for handling client red flags. A red flag is a service request created when a patient

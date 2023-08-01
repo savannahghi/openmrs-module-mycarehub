@@ -1,8 +1,8 @@
 package org.openmrs.module.mycarehub.model;
 
+import java.util.Date;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.openmrs.BaseOpenmrsData;
-import java.util.Date;
 
 /**
  * Holds configuration for the scheduler task. It provides key information used for synchronization
@@ -71,5 +71,4 @@ public class MyCareHubSetting extends BaseOpenmrsData {
 		return "MyCareHubSetting{" + "id=" + this.getId() + ", " + "settingType='" + settingType + "'" + "lastSyncTime='"
 		        + lastSyncTime + "'" + '}';
 	}
-	
 }

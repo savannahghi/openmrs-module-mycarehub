@@ -1,11 +1,10 @@
 package org.openmrs.module.mycarehub.api.service;
 
+import java.util.Date;
+import java.util.List;
 import org.openmrs.Obs;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
-
-import java.util.Date;
-import java.util.List;
 
 public interface AppointmentService extends OpenmrsService {
 	

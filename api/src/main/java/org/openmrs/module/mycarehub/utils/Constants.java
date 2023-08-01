@@ -1,42 +1,41 @@
 package org.openmrs.module.mycarehub.utils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Constants {
 	
-	public final static String EMPTY = "";
+	public static final String EMPTY = "";
 	
 	public static final String mycarehubDateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 	
-	/** A URL to reach myCareHub API. **/
-	public final static String GP_MYCAREHUB_API_URL = "mycarehub.api.url";
+	/** A URL to reach myCareHub API. * */
+	public static final String GP_MYCAREHUB_API_URL = "mycarehub.api.url";
 	
-	/** Username for myCareHub api user. **/
-	public final static String GP_MYCAREHUB_API_USERNAME = "mycarehub.api.username";
+	/** Username for myCareHub api user. * */
+	public static final String GP_MYCAREHUB_API_USERNAME = "mycarehub.api.username";
 	
-	public final static String GP_MYCAREHUB_API_DEFAULT_USERNAME = "admin";
+	public static final String GP_MYCAREHUB_API_DEFAULT_USERNAME = "admin";
 	
-	/** Password to authenticate myCareHub api user. **/
-	public final static String GP_MYCAREHUB_API_PASSWORD = "mycarehub.api.password";
+	/** Password to authenticate myCareHub api user. * */
+	public static final String GP_MYCAREHUB_API_PASSWORD = "mycarehub.api.password";
 	
-	public final static String GP_MYCAREHUB_API_DEFAULT_PASSWORD = "test";
+	public static final String GP_MYCAREHUB_API_DEFAULT_PASSWORD = "test";
 	
-	/** Time based oauth2.0 token for myCareHub backend server. **/
-	public final static String GP_MYCAREHUB_API_TOKEN = "mycarehub.api.token";
+	/** Time based oauth2.0 token for myCareHub backend server. * */
+	public static final String GP_MYCAREHUB_API_TOKEN = "mycarehub.api.token";
 	
-	/** Date-time when the current token expires. **/
-	public final static String GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME = "mycarehub.api.token.expiry";
+	/** Date-time when the current token expires. * */
+	public static final String GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME = "mycarehub.api.token.expiry";
 	
-	/** MFL code for the default location on the KenyaEmr instance. **/
-	public final static String GP_DEFAULT_LOCATION_MFL_CODE = "facility.mflcode";
+	/** MFL code for the default location on the KenyaEmr instance. * */
+	public static final String GP_DEFAULT_LOCATION_MFL_CODE = "facility.mflcode";
 	
-	public final static String CCC_NUMBER_IDENTIFIER_TYPE_UUID = "05ee9cf4-7242-4a17-b4d4-00f707265c8a";
+	public static final String CCC_NUMBER_IDENTIFIER_TYPE_UUID = "05ee9cf4-7242-4a17-b4d4-00f707265c8a";
 	
-	public final static int APPOINTMENT_DATE_CONCEPT_ID = 5096;
+	public static final int APPOINTMENT_DATE_CONCEPT_ID = 5096;
 	
-	public final static int APPOINTMENT_REASON_CONCEPT_ID = 160288;
+	public static final int APPOINTMENT_REASON_CONCEPT_ID = 160288;
 	
 	public static final String DATE_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
 	
@@ -72,7 +71,6 @@ public class Constants {
 		public static final String PATIENT_RED_FLAGS_REQUESTS_GET = "PATIENT_RED_FLAGS_REQUESTS_GET";
 		
 		public static final String PATIENT_HEALTH_DIARY_GET = "PATIENT_HEALTH_DIARY_GET";
-		
 	}
 	
 	public static final class MedicalRecordConcepts {

@@ -1,6 +1,6 @@
 openmrs-module-mycarehub
 ==========================
-[![Coverage](.github/badges/jacoco.svg)](https://github.com/savannahghi/openmrs-module-mycarehub/actions/workflows/ci.yaml)
+[![GitHub Super-Linter](https://github.com/savannahghi/openmrs-module-mycarehub/actions/workflows/ci.yaml/badge.svg)](https://github.com/marketplace/actions/super-linter) [![Coverage](.github/badges/jacoco.svg)](https://github.com/savannahghi/openmrs-module-mycarehub/actions/workflows/ci.yaml)
 
 OpenMRS module to link myCareHub to KenyaEMR
 

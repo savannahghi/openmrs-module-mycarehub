@@ -1,25 +1,5 @@
 package org.openmrs.module.mycarehub.api.service.impl;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.User;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.mycarehub.api.db.MyCareHubRedFlagDao;
-import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
-import org.openmrs.module.mycarehub.api.service.RedFlagService;
-import org.openmrs.module.mycarehub.model.MyCareHubSetting;
-import org.openmrs.module.mycarehub.model.RedFlags;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.MYCAREHUB_ID_KEY;
@@ -33,6 +13,25 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObje
 import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPatientRedFlagRequests;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.postPatientRedFlags;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.mycarehub.api.db.MyCareHubRedFlagDao;
+import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
+import org.openmrs.module.mycarehub.api.service.RedFlagService;
+import org.openmrs.module.mycarehub.model.MyCareHubSetting;
+import org.openmrs.module.mycarehub.model.RedFlags;
 
 public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagService {
 	

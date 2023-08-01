@@ -1,8 +1,6 @@
 package org.openmrs.module.mycarehub.exception;
 
-/**
- * Wraps errors thrown during authentication with myCareHub
- */
+/** Wraps errors thrown during authentication with myCareHub */
 public class AuthenticationException extends Throwable {
 	
 	public AuthenticationException() {

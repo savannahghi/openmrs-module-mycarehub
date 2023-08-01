@@ -11,9 +11,7 @@ public class MyCareHubSyncTask extends AbstractTask {
 		this.processor = new DataSynchronizer();
 	}
 	
-	/**
-	 * @see org.openmrs.scheduler.Task#execute()
-	 */
+	/** @see org.openmrs.scheduler.Task#execute() */
 	@Override
 	public void execute() {
 		Context.openSession();

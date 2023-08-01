@@ -1,8 +1,7 @@
 package org.openmrs.module.mycarehub.model;
 
-import org.openmrs.BaseOpenmrsData;
-
 import java.util.Date;
+import org.openmrs.BaseOpenmrsData;
 
 /**
  * A record of how the patient is feeling, selected by their mood How the patient is feeling at a
@@ -17,9 +16,7 @@ public class HealthDiary extends BaseOpenmrsData {
 	
 	private Integer id;
 	
-	/**
-	 * The patient's Comprehensive Care Clinic(CCC) number
-	 */
+	/** The patient's Comprehensive Care Clinic(CCC) number */
 	private String cccNumber;
 	
 	// The actual mood; how they are feeling
