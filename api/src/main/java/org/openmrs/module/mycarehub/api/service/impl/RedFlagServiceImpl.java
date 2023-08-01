@@ -31,7 +31,6 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObje
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_STATUS_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
-import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getDefaultLocationMflCode;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPatientRedFlagRequests;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.postPatientRedFlags;
 
@@ -100,7 +99,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 			
 			JsonObject containerObject = new JsonObject();
 			JsonArray redFlagArray = new JsonArray();
-			if (redFlags.size() > 0) {
+			if (!redFlags.isEmpty()) {
 				for (RedFlags redFlag : redFlags) {
 					JsonObject redFlagObject = new JsonObject();
 					redFlagObject.addProperty(MYCAREHUB_ID_KEY, redFlag.getMycarehubId());
@@ -194,7 +193,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
 					redFlags.add(redFlag);
 				}
 			}
-			if (redFlags.size() > 0) {
+			if (!redFlags.isEmpty()) {
 				saveRedFlagRequests(redFlags);
 			}
 		} else {
