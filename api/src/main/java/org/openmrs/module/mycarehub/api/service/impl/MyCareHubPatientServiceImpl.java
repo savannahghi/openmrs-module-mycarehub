@@ -120,7 +120,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 		if (setting != null) {
 			List<PatientRegistration> patientRegistrations = getUpdatedPatientRegistrationsSinceLastSyncDate(setting
 			        .getLastSyncTime());
-			if (patientRegistrations.size() > 0) {
+			if (!patientRegistrations.isEmpty()) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
 				patientRegistrationRequest.setPatientRegistrations(patientRegistrations);
 				patientRegistrationRequest.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
@@ -256,8 +256,6 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 	}
 	
 	private void uploadPatientsMedicalRecordsSinceDate(List<Patient> patients, Date lastSyncTime, Date newSyncTime) {
-		// TODO: 24/10/2022 Extract these strings into a constants file
-		String dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(mycarehubDateTimePattern);
 		
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
@@ -379,7 +377,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService implements M
 				medicalRecords.add(medicalRecord);
 			}
 		}
-		if (medicalRecords.size() > 0) {
+		if (!medicalRecords.isEmpty()) {
 			MedicalRecordsRequest medicalRecordsRequest = new MedicalRecordsRequest();
 			medicalRecordsRequest.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
 			medicalRecordsRequest.setMedicalRecords(medicalRecords);
