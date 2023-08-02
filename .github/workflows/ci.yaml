@@ -6,14 +6,20 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [ ubuntu-latest ]
-        java-version: [ 8 ]
-        maven: [ '3.6.3']
+        platform: [ubuntu-latest]
+        java-version: [8]
+        maven: ['3.6.3']
  
     runs-on: ${{ matrix.platform }}
     env:
       PLATFORM: ${{ matrix.platform }}
       JAVA_VERSION: ${{ matrix.java-version }}
+    
+    # Grant status permission for MULTI_STATUS #
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
  
     steps:
       - uses: actions/checkout@v3
@@ -39,12 +45,27 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # System dependencies
-      - uses: actions/checkout@v3
-      - name: Install dependencies
+      # Checkout code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          # Full git history is needed to get a proper
+          # list of changed files within `super-linter`
+          fetch-depth: 0
+  
+      - name: Lint Code Base
+        uses: super-linter/super-linter@v5
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_CSS: false
+          VALIDATE_HTML: false
+          VALIDATE_JAVASCRIPT_ES: false
+          DEFAULT_BRANCH: develop
+      
+      - name: Install Dependencies
         run: |
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
-        
+
       # Run tests
       - name: Run tests with Maven
         run: mvn test --batch-mode --file pom.xml
