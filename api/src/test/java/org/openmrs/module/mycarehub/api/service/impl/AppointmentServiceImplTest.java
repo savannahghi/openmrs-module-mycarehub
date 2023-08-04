@@ -1,5 +1,13 @@
 package org.openmrs.module.mycarehub.api.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -9,15 +17,6 @@ import org.openmrs.Obs;
 import org.openmrs.User;
 import org.openmrs.module.mycarehub.api.db.AppointmentDao;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppointmentServiceImplTest {
@@ -31,7 +30,6 @@ public class AppointmentServiceImplTest {
 	public static final User USER = testUserFactory();
 	
 	public static final Date CURRENT_DATE = new Date();
-
 	
 	@Test
 	public void testGetAppointmentsByLastSyncDate() {
@@ -124,7 +122,7 @@ public class AppointmentServiceImplTest {
 	
 	private static Obs createObs() {
 		Obs ob = new Obs();
-
+		
 		ob.setCreator(USER);
 		ob.setId(1);
 		ob.setObsId(1);
@@ -145,11 +143,11 @@ public class AppointmentServiceImplTest {
 		
 		return Arrays.asList(appointment);
 	}
-
+	
 	private static User testUserFactory() {
 		User user = new User();
 		user.setId(1);
-
+		
 		return user;
 	}
 }

@@ -1,39 +1,5 @@
 package org.openmrs.module.mycarehub.utils;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.mycarehub.api.rest.RestApiService;
-import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
-import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubMedication;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTest;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTestOrder;
-import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubVitalSign;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
-import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
-import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
-import org.openmrs.module.mycarehub.exception.AuthenticationException;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
@@ -55,7 +21,6 @@ import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.TEMPERATURE;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.VIRAL_LOAD;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.WEIGHT;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_MEDICAL_RECORDS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.KENYAEMR_PATIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.MYCAREHUB_CLIENT_REGISTRATIONS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
@@ -100,18 +65,51 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.mycarehub.api.rest.RestApiService;
+import org.openmrs.module.mycarehub.api.rest.mapper.LoginResponse;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecord;
+import org.openmrs.module.mycarehub.api.rest.mapper.MedicalRecordsRequest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubAllergy;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubMedication;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTest;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubTestOrder;
+import org.openmrs.module.mycarehub.api.rest.mapper.MyCareHubVitalSign;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
+import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistrationRequest;
+import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
+import org.openmrs.module.mycarehub.exception.AuthenticationException;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Context.class)
 @PowerMockIgnore("javax.net.ssl.*")
 public class MyCareHubUtilTest {
 	
-	private final static String testServerUrl = "https://mycarehub-testing.savannahghi.org/";
+	private static final String testServerUrl = "https://mycarehub-testing.savannahghi.org/";
 	
-	private final static String username = "kenya-emr@savannahinformatics.com";
+	private static final String username = "kenya-emr@savannahinformatics.com";
 	
-	private final static String password = "#kenya-EMR#";
+	private static final String password = "#kenya-EMR#";
 	
-	private final static String mflCode = "232343434";
+	private static final String mflCode = "232343434";
 	
 	private static final Log log = LogFactory.getLog(MyCareHubUtilTest.class);
 	
@@ -381,7 +379,7 @@ public class MyCareHubUtilTest {
 		
 		List<MyCareHubTest> myCareHubTests = new ArrayList<MyCareHubTest>();
 		
-		//This test has no test result concept ID
+		// This test has no test result concept ID
 		MyCareHubTest myCareHubTest = new MyCareHubTest();
 		myCareHubTest.setTestName("HEMOGLOBIN");
 		myCareHubTest.setTestConceptId(21);
@@ -433,8 +431,8 @@ public class MyCareHubUtilTest {
 		MyCareHubUtil.uploadPatientMedicalRecords(medicalRecordsRequest, newSyncTime);
 		
 		// TODO: fix test case
-		//		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS, newSyncTime);
+		//		verify(myCareHubSettingsService, times(1)).createMyCareHubSetting(KENYAEMR_MEDICAL_RECORDS,
+		// newSyncTime);
 		
 	}
-	
 }
