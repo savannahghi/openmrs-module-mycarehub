@@ -121,13 +121,6 @@
     <!-- End OpenMRS core -->
   </dependencies>
 
-  <repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-  </repositories>
-
   <build>
     <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
     <resources>
