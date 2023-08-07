@@ -5,9 +5,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.db.HealthDiaryDao;
 import org.openmrs.module.mycarehub.model.HealthDiary;
+import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -16,7 +19,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ Context.class, MyCareHubUtil.class })
 public class HealthDiaryServiceImplTest {
 	
 	@Mock

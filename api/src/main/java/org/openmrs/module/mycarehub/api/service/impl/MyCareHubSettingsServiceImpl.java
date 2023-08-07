@@ -17,14 +17,6 @@ public class MyCareHubSettingsServiceImpl extends BaseOpenmrsService implements 
 		this.dao = dao;
 	}
 	
-	public MyCareHubSettingsDao getDao() {
-		return dao;
-	}
-	
-	public void setDao(MyCareHubSettingsDao dao) {
-		this.dao = dao;
-	}
-	
 	@Override
 	public MyCareHubSetting getLatestMyCareHubSettingByType(String settingType) {
 		return dao.getMyCareHubSettingByType(settingType);
