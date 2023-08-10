@@ -2,6 +2,11 @@ package org.openmrs.module.mycarehub.api.service.impl;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
+import static org.openmrs.module.mycarehub.utils.Constants.*;
+import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -12,11 +17,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.db.MyCareHubRedFlagDao;
+import org.openmrs.module.mycarehub.api.rest.ApiClient;
+import org.openmrs.module.mycarehub.api.rest.RestApiService;
+import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
+import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.openmrs.module.mycarehub.model.RedFlags;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({Context.class, ApiClient.class})
 public class RedFlagServiceImplTest {
 
   @Mock MyCareHubRedFlagDao myCareHubRedFlagDao;
@@ -27,9 +41,46 @@ public class RedFlagServiceImplTest {
 
   private static Date date = null;
 
+  private MyCareHubSettingsService myCareHubSettingsService;
+  private static MyCareHubSetting setting = null;
+
+  private RestApiService restApiService;
+
+  private AdministrationService administrationService;
+
+  private static final String testServerUrl = "https://mycarehub-testing.savannahghi.org/";
+
+  private static final String username = "kenya-emr@savannahinformatics.com";
+
+  private static final String password = "#kenya-EMR#";
+
+  private static final String mflCode = "232343434";
+
   @Before
   public void setUp() {
     date = new Date();
+    myCareHubSettingsService = mock(MyCareHubSettingsService.class);
+    setting = mock(MyCareHubSetting.class);
+    administrationService = mock(AdministrationService.class);
+
+    mockStatic(Context.class);
+    when(Context.getService(MyCareHubSettingsService.class)).thenReturn(myCareHubSettingsService);
+
+    mockStatic(ApiClient.class);
+
+    PowerMockito.when(Context.getAdministrationService()).thenReturn(administrationService);
+    PowerMockito.when(administrationService.getGlobalProperty(GP_MYCAREHUB_API_URL, EMPTY))
+        .thenReturn(testServerUrl);
+    PowerMockito.when(
+            administrationService.getGlobalProperty(
+                GP_MYCAREHUB_API_USERNAME, GP_MYCAREHUB_API_DEFAULT_USERNAME))
+        .thenReturn(username);
+    PowerMockito.when(
+            administrationService.getGlobalProperty(
+                GP_MYCAREHUB_API_PASSWORD, GP_MYCAREHUB_API_DEFAULT_PASSWORD))
+        .thenReturn(password);
+    PowerMockito.when(administrationService.getGlobalProperty(GP_DEFAULT_LOCATION_MFL_CODE, EMPTY))
+        .thenReturn(mflCode);
   }
 
   @Test
@@ -139,6 +190,27 @@ public class RedFlagServiceImplTest {
         fakeRedFlagServiceImpl.countRedFlagsByType("TEST", redFlag.getRequestType());
     assertEquals(1, redFlagsCount);
     assertNotNull(redFlagsCount);
+  }
+
+  @Test
+  public void syncPatientRedFlagRequests_Null_Setting() {
+    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(PATIENT_RED_FLAGS_REQUESTS_POST))
+        .thenReturn(null);
+
+    fakeRedFlagServiceImpl.syncPatientRedFlagRequests();
+  }
+
+  @Test
+  public void syncPatientRedFlagRequest() {
+    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(PATIENT_RED_FLAGS_REQUESTS_POST))
+        .thenReturn(setting);
+
+    List<RedFlags> redFlagsList = RED_FLAGS;
+    assertEquals(1, redFlagsList.size());
+    when(myCareHubRedFlagDao.getAllRedFlagRequestsByLastSyncDate(setting.getLastSyncTime()))
+        .thenReturn(redFlagsList);
+
+    fakeRedFlagServiceImpl.syncPatientRedFlagRequests();
   }
 
   private static List<RedFlags> testRedFlagsFactory() {

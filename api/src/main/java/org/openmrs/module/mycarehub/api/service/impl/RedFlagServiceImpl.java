@@ -94,48 +94,49 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
     MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
     MyCareHubSetting setting =
         settingsService.getLatestMyCareHubSettingByType(PATIENT_RED_FLAGS_REQUESTS_POST);
+
+    Date newSyncDate = new Date();
+    JsonObject containerObject = new JsonObject();
+    JsonArray redFlagArray = new JsonArray();
+
     if (setting != null) {
       List<RedFlags> redFlags = dao.getAllRedFlagRequestsByLastSyncDate(setting.getLastSyncTime());
-      Date newSyncDate = new Date();
 
-      JsonObject containerObject = new JsonObject();
-      JsonArray redFlagArray = new JsonArray();
       if (!redFlags.isEmpty()) {
         for (RedFlags redFlag : redFlags) {
-          JsonObject redFlagObject = new JsonObject();
-          redFlagObject.addProperty(MYCAREHUB_ID_KEY, redFlag.getMycarehubId());
-          redFlagObject.addProperty(RED_FLAG_STATUS_KEY, redFlag.getStatus());
-          redFlagObject.addProperty(RED_FLAG_REQUEST_TYPE_KEY, redFlag.getRequestType());
-          if (redFlag.getProgressDate() != null) {
-            redFlagObject.addProperty(
-                RED_FLAG_PROGRESS_DATE_KEY,
-                mycarehubDateTimeFormatter.format(redFlag.getProgressDate()));
-          } else {
-            redFlagObject.addProperty(RED_FLAG_PROGRESS_DATE_KEY, "null");
-          }
-          redFlagObject.addProperty(RED_FLAG_PROGRESS_BY_KEY, redFlag.getProgressBy());
-          if (redFlag.getDateResolved() != null) {
-            redFlagObject.addProperty(
-                RED_FLAG_RESOLVED_DATE_KEY,
-                mycarehubDateTimeFormatter.format(redFlag.getDateResolved()));
-          } else {
-            redFlagObject.addProperty(RED_FLAG_RESOLVED_DATE_KEY, "null");
-          }
-          redFlagObject.addProperty(RED_FLAG_RESOLVED_BY_KEY, redFlag.getResolvedBy());
-
+          JsonObject redFlagObject = createRedFlagJsonObject(redFlag);
           redFlagArray.add(redFlagObject);
         }
 
         containerObject.add(RED_FLAG_CONTAINER, redFlagArray);
-
         postPatientRedFlags(containerObject, newSyncDate);
 
       } else {
         settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncDate);
       }
+
     } else {
       settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, new Date());
     }
+  }
+
+  private JsonObject createRedFlagJsonObject(RedFlags redFlag) {
+    JsonObject redFlagObject = new JsonObject();
+    redFlagObject.addProperty(MYCAREHUB_ID_KEY, redFlag.getMycarehubId());
+    redFlagObject.addProperty(RED_FLAG_STATUS_KEY, redFlag.getStatus());
+    redFlagObject.addProperty(RED_FLAG_REQUEST_TYPE_KEY, redFlag.getRequestType());
+
+    redFlagObject.addProperty(RED_FLAG_PROGRESS_DATE_KEY, formatDate(redFlag.getProgressDate()));
+    redFlagObject.addProperty(RED_FLAG_PROGRESS_BY_KEY, redFlag.getProgressBy());
+
+    redFlagObject.addProperty(RED_FLAG_RESOLVED_DATE_KEY, formatDate(redFlag.getDateResolved()));
+    redFlagObject.addProperty(RED_FLAG_RESOLVED_BY_KEY, redFlag.getResolvedBy());
+
+    return redFlagObject;
+  }
+
+  private String formatDate(Date date) {
+    return date != null ? mycarehubDateTimeFormatter.format(date) : "null";
   }
 
   @Override
