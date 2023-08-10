@@ -95,29 +95,29 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
     MyCareHubSetting setting =
         settingsService.getLatestMyCareHubSettingByType(PATIENT_RED_FLAGS_REQUESTS_POST);
 
+    if (setting == null) {
+      settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, new Date());
+      return;
+    }
+
     Date newSyncDate = new Date();
     JsonObject containerObject = new JsonObject();
     JsonArray redFlagArray = new JsonArray();
 
-    if (setting != null) {
-      List<RedFlags> redFlags = dao.getAllRedFlagRequestsByLastSyncDate(setting.getLastSyncTime());
+    List<RedFlags> redFlags = dao.getAllRedFlagRequestsByLastSyncDate(setting.getLastSyncTime());
 
-      if (!redFlags.isEmpty()) {
-        for (RedFlags redFlag : redFlags) {
-          JsonObject redFlagObject = createRedFlagJsonObject(redFlag);
-          redFlagArray.add(redFlagObject);
-        }
-
-        containerObject.add(RED_FLAG_CONTAINER, redFlagArray);
-        postPatientRedFlags(containerObject, newSyncDate);
-
-      } else {
-        settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncDate);
-      }
-
-    } else {
-      settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, new Date());
+    if (redFlags.isEmpty()) {
+      settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncDate);
+      return;
     }
+
+    for (RedFlags redFlag : redFlags) {
+      JsonObject redFlagObject = createRedFlagJsonObject(redFlag);
+      redFlagArray.add(redFlagObject);
+    }
+
+    containerObject.add(RED_FLAG_CONTAINER, redFlagArray);
+    postPatientRedFlags(containerObject, newSyncDate);
   }
 
   private JsonObject createRedFlagJsonObject(RedFlags redFlag) {
@@ -144,65 +144,67 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
     MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
     MyCareHubSetting setting =
         settingsService.getLatestMyCareHubSettingByType(PATIENT_RED_FLAGS_REQUESTS_GET);
-    if (setting != null) {
-      Date newSyncDate = new Date();
 
-      JsonArray jsonArray = getPatientRedFlagRequests(setting.getLastSyncTime(), newSyncDate);
-      List<RedFlags> redFlags = new ArrayList<RedFlags>();
-      if (jsonArray != null) {
-        for (int i = 0; i < jsonArray.size(); i++) {
-          JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
-          RedFlags redFlag = new RedFlags();
-          String mycarehubId = jsonObject1.get("id").getAsString();
-          RedFlags existingRequests = getRedFlagRequestByMycarehubId(mycarehubId);
-          if (existingRequests != null && existingRequests.getMycarehubId() != null) {
-            redFlag = existingRequests;
-          } else {
-            redFlag.setCreator(new User(1));
-            redFlag.setDateCreated(new Date());
-            redFlag.setUuid(UUID.randomUUID().toString());
-            redFlag.setVoided(false);
-          }
-
-          redFlag.setMycarehubId(jsonObject1.get("id").getAsString());
-          redFlag.setRequest(jsonObject1.get("request").getAsString());
-          redFlag.setRequestType(jsonObject1.get("requestType").getAsString());
-          redFlag.setStatus(jsonObject1.get("status").getAsString());
-          redFlag.setScreeningTool(jsonObject1.get("screeningToolName").getAsString());
-          redFlag.setScreeningScore(jsonObject1.get("screeningToolScore").getAsString());
-          if (!jsonObject1.get("inProgressAt").isJsonNull()) {
-            try {
-              redFlag.setProgressDate(
-                  dateFormat.parse(jsonObject1.get("inProgressAt").getAsString()));
-            } catch (ParseException e) {
-              log.error("Cannot parse InProgressAt date", e);
-            }
-          }
-
-          if (!jsonObject1.get("inProgressBy").isJsonNull())
-            redFlag.setProgressBy(jsonObject1.get("inProgressBy").getAsString());
-          if (!jsonObject1.get("resolvedAt").isJsonNull()) {
-            try {
-              redFlag.setProgressDate(
-                  dateFormat.parse(jsonObject1.get("resolvedAt").getAsString()));
-            } catch (ParseException e) {
-              log.error("Cannot parse ResolvedAt date", e);
-            }
-          }
-          if (!jsonObject1.get("resolvedBy").isJsonNull())
-            redFlag.setResolvedBy(jsonObject1.get("resolvedBy").getAsString());
-          redFlag.setClientName(jsonObject1.get("clientName").getAsString());
-          redFlag.setClientContact(jsonObject1.get("clientContact").getAsString());
-          redFlag.setCccNumber(jsonObject1.get("cccNumber").getAsString());
-
-          redFlags.add(redFlag);
-        }
-      }
-      if (!redFlags.isEmpty()) {
-        saveRedFlagRequests(redFlags);
-      }
-    } else {
+    if (setting == null) {
       settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_GET, new Date());
+      return;
+    }
+
+    // TODO: Add test to go beyond this point
+    Date newSyncDate = new Date();
+
+    JsonArray jsonArray = getPatientRedFlagRequests(setting.getLastSyncTime(), newSyncDate);
+    List<RedFlags> redFlags = new ArrayList<RedFlags>();
+    if (jsonArray != null) {
+      for (int i = 0; i < jsonArray.size(); i++) {
+        JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
+        RedFlags redFlag = new RedFlags();
+        String mycarehubId = jsonObject1.get("id").getAsString();
+        RedFlags existingRequests = getRedFlagRequestByMycarehubId(mycarehubId);
+        if (existingRequests != null && existingRequests.getMycarehubId() != null) {
+          redFlag = existingRequests;
+        } else {
+          redFlag.setCreator(new User(1));
+          redFlag.setDateCreated(new Date());
+          redFlag.setUuid(UUID.randomUUID().toString());
+          redFlag.setVoided(false);
+        }
+
+        redFlag.setMycarehubId(jsonObject1.get("id").getAsString());
+        redFlag.setRequest(jsonObject1.get("request").getAsString());
+        redFlag.setRequestType(jsonObject1.get("requestType").getAsString());
+        redFlag.setStatus(jsonObject1.get("status").getAsString());
+        redFlag.setScreeningTool(jsonObject1.get("screeningToolName").getAsString());
+        redFlag.setScreeningScore(jsonObject1.get("screeningToolScore").getAsString());
+        if (!jsonObject1.get("inProgressAt").isJsonNull()) {
+          try {
+            redFlag.setProgressDate(
+                dateFormat.parse(jsonObject1.get("inProgressAt").getAsString()));
+          } catch (ParseException e) {
+            log.error("Cannot parse InProgressAt date", e);
+          }
+        }
+
+        if (!jsonObject1.get("inProgressBy").isJsonNull())
+          redFlag.setProgressBy(jsonObject1.get("inProgressBy").getAsString());
+        if (!jsonObject1.get("resolvedAt").isJsonNull()) {
+          try {
+            redFlag.setProgressDate(dateFormat.parse(jsonObject1.get("resolvedAt").getAsString()));
+          } catch (ParseException e) {
+            log.error("Cannot parse ResolvedAt date", e);
+          }
+        }
+        if (!jsonObject1.get("resolvedBy").isJsonNull())
+          redFlag.setResolvedBy(jsonObject1.get("resolvedBy").getAsString());
+        redFlag.setClientName(jsonObject1.get("clientName").getAsString());
+        redFlag.setClientContact(jsonObject1.get("clientContact").getAsString());
+        redFlag.setCccNumber(jsonObject1.get("cccNumber").getAsString());
+
+        redFlags.add(redFlag);
+      }
+    }
+    if (!redFlags.isEmpty()) {
+      saveRedFlagRequests(redFlags);
     }
   }
 }
