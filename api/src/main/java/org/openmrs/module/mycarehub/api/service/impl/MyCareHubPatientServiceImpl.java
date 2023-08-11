@@ -118,21 +118,24 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService
 
     Date newSyncTime = new Date();
 
-    if (setting != null) {
-      List<PatientRegistration> patientRegistrations =
-          getUpdatedPatientRegistrationsSinceLastSyncDate(setting.getLastSyncTime());
-      if (!patientRegistrations.isEmpty()) {
-        PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
-        patientRegistrationRequest.setPatientRegistrations(patientRegistrations);
-        patientRegistrationRequest.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
-
-        MyCareHubUtil.uploadPatientRegistrationRecords(patientRegistrationRequest, newSyncTime);
-      } else {
-        settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
-      }
-    } else {
+    if (setting == null) {
       settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
+      return;
     }
+
+    List<PatientRegistration> patientRegistrations =
+        getUpdatedPatientRegistrationsSinceLastSyncDate(setting.getLastSyncTime());
+
+    if (patientRegistrations.isEmpty()) {
+      settingsService.createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
+      return;
+    }
+
+    PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+    patientRegistrationRequest.setPatientRegistrations(patientRegistrations);
+    patientRegistrationRequest.setFacility(MyCareHubUtil.getDefaultLocationMflCode());
+
+    MyCareHubUtil.uploadPatientRegistrationRecords(patientRegistrationRequest, newSyncTime);
   }
 
   public List<PatientRegistration> getUpdatedPatientRegistrationsSinceLastSyncDate(
@@ -147,6 +150,7 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService
       PatientRegistration registrationRequest = createPatientRegistration(patient);
       patientRegistrationRequests.add(registrationRequest);
     }
+
     return patientRegistrationRequests;
   }
 
