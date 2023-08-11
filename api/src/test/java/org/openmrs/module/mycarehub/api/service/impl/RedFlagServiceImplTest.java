@@ -4,11 +4,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import static org.openmrs.module.mycarehub.utils.Constants.*;
 import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
+import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_RED_FLAGS_REQUESTS_POST;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.*;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -25,12 +25,13 @@ import org.openmrs.module.mycarehub.api.rest.RestApiService;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 import org.openmrs.module.mycarehub.model.RedFlags;
+import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Context.class, ApiClient.class})
+@PrepareForTest({Context.class, ApiClient.class, MyCareHubUtil.class})
 public class RedFlagServiceImplTest {
 
   @Mock MyCareHubRedFlagDao myCareHubRedFlagDao;
@@ -67,6 +68,8 @@ public class RedFlagServiceImplTest {
     when(Context.getService(MyCareHubSettingsService.class)).thenReturn(myCareHubSettingsService);
 
     mockStatic(ApiClient.class);
+    mockStatic(RestApiService.class);
+    mockStatic(MyCareHubUtil.class);
 
     PowerMockito.when(Context.getAdministrationService()).thenReturn(administrationService);
     PowerMockito.when(administrationService.getGlobalProperty(GP_MYCAREHUB_API_URL, EMPTY))
@@ -213,6 +216,15 @@ public class RedFlagServiceImplTest {
     fakeRedFlagServiceImpl.syncPatientRedFlagRequests();
   }
 
+  @Test
+  public void fetchPatientRedFlagRequests_null() {
+    setting.setSettingType(PATIENT_RED_FLAGS_REQUESTS_GET);
+    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(PATIENT_RED_FLAGS_REQUESTS_GET))
+        .thenReturn(null);
+
+    fakeRedFlagServiceImpl.fetchPatientRedFlagRequests();
+  }
+
   private static List<RedFlags> testRedFlagsFactory() {
     RedFlags redFlags = new RedFlags();
     redFlags.setId(1);
@@ -224,6 +236,6 @@ public class RedFlagServiceImplTest {
     redFlags.setMycarehubId(String.valueOf(UUID.randomUUID()));
     redFlags.setUuid("bcbdaf68-3d36-4365-b575-4182d6749af0");
 
-    return Arrays.asList(redFlags);
+    return Collections.singletonList(redFlags);
   }
 }
