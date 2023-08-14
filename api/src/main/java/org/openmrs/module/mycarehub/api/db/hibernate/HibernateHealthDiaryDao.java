@@ -57,16 +57,18 @@ public class HibernateHealthDiaryDao implements HealthDiaryDao {
       disjunction.add(Restrictions.ilike("entryType", searchString, MatchMode.ANYWHERE));
       criteria.add(disjunction);
     }
+
     if (pageNumber != null && pageNumber > 0) {
       criteria.setFirstResult((pageNumber - 1) * pageSize);
     }
+
     if (pageSize != null) {
       criteria.setMaxResults(pageSize);
     }
+
     criteria.add(Restrictions.eq("voided", Boolean.FALSE));
     criteria.addOrder(Order.desc("dateRecorded"));
-    List<HealthDiary> healthDiaries = (List<HealthDiary>) criteria.list();
-    return healthDiaries;
+    return (List<HealthDiary>) criteria.list();
   }
 
   private DbSession session() {

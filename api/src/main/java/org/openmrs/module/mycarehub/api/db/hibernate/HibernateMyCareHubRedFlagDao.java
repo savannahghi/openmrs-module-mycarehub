@@ -63,15 +63,19 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
       disjunction.add(Restrictions.ilike("request", searchString, MatchMode.ANYWHERE));
       criteria.add(disjunction);
     }
+
     if (StringUtils.isNotEmpty(requestType)) {
       criteria.add(Restrictions.eq("requestType", requestType));
     }
+
     if (pageNumber != null && pageNumber > 0) {
       criteria.setFirstResult((pageNumber - 1) * pageSize);
     }
+
     if (pageSize != null) {
       criteria.setMaxResults(pageSize);
     }
+
     criteria.add(Restrictions.eq("voided", Boolean.FALSE));
     criteria.addOrder(Order.desc("dateCreated"));
     return (List<RedFlags>) criteria.list();
@@ -83,6 +87,7 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
     for (RedFlags redFlag : redFlags) {
       session().saveOrUpdate(redFlag);
     }
+
     return redFlags;
   }
 
@@ -112,10 +117,13 @@ public class HibernateMyCareHubRedFlagDao implements MyCareHubRedFlagDao {
       disjunction.add(Restrictions.ilike("request", searchString, MatchMode.ANYWHERE));
       criteria.add(disjunction);
     }
+
     if (StringUtils.isNotEmpty(requestType)) {
       criteria.add(Restrictions.eq("requestType", requestType));
     }
+
     criteria.setProjection(Projections.rowCount());
+
     return (Number) criteria.uniqueResult();
   }
 
