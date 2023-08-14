@@ -119,11 +119,11 @@ public class MyCareHubUtilTest {
 
   private MyCareHubSettingsService myCareHubSettingsService;
 
-  private String pattern = "yyyy-MM-dd";
+  private final String pattern = "yyyy-MM-dd";
 
-  private SimpleDateFormat sf = new SimpleDateFormat(pattern);
+  private final SimpleDateFormat sf = new SimpleDateFormat(pattern);
 
-  private SimpleDateFormat myCareHubDateTimeFormatter =
+  private final SimpleDateFormat myCareHubDateTimeFormatter =
       new SimpleDateFormat(mycarehubDateTimePattern);
 
   @Before
@@ -147,7 +147,7 @@ public class MyCareHubUtilTest {
     when(administrationService.getGlobalProperty(GP_DEFAULT_LOCATION_MFL_CODE, EMPTY))
         .thenReturn(mflCode);
 
-    String accessToken = "";
+    String accessToken;
     try {
       LoginResponse response = MyCareHubUtil.authenticateMyCareHub();
       if (response != null) {
@@ -212,9 +212,6 @@ public class MyCareHubUtilTest {
 
   @Test
   public void uploadPatientRegistrationRecords_shouldCreateCorrectSyncTimeSetting() {
-    String pattern = "yyyy-MM-dd";
-    SimpleDateFormat sf = new SimpleDateFormat(pattern);
-
     List<PatientRegistration> patientRegistrations = new ArrayList<PatientRegistration>();
     PatientRegistration patientRegistration = createDummyPatientRegistration();
     patientRegistrations.add(patientRegistration);
@@ -272,7 +269,6 @@ public class MyCareHubUtilTest {
   public void uploadPatientAppointments_shouldCreateCorrectSyncTimeSetting() {
     JsonObject appointmentObject = new JsonObject();
 
-    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     appointmentObject.addProperty(APPOINTMENT_ID_KEY, "58655");

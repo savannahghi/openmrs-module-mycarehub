@@ -58,8 +58,6 @@ public class MyCareHubUtil {
 
   private static final Log log = LogFactory.getLog(MyCareHubUtil.class);
 
-  private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
   private static final SimpleDateFormat dateTimeFormat =
       new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -95,6 +93,7 @@ public class MyCareHubUtil {
         Calendar calExpiryTime = Calendar.getInstance();
         calExpiryTime.setTime(dtExpiryTime);
         calExpiryTime.add(Calendar.SECOND, -5);
+
         if (calNow.before(calExpiryTime)) return token;
       } catch (ParseException e) {
         log.error(e.getMessage());
@@ -114,40 +113,57 @@ public class MyCareHubUtil {
 
   public static LoginResponse authenticateMyCareHub() throws AuthenticationException {
     RestApiService restApiService = ApiClient.getRestService();
-    if (restApiService == null)
-      throw new AuthenticationException("Cant create myCareHub REST API service");
 
-    Call<LoginResponse> call =
-        restApiService.login(new LoginRequest(EMPTY, getApiUsername(), getApiPassword()));
-    LoginResponse loginResponse = null;
+    if (restApiService == null) {
+      throw new AuthenticationException("Cannot create myCareHub REST API service");
+    }
+
+    // Prepare the login request
+    LoginRequest loginRequest = new LoginRequest(EMPTY, getApiUsername(), getApiPassword());
+
+    Call<LoginResponse> call = restApiService.login(loginRequest);
+    LoginResponse loginResponse;
+
     try {
       Response<LoginResponse> response = call.execute();
+
       if (response.isSuccessful()) {
+        // Successful authentication
         log.info("Successful authentication");
         loginResponse = response.body();
+
         if (loginResponse != null) {
+          // Calculate token expiry time
           Calendar cal = Calendar.getInstance();
           cal.add(Calendar.SECOND, loginResponse.getExpiryTime().intValue());
-          Date dt = cal.getTime();
+          Date expiryDate = cal.getTime();
 
           AdministrationService as = Context.getAdministrationService();
+
+          // Save API token and its expiry time as global properties
           as.saveGlobalProperty(
               new GlobalProperty(GP_MYCAREHUB_API_TOKEN, loginResponse.getAccessToken()));
           as.saveGlobalProperty(
-              new GlobalProperty(GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, dateTimeFormat.format(dt)));
-        } else
+              new GlobalProperty(
+                  GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME, dateTimeFormat.format(expiryDate)));
+        } else {
           throw new AuthenticationException(
               "Received a null response despite successfully authenticating");
+        }
       } else {
         if (response.errorBody() != null) {
+          // Handle error response
           ApiError apiError =
               new Gson().fromJson(response.errorBody().charStream(), ApiError.class);
           throw new AuthenticationException(apiError.getMessage());
-        } else throw new AuthenticationException(response.message());
+        } else {
+          throw new AuthenticationException(response.message());
+        }
       }
     } catch (Throwable throwable) {
       throw new AuthenticationException(throwable);
     }
+
     return loginResponse;
   }
 
@@ -169,6 +185,7 @@ public class MyCareHubUtil {
           restApiService.uploadPatientRegistrations(
               getBearer(getApiToken()), patientRegistrationRequest);
       Response<ResponseBody> response = call.execute();
+
       if (response.isSuccessful()) {
         Context.getService(MyCareHubSettingsService.class)
             .createMyCareHubSetting(KENYAEMR_PATIENT_REGISTRATIONS, newSyncTime);
@@ -216,6 +233,7 @@ public class MyCareHubUtil {
         Context.getService(MyCareHubSettingsService.class)
             .createMyCareHubSetting(MYCAREHUB_CLIENT_REGISTRATIONS, newSyncTime);
 
+        assert response.body() != null; // Body may be null
         cccList = response.body().getPatientsIdentifiers();
       } else {
         try {
@@ -278,8 +296,8 @@ public class MyCareHubUtil {
           restApiService.uploadPatientAppointmentRequests(
               getBearer(getApiToken()), appointmentRequests);
       Response<ResponseBody> response = call.execute();
-      if (response.isSuccessful()) {
 
+      if (response.isSuccessful()) {
         MyCareHubSettingsService settingsService =
             Context.getService(MyCareHubSettingsService.class);
         settingsService.createMyCareHubSetting(PATIENT_APPOINTMENTS_REQUESTS_POST, newSyncTime);
@@ -326,7 +344,7 @@ public class MyCareHubUtil {
 
         if (response.body() != null) {
           JsonObject jsonResponse =
-              new JsonParser().parse(response.body().string()).getAsJsonObject();
+              JsonParser.parseString(response.body().string()).getAsJsonObject();
           jsonArray = jsonResponse.getAsJsonArray("Results");
         }
       } else {
@@ -358,7 +376,6 @@ public class MyCareHubUtil {
           restApiService.postPatientRedFlags(getBearer(getApiToken()), redflags);
       Response<ResponseBody> response = call.execute();
       if (response.isSuccessful()) {
-
         MyCareHubSettingsService settingsService =
             Context.getService(MyCareHubSettingsService.class);
         settingsService.createMyCareHubSetting(PATIENT_RED_FLAGS_REQUESTS_POST, newSyncTime);
@@ -403,7 +420,7 @@ public class MyCareHubUtil {
 
         if (response.body() != null) {
           JsonObject jsonResponse =
-              new JsonParser().parse(response.body().string()).getAsJsonObject();
+              JsonParser.parseString(response.body().string()).getAsJsonObject();
           jsonArray = jsonResponse.getAsJsonArray("redFlags");
         }
       } else {
@@ -481,7 +498,7 @@ public class MyCareHubUtil {
 
         if (response.body() != null) {
           JsonObject jsonResponse =
-              new JsonParser().parse(response.body().string()).getAsJsonObject();
+              JsonParser.parseString(response.body().string()).getAsJsonObject();
           jsonArray = jsonResponse.getAsJsonArray("healthDiaries");
         }
 
@@ -505,9 +522,8 @@ public class MyCareHubUtil {
   }
 
   public static PatientIdentifierType getcccPatientIdentifierType() {
-    PatientIdentifierType cccIdentifierType =
-        Context.getPatientService().getPatientIdentifierTypeByUuid(CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-    return cccIdentifierType;
+    return Context.getPatientService()
+        .getPatientIdentifierTypeByUuid(CCC_NUMBER_IDENTIFIER_TYPE_UUID);
   }
 
   public static String getBearer(String token) {
