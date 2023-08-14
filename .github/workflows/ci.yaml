@@ -68,15 +68,18 @@ jobs:
       
       - name: Install Dependencies
         run: |
-          mvn clean install -Dartifact.version=1.0.0 -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+          latest_tag=$(git describe --abbrev=0 --tags)
+          mvn clean install -Dproject.version="$latest_tag" -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
 
       # Run tests
       - name: Run tests with Maven
-        run: mvn test -Dartifact.version=1.0.0 --batch-mode --file pom.xml
+        run: |
+          latest_tag=$(git describe --abbrev=0 --tags)
+          mvn test -Dproject.version="$latest_tag" --batch-mode --file pom.xml
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
       - name: Update dependency graph
-        uses: advanced-security/maven-dependency-submission-action@v3
+        run: mvn com.github.ferstl:depgraph-maven-plugin:4.0.2:reactor -DgraphFormat=json -DoutputFileName=reactor.json
 
       - name: Generate JaCoCo Badge
         id: jacoco
@@ -125,7 +128,7 @@ jobs:
           settings-path: ${{ github.workspace }}
 
       - name: Build Assets
-        run: mvn clean install --file pom.xml -Dartifact.version=${{ github.event.release.tag_name }} -DskipTests=true
+        run: mvn clean install --file pom.xml -Dproject.version=${{ github.event.release.tag_name }} -DskipTests=true
   
       - name: Prepare Released Files
         run: mkdir -p released-files
