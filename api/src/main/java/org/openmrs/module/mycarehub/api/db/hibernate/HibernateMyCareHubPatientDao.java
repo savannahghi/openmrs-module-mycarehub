@@ -1,5 +1,6 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
+import static org.openmrs.module.mycarehub.api.db.hibernate.Common.GET_MYCAREHUB_CONSENTED_PATIENT;
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.CCC_NUMBER_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGEN_CONCEPTS;
@@ -72,41 +73,15 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
     String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
 
     List<Integer> consentedPatientIds =
-        sessionFactory
-            .getCurrentSession()
-            .createSQLQuery("SELECT patient_id FROM mycarehub_consented_patient")
-            .list();
-    if (consentedPatientIds.size() > 0) {
-      Query query =
-          sessionFactory
-              .getCurrentSession()
-              .createSQLQuery(
-                  "SELECT DISTINCT patient.patient_id as patientId FROM patient "
-                      + "INNER JOIN person ON patient.patient_id = person.person_id "
-                      + "INNER JOIN person_name ON person_name.person_id = patient.patient_id "
-                      + "INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id "
-                      + "WHERE ("
-                      + "person.date_changed >=:formattedDate "
-                      + "OR person_name.date_changed >=:formattedDate "
-                      + "OR patient.patient_id in ("
-                      + "SELECT person_id FROM person_attribute "
-                      + "INNER JOIN person_attribute_type ON person_attribute.person_attribute_type_id = person_attribute_type.person_attribute_type_id "
-                      + "WHERE ( person_attribute.date_created >=:formattedDate OR person_attribute.date_changed >=:formattedDate) "
-                      + "AND person_attribute_type.uuid IN (:personAttributeTypeUuids) )) "
-                      + "OR patient.patient_id in ( "
-                      + "SELECT patient_id FROM patient_identifier  "
-                      + "WHERE ( patient_identifier.date_created >=:formattedDate OR patient_identifier.date_changed >=:formattedDate))"
-                      + "AND patient_identifier.identifier_type IN ( "
-                      + "SELECT patient_identifier_type_id FROM patient_identifier_type WHERE uuid = :cccIdentifierTypeUuid)"
-                      + "AND patient.voided=0 "
-                      + "AND patient.patient_id IN (:consentedPatientUuids)");
-      query.setParameter("formattedDate", formattedDate);
-      query.setParameterList("personAttributeTypeUuids", getPersonAttributeTypesList());
-      query.setParameter("cccIdentifierTypeUuid", CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-      query.setParameterList("consentedPatientUuids", consentedPatientIds);
-      return query.list();
+        sessionFactory.getCurrentSession().createSQLQuery(GET_MYCAREHUB_CONSENTED_PATIENT).list();
+
+    if (consentedPatientIds.isEmpty()) {
+      return new ArrayList<Integer>();
     }
-    return new ArrayList<Integer>();
+
+    Query query = getConsentedPatientIdsUpdatedSinceDateQuery(formattedDate, consentedPatientIds);
+
+    return query.list();
   }
 
   public List<Integer> getCccPatientIdsByIdentifier(String cccNumber) {
@@ -122,39 +97,22 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
                     + "AND patient_identifier.identifier = :cccNumber");
     query.setParameter("cccNumber", cccNumber);
     query.setParameter("cccIdentifierTypeUuid", CCC_NUMBER_IDENTIFIER_TYPE_UUID);
+
     return query.list();
   }
 
   public List<Integer> getConsentedPatientsWithUpdatedMedicalRecordsSinceDate(Date lastSyncDate) {
     List<Integer> consentedPatientIds =
-        sessionFactory
-            .getCurrentSession()
-            .createSQLQuery("SELECT patient_id FROM mycarehub_consented_patient")
-            .list();
-    if (consentedPatientIds.size() > 0) {
-      SQLQuery query =
-          getSession()
-              .createSQLQuery(
-                  "SELECT distinct patient.patient_id as patientId FROM patient "
-                      + "INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id "
-                      + "INNER JOIN obs ON obs.person_id = patient.patient_id "
-                      + "WHERE patient_identifier.identifier_type IN ( "
-                      + "SELECT patient_identifier_type_id FROM patient_identifier_type WHERE uuid = :cccIdentifierTypeUuid) "
-                      + "AND (obs.concept_id IN :conceptIds OR obs.value_coded IN (:drugConceptIds))"
-                      + "AND patient.voided=0 AND patient.patient_id IN (:consentedPatientUuids)"
-                      + "AND obs.voided=0 "
-                      + "AND obs.date_created >=:formattedLastSyncDate");
-      query.setParameter("cccIdentifierTypeUuid", CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-      query.setParameterList("conceptIds", getMedicalRecordConceptsList());
-      query.setParameterList("drugConceptIds", getDrugsConceptsList());
-      query.setParameterList("consentedPatientUuids", consentedPatientIds);
+        sessionFactory.getCurrentSession().createSQLQuery(GET_MYCAREHUB_CONSENTED_PATIENT).list();
 
-      String formattedLastSyncDate =
-          new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
-      query.setParameter("formattedLastSyncDate", formattedLastSyncDate);
-      return query.list();
+    if (consentedPatientIds.isEmpty()) {
+      return new ArrayList<Integer>();
     }
-    return new ArrayList<Integer>();
+
+    SQLQuery query =
+        getConsentedPatientsWithUpdatedMedicalRecordsSinceDate(lastSyncDate, consentedPatientIds);
+
+    return query.list();
   }
 
   public List<Obs> getUpdatedVitalSignsSinceDate(Patient patient, Date lastSyncDate) {
@@ -307,5 +265,61 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
     personAttributeTypeUuids.add(NEXT_OF_KIN_CONTACT);
     personAttributeTypeUuids.add(NEXT_OF_KIN_RELATIONSHIP);
     return personAttributeTypeUuids;
+  }
+
+  private Query getConsentedPatientIdsUpdatedSinceDateQuery(
+      String formattedDate, List<Integer> consentedPatientIds) {
+    Query query =
+        sessionFactory
+            .getCurrentSession()
+            .createSQLQuery(
+                "SELECT DISTINCT patient.patient_id as patientId FROM patient "
+                    + "INNER JOIN person ON patient.patient_id = person.person_id "
+                    + "INNER JOIN person_name ON person_name.person_id = patient.patient_id "
+                    + "INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id "
+                    + "WHERE ("
+                    + "person.date_changed >=:formattedDate "
+                    + "OR person_name.date_changed >=:formattedDate "
+                    + "OR patient.patient_id in ("
+                    + "SELECT person_id FROM person_attribute "
+                    + "INNER JOIN person_attribute_type ON person_attribute.person_attribute_type_id = person_attribute_type.person_attribute_type_id "
+                    + "WHERE ( person_attribute.date_created >=:formattedDate OR person_attribute.date_changed >=:formattedDate) "
+                    + "AND person_attribute_type.uuid IN (:personAttributeTypeUuids) )) "
+                    + "OR patient.patient_id in ( "
+                    + "SELECT patient_id FROM patient_identifier  "
+                    + "WHERE ( patient_identifier.date_created >=:formattedDate OR patient_identifier.date_changed >=:formattedDate))"
+                    + "AND patient_identifier.identifier_type IN ( "
+                    + "SELECT patient_identifier_type_id FROM patient_identifier_type WHERE uuid = :cccIdentifierTypeUuid)"
+                    + "AND patient.voided=0 "
+                    + "AND patient.patient_id IN (:consentedPatientUuids)");
+    query.setParameter("formattedDate", formattedDate);
+    query.setParameterList("personAttributeTypeUuids", getPersonAttributeTypesList());
+    query.setParameter("cccIdentifierTypeUuid", CCC_NUMBER_IDENTIFIER_TYPE_UUID);
+    query.setParameterList("consentedPatientUuids", consentedPatientIds);
+    return query;
+  }
+
+  private SQLQuery getConsentedPatientsWithUpdatedMedicalRecordsSinceDate(
+      Date lastSyncDate, List<Integer> consentedPatientIds) {
+    SQLQuery query =
+        getSession()
+            .createSQLQuery(
+                "SELECT distinct patient.patient_id as patientId FROM patient "
+                    + "INNER JOIN patient_identifier ON patient.patient_id = patient_identifier.patient_id "
+                    + "INNER JOIN obs ON obs.person_id = patient.patient_id "
+                    + "WHERE patient_identifier.identifier_type IN ( "
+                    + "SELECT patient_identifier_type_id FROM patient_identifier_type WHERE uuid = :cccIdentifierTypeUuid) "
+                    + "AND (obs.concept_id IN :conceptIds OR obs.value_coded IN (:drugConceptIds))"
+                    + "AND patient.voided=0 AND patient.patient_id IN (:consentedPatientUuids)"
+                    + "AND obs.voided=0 "
+                    + "AND obs.date_created >=:formattedLastSyncDate");
+    query.setParameter("cccIdentifierTypeUuid", CCC_NUMBER_IDENTIFIER_TYPE_UUID);
+    query.setParameterList("conceptIds", getMedicalRecordConceptsList());
+    query.setParameterList("drugConceptIds", getDrugsConceptsList());
+    query.setParameterList("consentedPatientUuids", consentedPatientIds);
+
+    String formattedLastSyncDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastSyncDate);
+    query.setParameter("formattedLastSyncDate", formattedLastSyncDate);
+    return query;
   }
 }

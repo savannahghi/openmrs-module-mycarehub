@@ -1,5 +1,6 @@
 package org.openmrs.module.mycarehub.api.db.hibernate;
 
+import static org.openmrs.module.mycarehub.api.db.hibernate.Common.GET_MYCAREHUB_CONSENTED_PATIENT;
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_REASON_CONCEPT_ID;
 
@@ -28,16 +29,18 @@ public class HibernateAppointmentDao implements AppointmentDao {
     this.sessionFactory = sessionFactory;
   }
 
+  private DbSession session() {
+    return sessionFactory.getCurrentSession();
+  }
+
   @Override
   public List<Obs> getAppointmentsByLastSyncDate(Date lastSyncDate) {
     if (lastSyncDate != null) {
       // TODO: 24/10/2022 Extract these queries into a shared place
       List<Integer> consentedPatientIds =
-          sessionFactory
-              .getCurrentSession()
-              .createSQLQuery("SELECT patient_id FROM mycarehub_consented_patient")
-              .list();
-      if (consentedPatientIds.size() > 0) {
+          sessionFactory.getCurrentSession().createSQLQuery(GET_MYCAREHUB_CONSENTED_PATIENT).list();
+
+      if (!consentedPatientIds.isEmpty()) {
         Criteria criteria = session().createCriteria(Obs.class);
         criteria.add(
             Restrictions.or(
@@ -49,6 +52,7 @@ public class HibernateAppointmentDao implements AppointmentDao {
         return criteria.list();
       }
     }
+
     return new ArrayList<Obs>();
   }
 
@@ -151,9 +155,5 @@ public class HibernateAppointmentDao implements AppointmentDao {
     criteria.addOrder(Order.desc("obsId"));
     criteria.setMaxResults(1);
     return (Obs) criteria.uniqueResult();
-  }
-
-  private DbSession session() {
-    return sessionFactory.getCurrentSession();
   }
 }
