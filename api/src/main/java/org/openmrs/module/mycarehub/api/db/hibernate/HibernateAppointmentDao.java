@@ -81,6 +81,7 @@ public class HibernateAppointmentDao implements AppointmentDao {
     for (AppointmentRequests appointmentRequest : appointmentRequests) {
       session().saveOrUpdate(appointmentRequest);
     }
+
     return appointmentRequests;
   }
 
