@@ -100,6 +100,9 @@ jobs:
 
       - name: Build Assets
         run: mvn clean install --file pom.xml -Dartifact.version=${{ github.event.release.tag_name }} -DskipTests=true
+
+      - name: Generate Dependency Graph
+        run: mvn com.github.ferstl:depgraph-maven-plugin:4.0.2:reactor -DgraphFormat=json -DoutputFileName=reactor.json -Dartifact.version=${{ github.event.release.tag_name }}
   
       - name: Prepare Released Files
         run: mkdir -p released-files
