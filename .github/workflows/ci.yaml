@@ -67,45 +67,19 @@ jobs:
           JAVA_FILE_NAME: checkstyle.xml
       
       - name: Install Dependencies
-        run: |
-          mvn clean install -Dartifact.version=1.0.0 -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+        run: mvn clean install -Dartifact.version=1.0.0 -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+      
+      - name: Test and Generate Coverage Report
+        run:  mvn -B verify -P coverage --no-transfer-progress -Dartifact.version=1.0.0
 
-      # Run tests
-      - name: Run tests with Maven
-        run: mvn test -Dartifact.version=1.0.0 --batch-mode --file pom.xml
-
-      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-#      - name: Update dependency graph
-#        uses: advanced-security/maven-dependency-submission-action@v3
-
-      - name: Generate JaCoCo Badge
-        id: jacoco
-        uses: cicirello/jacoco-badge-generator@v2
+      - name: Post Coverage Report to CodeCov
+        uses: codecov/codecov-action@v3
         with:
-          jacoco-csv-file: "**/jacoco.csv"
-          badges-directory: .github/badges
-          generate-coverage-badge: true
-          coverage-badge-filename: jacoco.svg
-          generate-branches-badge: true
-          branches-badge-filename: branches.svg
-          generate-summary: true
-          summary-filename: coverage-summary.json
-          coverage-label: coverage
-          branches-label: branches
-          colors: '#4c1 #97ca00 #a4a61d #dfb317 #fe7d37 #e05d44'
-          fail-on-coverage-decrease: true
-          fail-on-branches-decrease: true
-
-      - name: Log coverage percentage
-        run: |
-            echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
-            echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
-
-      - name: Upload JaCoCo coverage report
-        uses: actions/upload-artifact@v2
-        with:
-          name: jacoco-report
-          path: target/site/jacoco/
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./api/target/site/jacoco/jacoco.xml, ./omod/target/site/jacoco/jacoco.xml
+          name: codecov-umbrella
+          fail_ci_if_error: true
+          verbose: true
   
   release:
     if: ${{ github.event_name == 'release' }}
