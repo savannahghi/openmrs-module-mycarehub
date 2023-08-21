@@ -11,9 +11,9 @@ import org.openmrs.module.mycarehub.model.MyCareHubSetting;
 
 public class HibernateMyCareHubSettingsDao implements MyCareHubSettingsDao {
 
-  private DbSessionFactory sessionFactory;
+  private final DbSessionFactory sessionFactory;
 
-  protected Class mappedClass = MyCareHubSetting.class;
+  protected Class<MyCareHubSetting> mappedClass = MyCareHubSetting.class;
 
   public HibernateMyCareHubSettingsDao(DbSessionFactory sessionFactory) {
     this.sessionFactory = sessionFactory;
@@ -32,6 +32,7 @@ public class HibernateMyCareHubSettingsDao implements MyCareHubSettingsDao {
   @Override
   public MyCareHubSetting saveOrUpdateMyCareHubSetting(MyCareHubSetting myCareHubSetting) {
     session().saveOrUpdate(myCareHubSetting);
+    System.out.println(myCareHubSetting);
     return myCareHubSetting;
   }
 
