@@ -251,6 +251,12 @@
         <version>1.7</version>
       </dependency>
 
+      <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-jacoco</artifactId>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
   <repositories>
@@ -284,24 +290,15 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.10</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>generate-code-coverage-report</id>
-            <goals>
-              <goal>report</goal>
-            </goals>
-            <phase>test</phase>
-          </execution>
-        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.2</version>
+        <configuration>
+          <forkedProcessExitTimeoutInSeconds>60</forkedProcessExitTimeoutInSeconds>
+          <forkCount>1</forkCount>
+        </configuration>
       </plugin>
+
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
