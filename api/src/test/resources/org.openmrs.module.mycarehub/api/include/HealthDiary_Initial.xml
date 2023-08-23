@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <mycarehub_healthdiary id="1" ccc_number="1234567891" client_name="MtuKazi" client_contact="+254711223344" mood="VERY SAD" note="Test Note" entry_type="HEALTH_DIARY" date_recorded="2023-08-22 10:37:00" shared_on="2023-08-22 10:37:00" creator="1" date_created="2023-08-22 10:38:09" changed_by="1" date_changed="2023-08-22 10:38:22" voided="false" uuid="cf25712e-f193-48d5-a85a-5fd8d0244c71" />
+</dataset>
