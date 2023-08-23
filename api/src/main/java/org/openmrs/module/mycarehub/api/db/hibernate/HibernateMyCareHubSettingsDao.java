@@ -32,7 +32,6 @@ public class HibernateMyCareHubSettingsDao implements MyCareHubSettingsDao {
   @Override
   public MyCareHubSetting saveOrUpdateMyCareHubSetting(MyCareHubSetting myCareHubSetting) {
     session().saveOrUpdate(myCareHubSetting);
-    System.out.println(myCareHubSetting);
     return myCareHubSetting;
   }
 
