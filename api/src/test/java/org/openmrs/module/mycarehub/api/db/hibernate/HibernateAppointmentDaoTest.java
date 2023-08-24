@@ -2,9 +2,12 @@ package org.openmrs.module.mycarehub.api.db.hibernate;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,9 +44,13 @@ public class HibernateAppointmentDaoTest extends BaseModuleContextSensitiveTest 
   public void setup() throws Exception {
     appointmentDao = new HibernateAppointmentDao(sessionFactory);
 
-    //    executeDataSet(STANDARD_DATASET_XML_FILENAME);
-
-    executeDataSet(INITIAL_APPOINTMENT_XML_FILENAME);
+    Properties properties = new Properties();
+    try {
+      FileInputStream fileInputStream = new FileInputStream("openmrs-runtime.properties");
+      properties.load(fileInputStream);
+    } catch (IOException e) {
+      System.out.println(e);
+    }
   }
 
   @Test

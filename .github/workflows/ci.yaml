@@ -65,7 +65,7 @@ jobs:
           VALIDATE_XML: true
           DEFAULT_BRANCH: develop
           JAVA_FILE_NAME: checkstyle.xml
-
+  
       - name: Download and Extract SQL Archive
         run: |
           curl -LJO "https://github.com/savannahghi/kenya-emr-releases/releases/download/v18.6.2/KenyaEMR.Release.Archive.xz"
@@ -81,38 +81,43 @@ jobs:
           mysql -h localhost -uroot  -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
           mysql -h localhost -uroot $MYSQL_DATABASE < kenya-emr-release-content/databases/openmrs.sql
         env:
-          MYSQL_DATABASE: openmrs
-
-      - name: Download Liquibase 2.0.5
+          MYSQL_DATABASE: openmrs 
+      
+      - name: Download MySQL JDBC Driver
         run: |
-          mkdir -p liquibase
-          curl -LJO https://github.com/liquibase/liquibase/releases/download/liquibase-parent-2.0.5/liquibase-2.0.5-bin.tar.gz
-          tar -xzf liquibase-2.0.5-bin.tar.gz -C liquibase
-
-      - name: Run Liquibase Migrations
+          mkdir -p drivers
+          curl -LJO https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.49.tar.gz
+          tar -xzf mysql-connector-java-5.1.49.tar.gz -C drivers
+      
+      - name: Create liquibase.properties
         run: |
-          java -jar liquibase/liquibase.jar \
-            --classpath=liquibase/liquibase.jar \
-            --driver=com.mysql.jdbc.Driver \
-            --url=jdbc:mysql://localhost:3306/$MYSQL_DATABASE \
-            --username=root \
-            update \
-            --changeLogFile=api/src/main/resources/liquibase.xml
+          echo "classpath: drivers/mysql-connector-java-5.1.49/mysql-connector-java-5.1.49.jar" >> liquibase.properties
+          echo "url: jdbc:mysql://localhost:3306/$MYSQL_DATABASE" >> liquibase.properties
+          echo "username: root" >> liquibase.properties
+          echo "changeLogFile: api/src/main/resources/liquibase.xml" >> liquibase.properties
         env:
           MYSQL_DATABASE: openmrs
 
+      - name: Download and Install Liquibase
+        run: sudo snap install liquibase
+  
+      - name: Run Liquibase Migrations
+        run: liquibase --defaultsFile=liquibase.properties --logLevel=SEVERE update
+       
       - name: Cleanup Downloaded Files
         run: |
           rm -rf kenya-emr-release-content
           rm KenyaEMR.Release.Archive.xz
+          rm liquibase.properties
           rm -rf liquibase
-          rm liquibase-2.0.5-bin.tar.gz
+          rm mysql-connector-java-5.1.49.tar.gz
+          rm -rf drivers
 
       - name: Install Dependencies
         run: mvn clean install -Dartifact.version=1.0.0 -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
 
       - name: Test and Generate Coverage Report
-        run:  mvn -B verify -P coverage --no-transfer-progress -Dartifact.version=1.0.0 -Ddb.name="openmrs" -Ddb.user="root"
+        run:  mvn -B verify -P coverage --no-transfer-progress -Dartifact.version=1.0.0
 
       - name: Post Coverage Report to CodeCov
         uses: codecov/codecov-action@v3
