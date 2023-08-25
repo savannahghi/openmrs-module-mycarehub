@@ -2,6 +2,7 @@ package org.openmrs.module.mycarehub.utils;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Constants {
@@ -155,6 +156,12 @@ public class Constants {
           };
 
       public static final int ALLERGY_DATE = 160753;
+
+      public static final List<Integer> OTHER_DRUG_CONCEPTS =
+          Arrays.asList(
+              164505, 1652, 160124, 162565, 162563, 162199, 792, 160104, 1652, 160124, 162561,
+              162200, 164505, 162559, 164508, 164509, 164510, 162200, 162561, 164505, 162563,
+              162201, 164508, 164509, 164510, 162561, 164511, 162201, 164512, 162200);
     }
   }
 
