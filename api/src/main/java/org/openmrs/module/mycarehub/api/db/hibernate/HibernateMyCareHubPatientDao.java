@@ -9,6 +9,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_OTHER_REACTION;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_REACTION_CONCEPTS;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.ALLERGY_SEVERITY_CONCEPTS;
+import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Allergies.OTHER_DRUG_CONCEPTS;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Medications.REGIMEN;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.Tests.TESTS_ORDERED;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
@@ -27,7 +28,6 @@ import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -201,12 +201,7 @@ public class HibernateMyCareHubPatientDao implements MyCareHubPatientDao {
     List<Integer> fullDrugConcepts = new ArrayList<Integer>();
     fullDrugConcepts.addAll(drugsConcepts.list());
 
-    Integer[] otherDrugConcepts = {
-      164505, 1652, 160124, 162565, 162563, 162199, 792, 160104, 1652, 160124, 162561, 162200,
-      164505, 162559, 164508, 164509, 164510, 162200, 162561, 164505, 162563, 162201, 164508,
-      164509, 164510, 162561, 164511, 162201, 164512, 162200
-    };
-    fullDrugConcepts.addAll(Arrays.asList(otherDrugConcepts));
+    fullDrugConcepts.addAll(OTHER_DRUG_CONCEPTS);
     return fullDrugConcepts;
   }
 
