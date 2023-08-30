@@ -3,6 +3,7 @@ package org.openmrs.module.mycarehub.api.rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.logging.Log;
@@ -20,6 +21,8 @@ public class ApiClient {
 
   private static Retrofit retrofit = null;
 
+  private static final long timeoutDuration = 2;
+
   public static <S> RestApiService getRestService() {
     if (retrofit == null) {
       Gson gson =
@@ -30,7 +33,12 @@ public class ApiClient {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(loggingInterceptor).build();
+        OkHttpClient client =
+            new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .connectTimeout(timeoutDuration, TimeUnit.MINUTES)
+                .readTimeout(timeoutDuration, TimeUnit.MINUTES)
+                .build();
         retrofit =
             new Retrofit.Builder()
                 .baseUrl(apiUrl)
