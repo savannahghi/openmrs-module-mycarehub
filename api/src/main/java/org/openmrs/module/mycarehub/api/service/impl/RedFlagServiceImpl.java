@@ -10,6 +10,7 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObje
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_BY_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_STATUS_KEY;
+import static org.openmrs.module.mycarehub.utils.Constants.YEAR_MONTH_DAY_PATTERN;
 import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.getPatientRedFlagRequests;
 import static org.openmrs.module.mycarehub.utils.MyCareHubUtil.postPatientRedFlags;
@@ -42,7 +43,7 @@ public class RedFlagServiceImpl extends BaseOpenmrsService implements RedFlagSer
   private final SimpleDateFormat mycarehubDateTimeFormatter =
       new SimpleDateFormat(mycarehubDateTimePattern);
 
-  private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+  private final SimpleDateFormat dateFormat = new SimpleDateFormat(YEAR_MONTH_DAY_PATTERN);
 
   public RedFlagServiceImpl(MyCareHubRedFlagDao dao) {
     this.dao = dao;

@@ -2,16 +2,7 @@ package org.openmrs.module.mycarehub.utils;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
-import static org.openmrs.module.mycarehub.utils.Constants.EMPTY;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_DEFAULT_LOCATION_MFL_CODE;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_PASSWORD;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_DEFAULT_USERNAME;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_PASSWORD;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_TOKEN_EXPIRY_TIME;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_URL;
-import static org.openmrs.module.mycarehub.utils.Constants.GP_MYCAREHUB_API_USERNAME;
+import static org.openmrs.module.mycarehub.utils.Constants.*;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.BMI;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.CD4_COUNT;
 import static org.openmrs.module.mycarehub.utils.Constants.MedicalRecordConcepts.VitalSigns.HEIGHT;
@@ -60,7 +51,6 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObje
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_BY_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_RESOLVED_DATE_KEY;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.REdFlagsObjectKeys.RED_FLAG_STATUS_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -113,23 +103,17 @@ public class MyCareHubUtilTest {
 
   private static final Log log = LogFactory.getLog(MyCareHubUtilTest.class);
 
-  private RestApiService restApiService;
-
-  private AdministrationService administrationService;
-
   private MyCareHubSettingsService myCareHubSettingsService;
 
-  private final String pattern = "yyyy-MM-dd";
-
-  private final SimpleDateFormat sf = new SimpleDateFormat(pattern);
+  private final SimpleDateFormat sf = new SimpleDateFormat(YEAR_MONTH_DAY_PATTERN);
 
   private final SimpleDateFormat myCareHubDateTimeFormatter =
       new SimpleDateFormat(mycarehubDateTimePattern);
 
   @Before
   public void setup() {
-    restApiService = mock(RestApiService.class);
-    administrationService = mock(AdministrationService.class);
+    RestApiService restApiService = mock(RestApiService.class);
+    AdministrationService administrationService = mock(AdministrationService.class);
     myCareHubSettingsService = mock(MyCareHubSettingsService.class);
 
     mockStatic(Context.class);
@@ -269,7 +253,7 @@ public class MyCareHubUtilTest {
   public void uploadPatientAppointments_shouldCreateCorrectSyncTimeSetting() {
     JsonObject appointmentObject = new JsonObject();
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat dateFormat = new SimpleDateFormat(YEAR_MONTH_DAY_PATTERN);
 
     appointmentObject.addProperty(APPOINTMENT_ID_KEY, "58655");
 

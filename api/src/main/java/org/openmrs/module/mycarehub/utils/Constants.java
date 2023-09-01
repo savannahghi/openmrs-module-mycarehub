@@ -11,6 +11,8 @@ public class Constants {
 
   public static final String mycarehubDateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
+  public static final String YEAR_MONTH_DAY_PATTERN = "yyyy-MM-dd";
+
   /** A URL to reach myCareHub API. * */
   public static final String GP_MYCAREHUB_API_URL = "mycarehub.api.url";
 

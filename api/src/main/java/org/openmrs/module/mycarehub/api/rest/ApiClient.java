@@ -1,5 +1,6 @@
 package org.openmrs.module.mycarehub.api.rest;
 
+import static org.openmrs.module.mycarehub.utils.Constants.YEAR_MONTH_DAY_PATTERN;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,10 +24,12 @@ public class ApiClient {
 
   private static final long timeoutDuration = 2;
 
-  public static <S> RestApiService getRestService() {
+  public static RestApiService getRestService() {
     if (retrofit == null) {
       Gson gson =
-          new GsonBuilder().setDateFormat("yyyy-MM-dd").create(); // TODO: lastSyncTime have @Mokaya
+          new GsonBuilder()
+              .setDateFormat(YEAR_MONTH_DAY_PATTERN)
+              .create(); // TODO: lastSyncTime have @Mokaya
       String apiUrl = MyCareHubUtil.getApiUrl();
 
       if (new UrlValidator().isValid(apiUrl)) {
