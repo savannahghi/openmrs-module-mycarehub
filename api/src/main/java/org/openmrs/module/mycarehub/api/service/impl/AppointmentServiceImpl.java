@@ -1,7 +1,6 @@
 package org.openmrs.module.mycarehub.api.service.impl;
 
-import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
-import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_REASON_CONCEPT_ID;
+import static org.openmrs.module.mycarehub.utils.Constants.*;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
@@ -18,7 +17,6 @@ import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.AppointmentR
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.CCC_NUMBER;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.FACILITY_MFL_CODE;
 import static org.openmrs.module.mycarehub.utils.Constants.RestKeys.GeneralKeys.MYCAREHUB_ID_KEY;
-import static org.openmrs.module.mycarehub.utils.Constants.mycarehubDateTimePattern;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -52,7 +50,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
   private final SimpleDateFormat mycarehubDateTimeFormatter =
       new SimpleDateFormat(mycarehubDateTimePattern);
 
-  private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+  private final SimpleDateFormat dateFormat = new SimpleDateFormat(YEAR_MONTH_DAY_PATTERN);
 
   public AppointmentServiceImpl(AppointmentDao dao) {
     this.dao = dao;
