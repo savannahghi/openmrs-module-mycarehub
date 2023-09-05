@@ -32,7 +32,7 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
   private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(Constants.DATE_TIME_FORMAT);
 
   private final SimpleDateFormat dateFormat =
-      new SimpleDateFormat(Constants.YEAR_MONTH_DAY_PATTERN);
+      new SimpleDateFormat(Constants.DATE_FORMAT);
 
   public HealthDiaryServiceImpl(HealthDiaryDao dao) {
     this.dao = dao;
