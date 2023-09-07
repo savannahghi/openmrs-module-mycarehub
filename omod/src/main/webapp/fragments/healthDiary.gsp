@@ -12,7 +12,6 @@
                 <th>CCC Number</th>
                 <th>Mood</th>
                 <th>Note</th>
-                <th>Entry Type</th>
                 <th>Shared On</th>
                 <th>Created On</th>
             </tr>
@@ -24,7 +23,6 @@
                 <td>{{healthDiary.cccNumber}}</td>
                 <td>{{healthDiary.mood}}</td>
                 <td>{{healthDiary.note}}</td>
-                <td>{{healthDiary.entryType}}</td>
                 <td>{{healthDiary.sharedOn}}</td>
                 <td>{{healthDiary.dateRecorded}}</td>
             </tr>
