@@ -33,6 +33,12 @@ public class MyCareHubSettingsServiceImpl extends BaseOpenmrsService
 
   @Override
   public MyCareHubSetting createMyCareHubSetting(String settingType, Date syncTime) {
+    MyCareHubSetting mchSetting = dao.getMyCareHubSettingByType(settingType);
+    if (mchSetting != null) {
+      mchSetting.setLastSyncTime(new Date());
+      return dao.saveOrUpdateMyCareHubSetting(mchSetting);
+    }
+
     MyCareHubSetting setting = new MyCareHubSetting(settingType, syncTime);
     setting.setDateCreated(new Date());
     setting.setCreator(new User(1));
