@@ -31,7 +31,8 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
 
   private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(Constants.DATE_TIME_FORMAT);
 
-  private final SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+  private final SimpleDateFormat dateFormat =
+      new SimpleDateFormat(Constants.DATE_FORMAT);
 
   public HealthDiaryServiceImpl(HealthDiaryDao dao) {
     this.dao = dao;
@@ -58,51 +59,54 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
     MyCareHubSettingsService settingsService = Context.getService(MyCareHubSettingsService.class);
     MyCareHubSetting setting =
         settingsService.getLatestMyCareHubSettingByType(PATIENT_HEALTH_DIARY_GET);
-    if (setting != null) {
-      Date newSyncDate = new Date();
 
-      JsonArray jsonArray = getPatientHealthDiaries(setting.getLastSyncTime(), newSyncDate);
-      List<HealthDiary> healthDiaries = new ArrayList<HealthDiary>();
-      if (jsonArray != null) {
-        for (int i = 0; i < jsonArray.size(); i++) {
-          JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
-          HealthDiary healthDiary = new HealthDiary();
-          healthDiary.setCccNumber(jsonObject1.get("cccNumber").getAsString());
-          healthDiary.setClientName(jsonObject1.get("clientName").getAsString());
-          healthDiary.setClientContact(jsonObject1.get("phoneNumber").getAsString());
-          healthDiary.setMood(jsonObject1.get("mood").getAsString());
-          healthDiary.setNote(jsonObject1.get("note").getAsString());
-          healthDiary.setEntryType(jsonObject1.get("entryType").getAsString());
-          if (!jsonObject1.get("createdAt").isJsonNull()) {
-            try {
-              healthDiary.setDateRecorded(
-                  dateFormat.parse(jsonObject1.get("createdAt").getAsString()));
-            } catch (ParseException e) {
-              log.error("Cannot parse createdAt date", e);
-            }
-          }
-
-          if (!jsonObject1.get("sharedAt").isJsonNull()) {
-            try {
-              healthDiary.setSharedOn(dateFormat.parse(jsonObject1.get("sharedAt").getAsString()));
-            } catch (ParseException e) {
-              log.error("Cannot parse sharedAt date", e);
-            }
-          }
-
-          healthDiary.setDateCreated(new Date());
-          healthDiary.setCreator(new User(1));
-          healthDiary.setVoided(false);
-          healthDiary.setUuid(UUID.randomUUID().toString());
-
-          healthDiaries.add(healthDiary);
-        }
-      }
-      if (healthDiaries.size() > 0) {
-        saveHealthDiaries(healthDiaries);
-      }
-    } else {
+    if (setting == null) {
       settingsService.createMyCareHubSetting(PATIENT_HEALTH_DIARY_GET, new Date());
+      return;
+    }
+
+    Date newSyncDate = new Date();
+
+    JsonArray jsonArray = getPatientHealthDiaries(setting.getLastSyncTime(), newSyncDate);
+    List<HealthDiary> healthDiaries = new ArrayList<HealthDiary>();
+    if (jsonArray != null) {
+      for (int i = 0; i < jsonArray.size(); i++) {
+        JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
+        HealthDiary healthDiary = new HealthDiary();
+        healthDiary.setCccNumber(jsonObject1.get("cccNumber").getAsString());
+        healthDiary.setClientName(jsonObject1.get("clientName").getAsString());
+        healthDiary.setClientContact(jsonObject1.get("phoneNumber").getAsString());
+        healthDiary.setMood(jsonObject1.get("mood").getAsString());
+        healthDiary.setNote(jsonObject1.get("note").getAsString());
+        healthDiary.setEntryType(jsonObject1.get("entryType").getAsString());
+        if (!jsonObject1.get("createdAt").isJsonNull()) {
+          try {
+            healthDiary.setDateRecorded(
+                dateFormat.parse(jsonObject1.get("createdAt").getAsString()));
+          } catch (ParseException e) {
+            log.error("Cannot parse createdAt date", e);
+          }
+        }
+
+        if (!jsonObject1.get("sharedAt").isJsonNull()) {
+          try {
+            healthDiary.setSharedOn(dateFormat.parse(jsonObject1.get("sharedAt").getAsString()));
+          } catch (ParseException e) {
+            log.error("Cannot parse sharedAt date", e);
+          }
+        }
+
+        healthDiary.setDateCreated(new Date());
+        healthDiary.setCreator(new User(1));
+        healthDiary.setVoided(false);
+        healthDiary.setUuid(UUID.randomUUID().toString());
+
+        healthDiaries.add(healthDiary);
+      }
+    }
+
+    if (healthDiaries.isEmpty()) {
+      saveHealthDiaries(healthDiaries);
     }
   }
 }
