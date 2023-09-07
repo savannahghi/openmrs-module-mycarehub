@@ -128,6 +128,8 @@ public class MyCareHubUtilsFragmentController {
       map.put("mood", healthDiary.getMood());
       map.put("note", healthDiary.getNote());
       map.put("entryType", healthDiary.getEntryType());
+      map.put("clientName", healthDiary.getClientName());
+      map.put("clientContact", healthDiary.getClientContact());
       if (healthDiary.getDateRecorded() != null) {
         map.put("dateRecorded", Context.getDateTimeFormat().format(healthDiary.getDateRecorded()));
       } else {

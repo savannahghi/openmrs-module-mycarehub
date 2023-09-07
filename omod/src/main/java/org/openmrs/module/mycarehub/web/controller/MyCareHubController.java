@@ -252,13 +252,15 @@ public class MyCareHubController {
       map.put("mood", healthDiary.getMood());
       map.put("note", healthDiary.getNote());
       map.put("entryType", healthDiary.getEntryType());
+      map.put("clientName", healthDiary.getClientName());
+      map.put("clientContact", healthDiary.getClientContact());
       if (healthDiary.getDateRecorded() != null) {
-        map.put("dateRecorded", Context.getDateTimeFormat().format(healthDiary.getDateRecorded()));
+        map.put("dateRecorded", healthDiary.getDateRecorded().toString());
       } else {
         map.put("dateRecorded", "");
       }
       if (healthDiary.getSharedOn() != null) {
-        map.put("sharedOn", Context.getDateTimeFormat().format(healthDiary.getSharedOn()));
+        map.put("sharedOn", healthDiary.getSharedOn().toString());
       } else {
         map.put("sharedOn", "");
       }
