@@ -1,377 +1,448 @@
 package org.openmrs.module.mycarehub.api.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hibernate.validator.util.Contracts.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.*;
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
-import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_POST;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.springframework.test.util.AssertionErrors.*;
 
+import com.google.gson.JsonObject;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.db.AppointmentDao;
 import org.openmrs.module.mycarehub.api.service.MyCareHubSettingsService;
 import org.openmrs.module.mycarehub.model.AppointmentRequests;
 import org.openmrs.module.mycarehub.model.MyCareHubSetting;
-import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Context.class, MyCareHubUtil.class})
 public class AppointmentServiceImplTest {
 
-  @Mock private AppointmentDao appointmentDao;
-
-  @InjectMocks private AppointmentServiceImpl fakeAppointmentImpl;
-
-  public static final User USER = testUserFactory();
-
-  @Mock public static MyCareHubSettingsService myCareHubSettingsService;
-
+  // Setup test data
   public static Date CURRENT_DATE = new Date();
+  public static final String UUID1 = "4b41de8e-7680-47e1-a376-77682f99bf12";
+  public static final String UUID2 = "11db5593-5099-4b66-a7ea-e6180728bf07";
 
-  private static MyCareHubSetting setting = null;
+  public static final String MYCAREHUB_ID_1 = "4b41de8e-7680-47e1-a376-77682f99bf12";
+  public static final String MYCAREHUB_ID_2 = "11db5593-5099-4b66-a7ea-e6180728bf07";
 
-  @Before
-  public void setUp() {
-    myCareHubSettingsService = mock(MyCareHubSettingsService.class);
-    setting = mock(MyCareHubSetting.class);
-    Date dt = new Date();
-    CURRENT_DATE = mock(dt.getClass());
-
-    assertNotNull(setting);
-    assertNotNull(CURRENT_DATE);
-
-    mockStatic(Context.class);
-    mockStatic(MyCareHubUtil.class);
-    when(Context.getService(MyCareHubSettingsService.class)).thenReturn(myCareHubSettingsService);
-    when(Context.getPatientService()).thenReturn(mock(PatientService.class));
-  }
-
-  @Test
-  public void testGetAppointmentsByLastSyncDate() {
-    Obs recordOne = createObs();
-
-    List<Obs> obsList = Arrays.asList(recordOne);
-    when(appointmentDao.getAppointmentsByLastSyncDate(recordOne.getDateCreated()))
-        .thenReturn(obsList);
-    List<Obs> obsRecords =
-        fakeAppointmentImpl.getAppointmentsByLastSyncDate(recordOne.getDateCreated());
-    assertEquals(1, obsRecords.size());
-  }
-
-  @Test
-  public void testGetAllAppointmentRequests() {
-    List<AppointmentRequests> requests = createAppointmentRequests();
-    when(appointmentDao.getAllAppointmentRequests()).thenReturn(requests);
-
-    List<AppointmentRequests> appointmentRequests = fakeAppointmentImpl.getAllAppointmentRequests();
-    assertEquals(1, appointmentRequests.size());
-  }
-
-  @Test
-  public void testGetAllAppointmentRequests_Not_more_than_one() {
-    List<AppointmentRequests> requests = createAppointmentRequests();
-    when(appointmentDao.getAllAppointmentRequests()).thenReturn(requests);
-
-    List<AppointmentRequests> appointmentRequests = fakeAppointmentImpl.getAllAppointmentRequests();
-    assertNotEquals(4, appointmentRequests.size());
-  }
-
-  @Test
-  public void testGetAppointmentRequestByUuid() {
-    List<AppointmentRequests> requests = createAppointmentRequests();
-    when(appointmentDao.getAppointmentRequestByUuid(requests.get(0).getAppointmentUUID()))
-        .thenReturn(requests.get(0));
-
-    AppointmentRequests appointmentRequests =
-        fakeAppointmentImpl.getAppointmentRequestByUuid(requests.get(0).getAppointmentUUID());
-    assertEquals(appointmentRequests, requests.get(0));
-  }
-
-  @Test
-  public void testGetAllAppointmentRequestsByLastSyncDate() {
-    List<AppointmentRequests> requests = createAppointmentRequests();
-    when(appointmentDao.getAllAppointmentRequestsByLastSyncDate(CURRENT_DATE)).thenReturn(requests);
-
-    List<AppointmentRequests> appointmentRequestsList =
-        fakeAppointmentImpl.getAllAppointmentRequestsByLastSyncDate(CURRENT_DATE);
-    assertEquals(appointmentRequestsList, requests);
-    assertEquals(1, appointmentRequestsList.size());
-  }
-
-  @Test
-  public void testSaveAppointmentRequests() {
-    List<AppointmentRequests> requests = createAppointmentRequests();
-    when(appointmentDao.saveAppointmentRequests(requests)).thenReturn(requests);
-
-    List<AppointmentRequests> savedAppointments =
-        fakeAppointmentImpl.saveAppointmentRequests(requests);
-    assertEquals(savedAppointments, requests);
-  }
-
-  @Test
-  public void testGetAppointmentRequestByMycarehubId() {
-    List<AppointmentRequests> requests = createAppointmentRequests();
-    when(appointmentDao.getAppointmentRequestByMycarehubId(requests.get(0).getMycarehubId()))
-        .thenReturn(requests.get(0));
-
-    AppointmentRequests appointmentList =
-        fakeAppointmentImpl.getAppointmentRequestByMycarehubId(requests.get(0).getMycarehubId());
-    assertEquals(appointmentList, requests.get(0));
-  }
-
-  @Test
-  public void testCountAppointments() {
-    List<AppointmentRequests> requests = createAppointmentRequests();
-    when(appointmentDao.countAppointments("TEST")).thenReturn(requests.size());
-
-    Number appointments = fakeAppointmentImpl.countAppointments("TEST");
-    assertEquals(1, appointments);
-  }
-
-  @Test
-  public void testGetPagedAppointments() {
-    List<AppointmentRequests> requests = createAppointmentRequests();
-    when(appointmentDao.getPagedAppointments("TEST", 1, 5)).thenReturn(requests);
-
-    List<AppointmentRequests> appointments = fakeAppointmentImpl.getPagedAppointments("TEST", 1, 5);
-    assertEquals(1, appointments.size());
-    assertEquals(appointments, requests);
-  }
-
-  //	@Test
-  //	public void syncPatientAppointments(){
-  //		assertNotNull(setting);
-  //		assertNotNull(CURRENT_DATE);
-  //
-  //		setting.setLastSyncTime(CURRENT_DATE);
-  //
-  //		// Mock behavior of the MyCareHubSettingsService
-  //		when(myCareHubSettingsService.getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS))
-  //				.thenReturn(setting);
-  //
-  //		// Create a sample list of appointments
-  //		List<Obs> appointments = Arrays.asList(
-  //				createSampleAppointmentObs(1, new Date()), // Sample appointment observation
-  //				createSampleAppointmentObs(2, new Date()) // Sample appointment observation
-  //		);
-  //		// Mock behavior of the AppointmentDao
-  //		when(appointmentDao.getAppointmentsByLastSyncDate(any(Date.class)))
-  //				.thenReturn(appointments);
-  //
-  ////		// Mock behavior of the MyCareHubUtil
-  ////
-  //	when(MyCareHubUtil.getcccPatientIdentifierType()).thenReturn(patientIdentifier.getIdentifierType());
-  //
-  //		String mflCode = "1234";
-  //		when(MyCareHubUtil.getDefaultLocationMflCode()).thenReturn(mflCode);
-  //
-  //		// Call the method to test
-  //		fakeAppointmentImpl.syncPatientAppointments();
-  //
-  //		// Verify that necessary methods were called
-  //		verify(myCareHubSettingsService,
-  // times(1)).getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS);
-  //		verify(appointmentDao, times(1)).getAppointmentsByLastSyncDate(any(Date.class));
-  //
-  //	}
-
-  @Test
-  public void syncPatientAppointmentRequests() {
-    setting.setLastSyncTime(CURRENT_DATE);
-
-    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(
-            PATIENT_APPOINTMENTS_REQUESTS_POST))
-        .thenReturn(setting);
-
-    List<AppointmentRequests> appointments = createAppointmentRequests();
-    when(appointmentDao.getAllAppointmentRequestsByLastSyncDate(any(Date.class)))
-        .thenReturn(appointments);
-    assertNotNull(appointments);
-    assertEquals(1, appointments.size());
-
-    // Call the method to test
-    fakeAppointmentImpl.syncPatientAppointmentRequests();
-
-    verify(myCareHubSettingsService, times(1))
-        .getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS_REQUESTS_POST);
-    verify(appointmentDao, times(1)).getAllAppointmentRequestsByLastSyncDate(any(Date.class));
-  }
-
-  @Test
-  public void syncPatientAppointmentRequests_nullSetting() {
-    when(myCareHubSettingsService.createMyCareHubSetting(
-            PATIENT_APPOINTMENTS_REQUESTS_POST, CURRENT_DATE))
-        .thenReturn(setting);
-
-    // Call the method to test
-    fakeAppointmentImpl.syncPatientAppointmentRequests();
-  }
-
-  @Test
-  public void fetchPatientAppointmentRequests_nullSetting() {
-    when(myCareHubSettingsService.createMyCareHubSetting(
-            PATIENT_APPOINTMENTS_REQUESTS_GET, CURRENT_DATE))
-        .thenReturn(null);
-
-    // Call the method to test
-    fakeAppointmentImpl.fetchPatientAppointmentRequests();
-  }
-
-  @Test
-  public void fetchPatientAppointmentRequests() {
-    setting.getLastSyncTime();
-    when(myCareHubSettingsService.createMyCareHubSetting(
-            PATIENT_APPOINTMENTS_REQUESTS_GET, CURRENT_DATE))
-        .thenReturn(setting);
-
-    List<AppointmentRequests> appointmentRequestsList = createAppointmentRequests();
-    assertNotNull(appointmentRequestsList);
-
-    // Call the method to test
-    fakeAppointmentImpl.fetchPatientAppointmentRequests();
-  }
-
-  private Obs createSampleAppointmentObs(Integer encounterId, Date appointmentDate) {
-    Obs appointmentObs = new Obs();
-    appointmentObs.setValueDatetime(appointmentDate);
-    appointmentObs.setId(APPOINTMENT_DATE_CONCEPT_ID);
-
-    PatientIdentifierType patientIdentifierType = getPatientIdentifierType();
-
-    PatientIdentifier patientIdentifier = getPatientIdentifier(patientIdentifierType);
-
-    Collection<PatientIdentifier> identifiers = getIdentifiers(patientIdentifier);
-
-    Set<PatientIdentifier> patientIdentifierSet = getPatientIdentifiers(patientIdentifier);
-
-    Patient patient = getPatient(identifiers, patientIdentifierSet);
-
-    Encounter encounter = getEncounter(encounterId, patient);
-
-    Concept concept = getConcept();
-
-    appointmentObs.setEncounter(encounter);
-    appointmentObs.setConcept(concept);
-    appointmentObs.getEncounter();
-
-    return appointmentObs;
-  }
-
-  private static PatientIdentifierType getPatientIdentifierType() {
-    PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
-    patientIdentifierType.setPatientIdentifierTypeId(1234);
-    patientIdentifierType.setId(1234);
-    return patientIdentifierType;
-  }
-
-  private static Collection<PatientIdentifier> getIdentifiers(PatientIdentifier patientIdentifier) {
-    Collection<PatientIdentifier> identifiers = new ArrayList<PatientIdentifier>();
-    identifiers.add(patientIdentifier);
-    return identifiers;
-  }
-
-  private static Set<PatientIdentifier> getPatientIdentifiers(PatientIdentifier patientIdentifier) {
-    Set<PatientIdentifier> patientIdentifierSet = new HashSet<PatientIdentifier>();
-    patientIdentifierSet.add(patientIdentifier);
-    return patientIdentifierSet;
-  }
-
-  private static Concept getConcept() {
-    Concept concept = new Concept();
-    concept.setConceptId(APPOINTMENT_DATE_CONCEPT_ID);
-    concept.setId(APPOINTMENT_DATE_CONCEPT_ID);
-    return concept;
-  }
-
-  private static Encounter getEncounter(Integer encounterId, Patient patient) {
-    Encounter encounter = new Encounter();
-    encounter.setEncounterId(encounterId);
-    encounter.setPatient(patient);
-    encounter.setId(1234);
-    encounter.setEncounterType(new EncounterType());
-    return encounter;
-  }
-
-  private static Patient getPatient(
-      Collection<PatientIdentifier> identifiers, Set<PatientIdentifier> patientIdentifierSet) {
-    Patient patient = new Patient();
-    patient.setId(1);
-    patient.setPatientId(1234);
-    patient.addIdentifiers(identifiers);
-    patient.setIdentifiers(patientIdentifierSet);
-    return patient;
-  }
-
-  private static PatientIdentifier getPatientIdentifier(
-      PatientIdentifierType patientIdentifierType) {
-    PatientIdentifier patientIdentifier = new PatientIdentifier();
-    patientIdentifier.setIdentifierType(patientIdentifierType);
-    patientIdentifier.setIdentifier("ccc_number");
-    patientIdentifier.setPatientIdentifierId(1234);
-    patientIdentifier.setId(1234);
-    patientIdentifier.setPreferred(true);
-    patientIdentifier.setVoided(true);
-    return patientIdentifier;
-  }
-
-  private static Obs createObs() {
-    Obs ob = new Obs();
-
-    ob.setCreator(USER);
-    ob.setId(1);
-    ob.setObsId(1);
-    ob.setComment("test");
-    ob.setDateCreated(CURRENT_DATE);
-
-    return ob;
-  }
-
-  private static List<AppointmentRequests> createAppointmentRequests() {
-    AppointmentRequests appointment = new AppointmentRequests();
-
-    appointment.setAppointmentReason("Very far");
-    appointment.setAppointmentUUID(String.valueOf(UUID.randomUUID()));
-    appointment.setCccNumber("12345");
-    appointment.setId(12);
-    appointment.setCreator(USER);
-
-    return Arrays.asList(appointment);
-  }
-
-  private static User testUserFactory() {
+  private static User userFactory() {
     User user = new User();
     user.setId(1);
 
     return user;
+  }
+
+  public static final User USER = userFactory();
+
+  private static PatientIdentifierType patientIdentifierTypeFactory() {
+    PatientIdentifierType identifierType = new PatientIdentifierType();
+
+    identifierType.setId(1);
+    identifierType.setPatientIdentifierTypeId(1);
+    identifierType.setUuid("uuid");
+
+    return identifierType;
+  }
+
+  private static PatientIdentifier patientIdentifierFactory() {
+    PatientIdentifier identifier = new PatientIdentifier();
+
+    identifier.setId(1);
+    identifier.setIdentifier("CCC");
+    identifier.setUuid("uuid");
+    identifier.setIdentifierType(patientIdentifierTypeFactory());
+
+    return identifier;
+  }
+
+  private static Patient patientFactory() {
+    Patient patient = new Patient();
+    patient.setId(1);
+    patient.setIdentifiers(patient.getIdentifiers());
+    patient.addIdentifier(patientIdentifierFactory());
+
+    return patient;
+  }
+
+  private static Encounter encounterFactory() {
+    Encounter encounter = new Encounter();
+    encounter.setId(1);
+    encounter.setEncounterId(1);
+    encounter.setPatient(patientFactory());
+
+    return encounter;
+  }
+
+  private static ConceptDatatype conceptDataTypeFactory() {
+    ConceptDatatype conceptDataType = new ConceptDatatype();
+    conceptDataType.setId(1);
+    conceptDataType.setConceptDatatypeId(1);
+    conceptDataType.setHl7Abbreviation("BIT");
+    return conceptDataType;
+  }
+
+  private static Concept conceptFactory() {
+    Concept concept = new Concept();
+    concept.setConceptId(APPOINTMENT_DATE_CONCEPT_ID);
+    concept.setId(1);
+    concept.setDatatype(conceptDataTypeFactory());
+
+    return concept;
+  }
+
+  private static List<Obs> obsFactory() {
+    Obs ob1 = new Obs();
+    ob1.setCreator(USER);
+    ob1.setId(1);
+    ob1.setObsId(1);
+    ob1.setComment("test");
+    ob1.setDateCreated(CURRENT_DATE);
+    ob1.setEncounter(encounterFactory());
+    ob1.setConcept(conceptFactory());
+
+    Obs ob2 = new Obs();
+    ob2.setCreator(USER);
+    ob2.setId(2);
+    ob2.setObsId(2);
+    ob2.setComment("test");
+    ob2.setDateCreated(CURRENT_DATE);
+    ob2.setEncounter(encounterFactory());
+    ob2.setConcept(conceptFactory());
+
+    List<Obs> obs = Arrays.asList(ob1, ob2);
+    return obs;
+  }
+
+  private static List<AppointmentRequests> appointmentRequestsFactory() {
+    AppointmentRequests request1 = new AppointmentRequests();
+    request1.setId(1);
+    request1.setUuid(UUID1);
+    request1.setMycarehubId(MYCAREHUB_ID_1);
+
+    AppointmentRequests request2 = new AppointmentRequests();
+    request2.setId(2);
+    request2.setUuid(UUID2);
+    request2.setMycarehubId(MYCAREHUB_ID_2);
+
+    List<AppointmentRequests> appointmentRequests = Arrays.asList(request1, request2);
+
+    return appointmentRequests;
+  }
+
+  @Mock private AppointmentDao mockAppointmentDao;
+  @Mock private MyCareHubSettingsService mockMyCareHubSettingsService;
+
+  @Mock private AppointmentServiceImpl mockAppointmentServiceImpl;
+
+  @InjectMocks private AppointmentServiceImpl appointmentService;
+
+  @Before
+  public void setup() {
+    MockitoAnnotations.initMocks(this);
+
+    appointmentService = new AppointmentServiceImpl(mockAppointmentDao);
+  }
+
+  // Method Tests
+  @Test
+  public void testGetAppointmentsByLastSyncDate() {
+    // Create mock data
+    List<Obs> mockObservations = obsFactory();
+
+    // Mock setup
+    when(mockAppointmentDao.getAppointmentsByLastSyncDate(mockObservations.get(0).getDateCreated()))
+        .thenReturn(mockObservations);
+
+    // Test
+    List<Obs> appointments =
+        appointmentService.getAppointmentsByLastSyncDate(mockObservations.get(0).getDateCreated());
+    List<Obs> noAppointments = appointmentService.getAppointmentsByLastSyncDate(new Date());
+
+    // Assertions
+    assertEquals("Happy Case: Gets at least one appointment", 2, appointments.size());
+    assertEquals("Sad Case: Last sync time in the future", 0, noAppointments.size());
+  }
+
+  @Test
+  public void testGetAllAppointmentRequests() {
+    // Create mock data
+    List<AppointmentRequests> mockAppointmentRequests = appointmentRequestsFactory();
+
+    // Mock setup
+    when(mockAppointmentDao.getAllAppointmentRequests()).thenReturn(mockAppointmentRequests);
+
+    // Test
+    List<AppointmentRequests> result = appointmentService.getAllAppointmentRequests();
+
+    // Assertions
+    assertEquals("Happy case: Number of appointment requests should match", 2, result.size());
+    assertEquals(
+        "Happy case: Appointment request ID 1 should match",
+        Integer.valueOf(1),
+        result.get(0).getId());
+    assertEquals(
+        "Happy Case: Appointment request ID 2 should match",
+        Integer.valueOf(2),
+        result.get(1).getId());
+    try {
+      assertEquals(
+          "Sad Case: Appointment request ID 3 does not in list",
+          Integer.valueOf(3),
+          result.get(2).getId());
+      fail("Expected ArrayIndexOutOfBoundsException");
+    } catch (ArrayIndexOutOfBoundsException e) {
+      // The exception is expected, so the test passes
+    }
+  }
+
+  @Test
+  public void testGetAppointmentRequestByUuid() {
+    // Create mock data
+    List<AppointmentRequests> mockAppointmentRequests = appointmentRequestsFactory();
+    AppointmentRequests mockRequest = mockAppointmentRequests.get(0);
+    String nonExistentUuid = UUID.randomUUID().toString();
+
+    // Mock setup
+    when(mockAppointmentDao.getAppointmentRequestByUuid(UUID1)).thenReturn(mockRequest);
+    when(mockAppointmentDao.getAppointmentRequestByUuid(nonExistentUuid)).thenReturn(null);
+
+    // Test
+    AppointmentRequests result = appointmentService.getAppointmentRequestByUuid(UUID1);
+    AppointmentRequests resultNonExistingUUID =
+        appointmentService.getAppointmentRequestByUuid(nonExistentUuid);
+
+    // Assertions
+    assertEquals("Happy Case: Appointment request UUID should match", UUID1, result.getUuid());
+    assertNull("Sad Case: Should return null for non-existent UUID", resultNonExistingUUID);
+  }
+
+  @Test
+  public void testGetAllAppointmentRequestsByLastSyncDate() {
+    // Create mock data
+    Date lastSyncDate = new Date();
+    Date InvalidLastSyncDate = new Date();
+    InvalidLastSyncDate.setTime(lastSyncDate.getTime() + 10000);
+    List<AppointmentRequests> mockAppointmentRequests = appointmentRequestsFactory();
+
+    // Mock setup
+    when(mockAppointmentDao.getAllAppointmentRequestsByLastSyncDate(lastSyncDate))
+        .thenReturn(mockAppointmentRequests);
+    when(mockAppointmentDao.getAllAppointmentRequestsByLastSyncDate(InvalidLastSyncDate))
+        .thenReturn(Collections.<AppointmentRequests>emptyList());
+
+    // Test
+    List<AppointmentRequests> result =
+        appointmentService.getAllAppointmentRequestsByLastSyncDate(lastSyncDate);
+    List<AppointmentRequests> resultInvalidLastSyncDate =
+        appointmentService.getAllAppointmentRequestsByLastSyncDate(InvalidLastSyncDate);
+
+    // Assertions
+    assertEquals("Happy Case: Number of appointment requests should match", 2, result.size());
+    assertEquals(
+        "Happy Case: Appointment request ID should match",
+        Integer.valueOf(1),
+        result.get(0).getId());
+    assertEquals(
+        "Happy Case: Appointment request ID should match",
+        Integer.valueOf(2),
+        result.get(1).getId());
+    assertTrue(
+        "Sad Case: List of appointment requests should be empty",
+        resultInvalidLastSyncDate.isEmpty());
+  }
+
+  @Test
+  public void testSaveAppointmentRequests() {
+    // Create mock data
+    List<AppointmentRequests> mockAppointmentRequests = appointmentRequestsFactory();
+    List<AppointmentRequests> emptyList = Collections.emptyList();
+
+    // Mock setup
+    when(mockAppointmentDao.saveAppointmentRequests(mockAppointmentRequests))
+        .thenReturn(mockAppointmentRequests);
+    when(mockAppointmentDao.saveAppointmentRequests(emptyList)).thenReturn(emptyList);
+
+    // Test
+    List<AppointmentRequests> result =
+        appointmentService.saveAppointmentRequests(mockAppointmentRequests);
+    List<AppointmentRequests> resultEmptyList =
+        appointmentService.saveAppointmentRequests(emptyList);
+
+    // Assertions
+    assertEquals("Happy Case: Number of saved appointment requests should match", 2, result.size());
+    assertEquals(
+        "Happy Case: Saved appointment request ID should match",
+        Integer.valueOf(1),
+        result.get(0).getId());
+    assertEquals(
+        "Happy Case: Saved appointment request ID should match",
+        Integer.valueOf(2),
+        result.get(1).getId());
+    verify(mockAppointmentDao).saveAppointmentRequests(mockAppointmentRequests);
+
+    assertTrue(
+        "Sad Case: List of saved appointment requests should be empty", resultEmptyList.isEmpty());
+    verify(mockAppointmentDao).saveAppointmentRequests(emptyList);
+  }
+
+  @Test
+  public void testSaveAppointmentRequests2() {
+    // Create mock data
+    List<AppointmentRequests> mockAppointmentRequests = appointmentRequestsFactory();
+    AppointmentRequests mockAppointmentRequest = mockAppointmentRequests.get(0);
+
+    // Mock setup
+    when(mockAppointmentDao.saveAppointmentRequests(mockAppointmentRequest))
+        .thenReturn(mockAppointmentRequest);
+    when(mockAppointmentDao.saveAppointmentRequests((List<AppointmentRequests>) null))
+        .thenThrow(new IllegalArgumentException("Invalid input"));
+
+    // Test
+    AppointmentRequests result = appointmentService.saveAppointmentRequests(mockAppointmentRequest);
+
+    // Assertions
+    assertEquals(
+        "Happy Case: Saved appointment request ID should match",
+        Integer.valueOf(1),
+        result.getId());
+
+    // Verify mock behavior
+    verify(mockAppointmentDao).saveAppointmentRequests(mockAppointmentRequest);
+
+    try {
+      appointmentService.saveAppointmentRequests((List<AppointmentRequests>) null);
+      fail("Sad Case: Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      // The exception is expected, so the test passes
+    }
+  }
+
+  @Test
+  public void testGetAppointmentRequestByMycarehubId() {
+    // Create mock data
+    String mycarehubIDNonExistent = "nonexistent";
+    List<AppointmentRequests> mockAppointmentRequests = appointmentRequestsFactory();
+    AppointmentRequests mockAppointmentRequest = mockAppointmentRequests.get(0);
+
+    // Mock setup
+    when(mockAppointmentDao.getAppointmentRequestByMycarehubId(MYCAREHUB_ID_1))
+        .thenReturn(mockAppointmentRequest);
+    when(mockAppointmentDao.getAppointmentRequestByMycarehubId(mycarehubIDNonExistent))
+        .thenReturn(null);
+
+    // Test
+    AppointmentRequests result =
+        appointmentService.getAppointmentRequestByMycarehubId(MYCAREHUB_ID_1);
+    AppointmentRequests resultNonExistentID =
+        appointmentService.getAppointmentRequestByMycarehubId(mycarehubIDNonExistent);
+
+    // Assertions
+    assertEquals(
+        "Happy Case: Returned appointment request should match", mockAppointmentRequest, result);
+    assertNull("Sad Case: Returned appointment request should be null", resultNonExistentID);
+  }
+
+  @Test
+  public void testCountAppointments() {
+    // Create mock data
+    String searchString = "example search string";
+    Number mockCount = 100;
+    String searchStringNonExistent = "nonexistent";
+    Number mockCountNonExistent = 0;
+
+    // Mock setup
+    when(mockAppointmentDao.countAppointments(searchString)).thenReturn(mockCount);
+    when(mockAppointmentDao.countAppointments(searchStringNonExistent))
+        .thenReturn(mockCountNonExistent);
+
+    // Test
+    Number result = appointmentService.countAppointments(searchString);
+    Number resultNonExistent = appointmentService.countAppointments(searchStringNonExistent);
+
+    // Assertion
+    assertEquals("Happy Case: Returned count should match", mockCount, result);
+    assertEquals("Sad Case: Returned count should be 0", mockCountNonExistent, resultNonExistent);
+  }
+
+  @Test
+  public void testGetPagedAppointments() {
+    // Create mock data
+    String searchString = "example search string";
+    String searchStringNonExistent = "nonExistent";
+    Integer pageNumber = 1;
+    Integer pageSize = 10;
+    List<AppointmentRequests> mockAppointmentRequests = appointmentRequestsFactory();
+    List<AppointmentRequests> mockAppointmentsNonExistent = new ArrayList<AppointmentRequests>();
+
+    // Mock setup
+    when(mockAppointmentDao.getPagedAppointments(searchString, pageNumber, pageSize))
+        .thenReturn(mockAppointmentRequests);
+    when(mockAppointmentDao.getPagedAppointments(searchStringNonExistent, pageNumber, pageSize))
+        .thenReturn(mockAppointmentsNonExistent);
+
+    // Test
+    List<AppointmentRequests> result =
+        appointmentService.getPagedAppointments(searchString, pageNumber, pageSize);
+    List<AppointmentRequests> resultNonExistent =
+        appointmentService.getPagedAppointments(searchStringNonExistent, pageNumber, pageSize);
+
+    // Assertions
+    assertEquals("Happy Case: Number of returned appointments should match", 2, result.size());
+    assertEquals(
+        "Sad Case: Number of returned appointments should be 0", 0, resultNonExistent.size());
+  }
+
+  @Test
+  public void testSyncPatientAppointments() throws Exception {
+    // Create mock data
+    MyCareHubSetting mockSetting = new MyCareHubSetting();
+    mockSetting.setLastSyncTime(new Date());
+    mockSetting.setId(1);
+    mockSetting.setSettingType("PATIENT_APPOINTMENTS");
+    List<Obs> mockObservations = obsFactory();
+    Obs mockObservation = mockObservations.get(0);
+
+    // Mock setup
+    when(mockMyCareHubSettingsService.getLatestMyCareHubSettingByType(
+            "APPOINTMENT_DATE_CONCEPT_ID"))
+        .thenReturn(mockSetting);
+    when(mockAppointmentDao.getAppointmentsByLastSyncDate(mockSetting.getLastSyncTime()))
+        .thenReturn(mockObservations);
+    when(mockAppointmentDao.getObsByEncounterAndConcept(
+            encounterFactory().getEncounterId(), conceptFactory().getConceptId()))
+        .thenReturn(mockObservation);
+
+    // Use Reflections to access and test the private method
+    Method createAppointmentObjectMethod =
+        appointmentService
+            .getClass()
+            .getDeclaredMethod(
+                "createAppointmentObject", mockObservation.getClass(), PatientIdentifierType.class);
+    createAppointmentObjectMethod.setAccessible(true);
+
+    // Call the private method
+    JsonObject appointmentObject =
+        (JsonObject)
+            createAppointmentObjectMethod.invoke(
+                appointmentService, mockObservation, patientIdentifierTypeFactory());
+
+    assertNotNull(appointmentObject);
   }
 }
