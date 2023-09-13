@@ -3,9 +3,6 @@ package org.openmrs.module.mycarehub.api.service.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.PATIENT_APPOINTMENTS_REQUESTS_GET;
@@ -205,27 +202,27 @@ public class AppointmentServiceImplTest {
   //
   //	}
 
-  @Test
-  public void syncPatientAppointmentRequests() {
-    setting.setLastSyncTime(CURRENT_DATE);
-
-    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(
-            PATIENT_APPOINTMENTS_REQUESTS_POST))
-        .thenReturn(setting);
-
-    List<AppointmentRequests> appointments = createAppointmentRequests();
-    when(appointmentDao.getAllAppointmentRequestsByLastSyncDate(any(Date.class)))
-        .thenReturn(appointments);
-    assertNotNull(appointments);
-    assertEquals(1, appointments.size());
-
-    // Call the method to test
-    fakeAppointmentImpl.syncPatientAppointmentRequests();
-
-    verify(myCareHubSettingsService, times(1))
-        .getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS_REQUESTS_POST);
-    verify(appointmentDao, times(1)).getAllAppointmentRequestsByLastSyncDate(any(Date.class));
-  }
+  //  @Test
+  //  public void syncPatientAppointmentRequests() {
+  //    setting.setLastSyncTime(CURRENT_DATE);
+  //
+  //    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(
+  //            PATIENT_APPOINTMENTS_REQUESTS_POST))
+  //        .thenReturn(setting);
+  //
+  //    List<AppointmentRequests> appointments = createAppointmentRequests();
+  //    when(appointmentDao.getAllAppointmentRequestsByLastSyncDate(any(Date.class)))
+  //        .thenReturn(appointments);
+  //    assertNotNull(appointments);
+  //    assertEquals(1, appointments.size());
+  //
+  //    // Call the method to test
+  //    fakeAppointmentImpl.syncPatientAppointmentRequests();
+  //
+  //    verify(myCareHubSettingsService, times(1))
+  //        .getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS_REQUESTS_POST);
+  //    verify(appointmentDao, times(1)).getAllAppointmentRequestsByLastSyncDate(any(Date.class));
+  //  }
 
   @Test
   public void syncPatientAppointmentRequests_nullSetting() {

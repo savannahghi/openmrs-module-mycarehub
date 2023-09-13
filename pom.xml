@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.github.savannahghi</groupId>
     <artifactId>openmrs-contrib-maven-parent-module</artifactId>
-    <version>1.0.0</version>
+    <version>1.7.0</version>
   </parent>
 
   <groupId>org.openmrs.module</groupId>
@@ -110,14 +110,6 @@
         <artifactId>kenyacore-api</artifactId>
         <version>${kenyacoreVersion}</version>
         <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.openmrs.test</groupId>
-        <artifactId>openmrs-test</artifactId>
-        <version>${openMRSVersion}</version>
-        <type>pom</type>
-        <scope>test</scope>
       </dependency>
 
       <dependency>
