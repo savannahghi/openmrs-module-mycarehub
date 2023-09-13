@@ -18,7 +18,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import retrofit2.Retrofit;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({RestApiService.class, Retrofit.class, Context.class, MyCareHubUtil.class})
+@PrepareForTest({
+  RestApiService.class,
+  Retrofit.class,
+  Context.class,
+  MyCareHubUtil.class,
+  ApiClient.class
+})
 @PowerMockIgnore("javax.net.ssl.*")
 public class ApiClientTest {
 

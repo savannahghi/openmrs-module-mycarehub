@@ -31,7 +31,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Context.class, ApiClient.class, MyCareHubUtil.class})
+@PrepareForTest({Context.class, ApiClient.class, MyCareHubUtil.class, RestApiService.class})
 public class RedFlagServiceImplTest {
 
   @Mock MyCareHubRedFlagDao myCareHubRedFlagDao;
