@@ -136,6 +136,17 @@ public class AppointmentServiceImplTest {
   }
 
   @Test
+  public void testSaveSingleAppointmentRequest() {
+    List<AppointmentRequests> requests = createAppointmentRequests();
+    AppointmentRequests firstRequest = requests.get(0);
+
+    when(appointmentDao.saveAppointmentRequests(firstRequest)).thenReturn(firstRequest);
+    AppointmentRequests savedAppointment =
+        fakeAppointmentImpl.saveAppointmentRequests(firstRequest);
+    assertEquals(savedAppointment, firstRequest);
+  }
+
+  @Test
   public void testGetAppointmentRequestByMycarehubId() {
     List<AppointmentRequests> requests = createAppointmentRequests();
     when(appointmentDao.getAppointmentRequestByMycarehubId(requests.get(0).getMycarehubId()))
