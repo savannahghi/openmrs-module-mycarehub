@@ -1,4 +1,4 @@
-name: Lint => Test => Release
+name: Lint & Test
 
 on: 
   push:
