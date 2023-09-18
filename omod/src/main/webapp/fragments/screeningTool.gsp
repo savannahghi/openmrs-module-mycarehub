@@ -1,7 +1,7 @@
 <div class="ke-panel-frame"  ng-controller="ScreeningToolCtrl" ng-init="init()">
     <div class="ke-panel-heading">Screening Tool Red Flags
         <input type="text" name="screeningToolRedFlagSearchString" ng-model="screeningToolRedFlagSearchString"
-               ng-change="loadScreeningToolRedFlags()" style="width: 260px;margin-left:50px" placeholder="Search ..."/>
+               ng-change="loadScreeningToolRedFlags()" style="width: 300px;margin-left:50px" placeholder="Search using CCC, client name, client contact, request, screening tool name and status."/>
     </div>
     <div class="ke-panel-content">
         <table class="ke-table-vertical">
