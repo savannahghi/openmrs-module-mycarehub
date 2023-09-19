@@ -1,7 +1,7 @@
 <div class="ke-panel-frame"  ng-controller="HealthDiaryCtrl" ng-init="init()">
     <div class="ke-panel-heading">Health Diary
             <input type="text" name="healthDiarySearchString" ng-model="healthDiarySearchString"
-                   ng-change="loadHealthDiaries()" style="width: 300px;margin-left:50px" placeholder="Search using CCC, mood or note."/>
+                   ng-change="loadHealthDiaries()" style="width: 450px;margin-left:50px" placeholder="Search using CCC, mood or note."/>
     </div>
     <div class="ke-panel-content">
         <table class="ke-table-vertical">
