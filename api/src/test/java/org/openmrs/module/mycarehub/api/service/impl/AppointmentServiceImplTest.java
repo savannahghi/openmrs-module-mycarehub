@@ -57,6 +57,8 @@ public class AppointmentServiceImplTest {
 
   private static MyCareHubSetting setting;
 
+  private static final String mflCode = "232343434";
+
   @Before
   public void setUp() {
     myCareHubSettingsService = mock(MyCareHubSettingsService.class);
@@ -68,8 +70,10 @@ public class AppointmentServiceImplTest {
     assertNotNull(CURRENT_DATE);
 
     mockStatic(Context.class);
+    mockStatic(MyCareHubUtil.class);
     when(Context.getService(MyCareHubSettingsService.class)).thenReturn(myCareHubSettingsService);
     when(Context.getPatientService()).thenReturn(mock(PatientService.class));
+    when(MyCareHubUtil.getDefaultLocationMflCode()).thenReturn(mflCode);
   }
 
   @Test
@@ -209,20 +213,19 @@ public class AppointmentServiceImplTest {
     fakeAppointmentImpl.syncPatientAppointmentRequests();
   }
 
-  //  @Test
-  //  public void syncPatientAppointmentsEmptyAppointments(){
-  //    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(
-  //            PATIENT_APPOINTMENTS))
-  //            .thenReturn(setting);
-  //
-  //    Date lastSyncTime = new Date();
-  //    when(setting.getLastSyncTime()).thenReturn(lastSyncTime);
-  //    List<Obs> appointments = new ArrayList<Obs>();
-  //
-  // when(appointmentDao.getAppointmentsByLastSyncDate(eq(lastSyncTime))).thenReturn(appointments);
-  //
-  //    fakeAppointmentImpl.syncPatientAppointments();
-  //  }
+  @Test
+  public void syncPatientAppointmentsEmptyAppointments() {
+    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(PATIENT_APPOINTMENTS))
+        .thenReturn(setting);
+
+    Date lastSyncTime = new Date();
+    when(setting.getLastSyncTime()).thenReturn(lastSyncTime);
+    List<Obs> appointments = new ArrayList<Obs>();
+
+    when(appointmentDao.getAppointmentsByLastSyncDate(eq(lastSyncTime))).thenReturn(appointments);
+
+    fakeAppointmentImpl.syncPatientAppointments();
+  }
 
   @Test
   public void fetchPatientAppointmentRequests_nullSetting() {
@@ -230,7 +233,6 @@ public class AppointmentServiceImplTest {
             PATIENT_APPOINTMENTS_REQUESTS_GET, CURRENT_DATE))
         .thenReturn(null);
 
-    // Call the method to test
     fakeAppointmentImpl.fetchPatientAppointmentRequests();
   }
 
@@ -244,7 +246,6 @@ public class AppointmentServiceImplTest {
     List<AppointmentRequests> appointmentRequestsList = createAppointmentRequests();
     assertNotNull(appointmentRequestsList);
 
-    // Call the method to test
     fakeAppointmentImpl.fetchPatientAppointmentRequests();
   }
 
