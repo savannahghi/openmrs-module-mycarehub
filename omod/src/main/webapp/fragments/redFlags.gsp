@@ -1,7 +1,7 @@
 <div class="ke-panel-frame"  ng-controller="RedFlagsCtrl" ng-init="init()">
     <div class="ke-panel-heading">Red Flags
         <input type="text" name="redFlagsSearchString" ng-model="redFlagsSearchString"
-               ng-change="loadRedFlags()" style="width: 260px;margin-left:50px" placeholder="Search ..."/>
+               ng-change="loadRedFlags()" style="width: 300px;margin-left:50px" placeholder="Search using CCC, client name, client contact and status."/>
     </div>
     <div class="ke-panel-content">
         <table class="ke-table-vertical">

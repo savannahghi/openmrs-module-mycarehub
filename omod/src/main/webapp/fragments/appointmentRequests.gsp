@@ -1,7 +1,7 @@
 <div class="ke-panel-frame" ng-controller="AppointmentRequestsCtrl" ng-init="init()">
     <div class="ke-panel-heading">Appointment Requests
         <input type="text" name="appointmentsSearchString" ng-model="appointmentsSearchString"
-               ng-change="searchAppointments()" style="width: 260px;margin-left:50px" placeholder="Search ..."/>
+               ng-change="searchAppointments()" style="width: 300px;margin-left:50px" placeholder="Search using CCC, client name, client contact, appointment reason or status."/>
     </div>
     <div class="ke-panel-content">
         <table class="ke-table-vertical">
