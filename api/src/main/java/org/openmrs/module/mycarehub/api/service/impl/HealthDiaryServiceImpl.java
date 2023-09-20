@@ -98,7 +98,7 @@ public class HealthDiaryServiceImpl extends BaseOpenmrsService implements Health
           healthDiaries.add(healthDiary);
         }
       }
-      if (healthDiaries.size() > 0) {
+      if (!healthDiaries.isEmpty()) {
         saveHealthDiaries(healthDiaries);
       }
     } else {
