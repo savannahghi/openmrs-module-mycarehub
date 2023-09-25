@@ -3,8 +3,8 @@ package org.openmrs.module.mycarehub.api.service.impl;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.*;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.openmrs.module.mycarehub.utils.Constants._PersonAttributeType.TELEPHONE_CONTACT;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 import java.util.*;
 import org.junit.Before;
@@ -12,10 +12,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
+import org.openmrs.*;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mycarehub.api.db.MyCareHubPatientDao;
 import org.openmrs.module.mycarehub.api.rest.mapper.PatientRegistration;
@@ -56,6 +55,8 @@ public class MyCareHubPatientServiceImplTest {
     when(Context.getService(MyCareHubSettingsService.class)).thenReturn(myCareHubSettingsService);
 
     when(Context.getPatientService()).thenReturn(mock(PatientService.class));
+
+    when(Context.getProgramWorkflowService()).thenReturn(mock(ProgramWorkflowService.class));
   }
 
   @Test
@@ -96,7 +97,7 @@ public class MyCareHubPatientServiceImplTest {
   }
 
   @Test
-  public void syncPatientData_null_setting() {
+  public void syncPatientDataNullSetting() {
     when(myCareHubSettingsService.getLatestMyCareHubSettingByType(KENYAEMR_PATIENT_REGISTRATIONS))
         .thenReturn(null);
 
@@ -105,19 +106,60 @@ public class MyCareHubPatientServiceImplTest {
 
   @Test
   public void syncPatientData_fetchRegisteredClientIdentifiersSinceLastSyncDate() {
-    setting.setSettingType(KENYAEMR_PATIENT_REGISTRATIONS);
-    Date date = new Date();
-    setting.setLastSyncTime(date);
+    MyCareHubSetting myCareHubSetting = new MyCareHubSetting();
+    myCareHubSetting.setSettingType(PATIENT_HEALTH_DIARY_GET);
+    myCareHubSetting.setLastSyncTime(new Date());
+
     when(myCareHubSettingsService.getLatestMyCareHubSettingByType(KENYAEMR_PATIENT_REGISTRATIONS))
         .thenReturn(setting);
 
     myCareHubPatientServiceImpl.syncPatientData();
   }
 
+  @Test
+  public void getUpdatedPatientRegistrationsSinceLastSyncDate() {
+    MyCareHubSetting myCareHubSetting = new MyCareHubSetting();
+    myCareHubSetting.setSettingType(KENYAEMR_PATIENT_REGISTRATIONS);
+    myCareHubSetting.setLastSyncTime(new Date());
+
+    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(KENYAEMR_PATIENT_REGISTRATIONS))
+        .thenReturn(setting);
+
+    List<ConsentedPatient> consentedPatientList = Collections.singletonList(CONSENTED_PATIENT);
+    when(myCareHubPatientDao.getConsentedPatientIdsUpdatedSinceDate(
+            myCareHubSetting.getLastSyncTime()))
+        .thenReturn(Collections.singletonList(consentedPatientList.get(0).getPatientId()));
+
+    when(Context.getPatientService().getPatient(1)).thenReturn(PATIENT);
+
+    // TODO: Relook at this test later to to cover
+    // ``Context.getPersonService().getPersonAttributeTypeByUuid(TELEPHONE_CONTACT);``
+    //
+    // when(myCareHubPatientServiceImpl.getUpdatedPatientRegistrationsSinceLastSyncDate(myCareHubSetting.getLastSyncTime())).thenReturn(PATIENT_REGISTRATION);
+  }
+
+  private static PersonAttribute personAttributeFactory() {
+    PersonAttribute personAttribute = new PersonAttribute();
+    personAttribute.setId(1);
+    personAttribute.setPersonAttributeId(1);
+    personAttribute.setUuid(TELEPHONE_CONTACT);
+    return personAttribute;
+  }
+
+  private static PatientProgram patientProgramFactory() {
+    PatientProgram patientProgram = new PatientProgram();
+    patientProgram.setPatient(testPatientFactory());
+    return patientProgram;
+  }
+
   private static Patient testPatientFactory() {
     Patient patient = new Patient();
     patient.setId(1);
     patient.setPatientId(1);
+    patient.setNames(getPersonNames());
+    patient.setBirthdate(new Date());
+    patient.setBirthdateEstimated(true);
+    patient.setDateCreated(new Date());
 
     PatientIdentifierType patientIdentifierType = getPatientIdentifierType();
 
@@ -185,5 +227,16 @@ public class MyCareHubPatientServiceImplTest {
     Set<PatientIdentifier> patientIdentifierSet = new HashSet<PatientIdentifier>();
     patientIdentifierSet.add(patientIdentifier);
     return patientIdentifierSet;
+  }
+
+  private static Set<PersonName> getPersonNames() {
+    PersonName personName = new PersonName();
+    personName.setFamilyName("Hojlund");
+    personName.setGivenName("Hojlund");
+
+    Set<PersonName> personNameSet = new HashSet<PersonName>();
+    personNameSet.add(personName);
+
+    return personNameSet;
   }
 }

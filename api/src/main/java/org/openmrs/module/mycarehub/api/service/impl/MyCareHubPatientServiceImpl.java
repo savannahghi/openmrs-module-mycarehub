@@ -38,6 +38,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
@@ -63,6 +65,7 @@ import org.openmrs.module.mycarehub.utils.MyCareHubUtil;
 
 public class MyCareHubPatientServiceImpl extends BaseOpenmrsService
     implements MyCareHubPatientService {
+  private static final Log log = LogFactory.getLog(AppointmentServiceImpl.class);
 
   MyCareHubPatientDao myCareHubPatientDao;
 
@@ -167,10 +170,17 @@ public class MyCareHubPatientServiceImpl extends BaseOpenmrsService
 
     PatientIdentifierType cccIdentifierType =
         Context.getPatientService().getPatientIdentifierTypeByUuid(CCC_NUMBER_IDENTIFIER_TYPE_UUID);
-    registrationRequest.setCccNumber(
-        patient
-            .getPatientIdentifier(cccIdentifierType.getPatientIdentifierTypeId())
-            .getIdentifier());
+
+    // Should not fail to sync patient when patient identifier is not found.
+    try {
+      String cccNumber =
+          patient
+              .getPatientIdentifier(cccIdentifierType.getPatientIdentifierTypeId())
+              .getIdentifier();
+      registrationRequest.setCccNumber(cccNumber);
+    } catch (NullPointerException e) {
+      log.error("Unable to get identifier", e);
+    }
 
     SimpleDateFormat sf = new SimpleDateFormat(YEAR_MONTH_DAY_PATTERN);
     registrationRequest.setDateOfBirth(sf.format(patient.getBirthdate()));
