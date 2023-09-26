@@ -4,25 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 import static org.openmrs.module.mycarehub.utils.Constants.APPOINTMENT_DATE_CONCEPT_ID;
 import static org.openmrs.module.mycarehub.utils.Constants.MyCareHubSettingType.*;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -228,7 +222,7 @@ public class AppointmentServiceImplTest {
   }
 
   @Test
-  public void fetchPatientAppointmentRequests_nullSetting() {
+  public void fetchPatientAppointmentRequestsWithNullSetting() {
     when(myCareHubSettingsService.createMyCareHubSetting(
             PATIENT_APPOINTMENTS_REQUESTS_GET, CURRENT_DATE))
         .thenReturn(null);
@@ -238,15 +232,68 @@ public class AppointmentServiceImplTest {
 
   @Test
   public void fetchPatientAppointmentRequests() {
-    setting.getLastSyncTime();
-    when(myCareHubSettingsService.createMyCareHubSetting(
-            PATIENT_APPOINTMENTS_REQUESTS_GET, CURRENT_DATE))
-        .thenReturn(setting);
+    MyCareHubSetting myCareHubSetting = new MyCareHubSetting();
+    myCareHubSetting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_GET);
+    myCareHubSetting.setLastSyncTime(CURRENT_DATE);
 
-    List<AppointmentRequests> appointmentRequestsList = createAppointmentRequests();
-    assertNotNull(appointmentRequestsList);
+    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(
+            PATIENT_APPOINTMENTS_REQUESTS_GET))
+        .thenReturn(myCareHubSetting);
+
+    JsonArray jsonArray = getJsonElements();
+
+    when(MyCareHubUtil.fetchPatientAppointmentRequests(
+            Mockito.any(Date.class), Mockito.any(Date.class)))
+        .thenReturn(jsonArray);
+
+    when(appointmentDao.getAppointmentRequestByMycarehubId(Mockito.anyString()))
+        .thenReturn(createAppointmentRequests().get(0));
 
     fakeAppointmentImpl.fetchPatientAppointmentRequests();
+  }
+
+  @Test
+  public void fetchPatientAppointmentRequestsWithNoExistingMyCareHubRequests() {
+    MyCareHubSetting myCareHubSetting = new MyCareHubSetting();
+    myCareHubSetting.setSettingType(PATIENT_APPOINTMENTS_REQUESTS_GET);
+    myCareHubSetting.setLastSyncTime(CURRENT_DATE);
+
+    when(myCareHubSettingsService.getLatestMyCareHubSettingByType(
+            PATIENT_APPOINTMENTS_REQUESTS_GET))
+        .thenReturn(myCareHubSetting);
+
+    JsonArray jsonArray = getJsonElements();
+
+    when(MyCareHubUtil.fetchPatientAppointmentRequests(
+            Mockito.any(Date.class), Mockito.any(Date.class)))
+        .thenReturn(jsonArray);
+
+    when(appointmentDao.getAppointmentRequestByMycarehubId(Mockito.anyString()))
+        .thenReturn(new AppointmentRequests());
+
+    fakeAppointmentImpl.fetchPatientAppointmentRequests();
+  }
+
+  private static JsonArray getJsonElements() {
+    JsonArray jsonArray = new JsonArray();
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("id", String.valueOf(UUID.randomUUID()));
+    jsonObject.addProperty("AppointmentID", String.valueOf(UUID.randomUUID()));
+    jsonObject.addProperty("AppointmentReason", "LAB test");
+    jsonObject.addProperty("SuggestedDate", String.valueOf(CURRENT_DATE));
+    jsonObject.addProperty("InProgressAt", String.valueOf(CURRENT_DATE));
+    jsonObject.addProperty("InProgressBy", String.valueOf(UUID.randomUUID()));
+    jsonObject.addProperty("ResolvedAt", String.valueOf(CURRENT_DATE));
+    jsonObject.addProperty("ResolvedBy", String.valueOf(UUID.randomUUID()));
+    jsonObject.addProperty("ClientName", "test");
+    jsonObject.addProperty("ClientContact", "0711223344");
+    jsonObject.addProperty("CCCNumber", "123456789");
+    jsonObject.addProperty("MFLCODE", "11094");
+    jsonObject.addProperty("Status", "PENDING");
+
+    jsonArray.add(jsonObject);
+    return jsonArray;
   }
 
   private Obs createSampleAppointmentObs(Integer encounterId, Date appointmentDate) {
@@ -346,14 +393,14 @@ public class AppointmentServiceImplTest {
 
   private static List<AppointmentRequests> createAppointmentRequests() {
     AppointmentRequests appointment = new AppointmentRequests();
-
     appointment.setAppointmentReason("Very far");
     appointment.setAppointmentUUID(String.valueOf(UUID.randomUUID()));
     appointment.setCccNumber("12345");
     appointment.setId(12);
     appointment.setCreator(USER);
+    appointment.setMycarehubId(String.valueOf(UUID.randomUUID()));
 
-    return Arrays.asList(appointment);
+    return Collections.singletonList(appointment);
   }
 
   private static User testUserFactory() {

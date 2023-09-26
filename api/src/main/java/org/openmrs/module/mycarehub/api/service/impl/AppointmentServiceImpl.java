@@ -290,6 +290,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 
         handleAppointmentException(appointmentRequest, jsonObject1, dateFormat);
 
+        appointmentRequest.setStatus(jsonObject1.get("Status").getAsString());
         appointmentRequest.setClientName(jsonObject1.get("ClientName").getAsString());
         appointmentRequest.setClientContact(jsonObject1.get("ClientContact").getAsString());
         appointmentRequest.setCccNumber(jsonObject1.get("CCCNumber").getAsString());
@@ -310,8 +311,6 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
     } catch (ParseException e) {
       log.error("Cannot parse SuggestedDate date", e);
     }
-
-    appointmentRequest.setStatus(jsonObject1.get("Status").getAsString());
 
     if (!jsonObject1.get("InProgressAt").isJsonNull()) {
       try {
