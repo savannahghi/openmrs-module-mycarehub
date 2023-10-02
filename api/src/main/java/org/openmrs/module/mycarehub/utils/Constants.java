@@ -211,6 +211,10 @@ public class Constants {
       public static final String APPOINTMENT_RESOLVED_BY_KEY = "ResolvedBy";
 
       public static final String APPOINTMENT_REQUEST_CONTAINER = "serviceRequests";
+
+      public static final String APPOINTMENT_REQUEST_TYPE_KEY = "request_type";
+
+      public static final String APPOINTMENT_REQUEST_TYPE = "APPOINTMENTS";
     }
 
     public static final class REdFlagsObjectKeys {
