@@ -53,7 +53,7 @@
     <openMRSVersion>1.12.0</openMRSVersion>
     <retrofitVersion>2.9.0</retrofitVersion>
     <uiframeworkVersion>3.15.0</uiframeworkVersion>
-    <webservicesRestVersion>2.32.0</webservicesRestVersion>
+    <webservicesRestVersion>2.40.0</webservicesRestVersion>
   </properties>
 
   <dependencyManagement>
