@@ -44,7 +44,7 @@
     <appframeworkVersion>2.2.1</appframeworkVersion>
     <appointmentschedulingVersion>1.13.0</appointmentschedulingVersion>
     <gsonVersion>2.9.0</gsonVersion>
-    <idgenVersion>2.6</idgenVersion>
+    <idgenVersion>4.10.0</idgenVersion>
     <kenyacoreVersion>3.0.1</kenyacoreVersion>
     <kenyauiVersion>3.0.0</kenyauiVersion>
     <maven.compiler.source>1.8</maven.compiler.source>
