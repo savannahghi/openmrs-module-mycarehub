@@ -41,7 +41,7 @@
   </distributionManagement>
 
   <properties>
-    <appframeworkVersion>2.2.1</appframeworkVersion>
+    <appframeworkVersion>2.17.0</appframeworkVersion>
     <appointmentschedulingVersion>1.13.0</appointmentschedulingVersion>
     <gsonVersion>2.9.0</gsonVersion>
     <idgenVersion>2.6</idgenVersion>
