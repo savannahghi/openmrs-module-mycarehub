@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
     <changeSet id="mycarehub-202202221530" author="bmokaya">
         <preConditions onFail="MARK_RAN">
@@ -23,7 +21,7 @@
             <column name="provider" type="varchar(255)"/>
             <column name="requested_date" type="date"/>
             <column name="requested_time_slot" type="varchar(255)"/>
-            <column name="status" type="ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED')" defaultValue="'PENDING'">
+            <column name="status" type="ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED')" defaultValue="PENDING">
                 <constraints nullable="false"/>
             </column>
             <column name="progress_by" type="int"/>
@@ -63,7 +61,7 @@
 			<column name="request_type" type="varchar(255)"/>
 			<column name="screening_tool" type="varchar(255)"/>
 			<column name="screening_score" type="varchar(255)"/>
-            <column name="status" type="ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED')" defaultValue="'PENDING'">
+            <column name="status" type="ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED')" defaultValue="PENDING">
                 <constraints nullable="false"/>
             </column>
             <column name="progress_by" type="int"/>

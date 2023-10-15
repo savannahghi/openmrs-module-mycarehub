@@ -5,6 +5,15 @@
 
 <hibernate-configuration>
     <session-factory>
+        <!-- Database connection settings -->
+        <property name="hibernate.connection.driver_class">org.h2.Driver</property>
+        <property name="hibernate.connection.url">jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MVCC=true</property>
+        <property name="hibernate.connection.username">sa</property>
+        <property name="hibernate.connection.password"></property>
+
+         <!-- Show SQL statements in logs -->
+        <property name="hibernate.show_sql">true</property>
+
         <mapping resource="MyCareHubSettings.hbm.xml"/>
         <mapping resource="AppointmentRequests.hbm.xml"/>
         <mapping resource="HealthDiary.hbm.xml"/>

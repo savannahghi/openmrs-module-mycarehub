@@ -3,7 +3,10 @@ package org.openmrs.module.mycarehub.api.db.hibernate;
 import static org.junit.Assert.assertEquals;
 import static org.openmrs.module.mycarehub.api.db.hibernate.MyCareHubPatientDaoTest.MCH_CONSENTED_PATIENT_XML_FILENAME;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -20,7 +23,6 @@ import org.springframework.test.annotation.Rollback;
 public class HibernateAppointmentDaoTest extends BaseModuleContextSensitiveTest {
 
   private AppointmentDao appointmentDao;
-
   @Autowired public DbSessionFactory sessionFactory;
 
   //  protected static final String STANDARD_DATASET_XML_FILENAME =
@@ -32,16 +34,12 @@ public class HibernateAppointmentDaoTest extends BaseModuleContextSensitiveTest 
   public Boolean useInMemoryDatabase() {
     // Defaults to true. If you want to use your own database specified in your runtime properties
     // return false instead, otherwise return super.useInMemoryDatabase();.
-    return super.useInMemoryDatabase();
+    return false;
   }
 
   @Before
   public void setup() throws Exception {
     appointmentDao = new HibernateAppointmentDao(sessionFactory);
-
-    //    executeDataSet(STANDARD_DATASET_XML_FILENAME);
-
-    executeDataSet(INITIAL_APPOINTMENT_XML_FILENAME);
   }
 
   @Test
